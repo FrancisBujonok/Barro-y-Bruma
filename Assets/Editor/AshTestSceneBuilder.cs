@@ -1,6 +1,8 @@
+using BarroYBruma.Player;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 
@@ -28,6 +30,14 @@ namespace BarroYBruma.Editor
 
         /// <summary>Contact shadow drawn under the player.</summary>
         public const string PlayerShadowSpritePath = "Assets/Art/Sprites/Characters/PlayerShadow.png";
+
+        /// <summary>Player tuning asset; created on first build if missing.</summary>
+        public const string PlayerStatsPath = "Assets/Data/PlayerStats.asset";
+
+        /// <summary>Input actions used by the player controller.</summary>
+        public const string PlayerInputPath = "Assets/Settings/PlayerInput.inputactions";
+
+        private const float PlayerColliderRadius = 0.25f;
 
         // Look-test values only; gameplay tuning lives elsewhere once those systems exist.
         private const int FloorWidth = 24;
@@ -90,7 +100,7 @@ namespace BarroYBruma.Editor
             var tile = AssetDatabase.LoadAssetAtPath<Tile>(path);
             if (tile == null)
             {
-                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+                EnsureFolder(System.IO.Path.GetDirectoryName(path));
                 tile = ScriptableObject.CreateInstance<Tile>();
                 AssetDatabase.CreateAsset(tile, path);
             }
@@ -98,6 +108,17 @@ namespace BarroYBruma.Editor
             EditorUtility.SetDirty(tile);
             AssetDatabase.SaveAssets();
             return tile;
+        }
+
+        // Creates an Assets/... folder (and missing parents) through the AssetDatabase.
+        private static void EnsureFolder(string folder)
+        {
+            folder = folder.Replace('\\', '/');
+            if (AssetDatabase.IsValidFolder(folder)) return;
+            int slash = folder.LastIndexOf('/');
+            string parent = folder.Substring(0, slash);
+            EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, folder.Substring(slash + 1));
         }
 
         private static void CreateCamera()
@@ -139,7 +160,8 @@ namespace BarroYBruma.Editor
             floorGo.transform.SetParent(grid.transform, false);
             var tilemap = floorGo.AddComponent<Tilemap>();
             var renderer = floorGo.AddComponent<TilemapRenderer>();
-            renderer.sortingOrder = -100;
+            // Player Y-sorting uses sortingOrder = -Y * 100, so the floor must stay below any of it.
+            renderer.sortingOrder = short.MinValue;
 
             for (int y = -FloorHeight / 2; y < FloorHeight / 2; y++)
             for (int x = -FloorWidth / 2; x < FloorWidth / 2; x++)
@@ -169,6 +191,33 @@ namespace BarroYBruma.Editor
             shadowSr.sprite = shadow;
             shadowSr.color = ShadowTint;
             shadowSr.sortingOrder = 9;
+
+            // Story 001: physics body + controller (sorting orders above are overwritten at runtime).
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0f;
+            rb.freezeRotation = true;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            var col = go.AddComponent<CircleCollider2D>();
+            col.radius = PlayerColliderRadius;
+            col.offset = new Vector2(0f, ShadowOffsetY + PlayerColliderRadius);  // around the feet
+
+            var controller = go.AddComponent<PlayerController>();
+            var so = new SerializedObject(controller);
+            so.FindProperty("_stats").objectReferenceValue = LoadOrCreatePlayerStats();
+            so.FindProperty("_inputActions").objectReferenceValue = AssetDatabase.LoadAssetAtPath<InputActionAsset>(PlayerInputPath);
+            so.FindProperty("_shadowRenderer").objectReferenceValue = shadowSr;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static PlayerStats LoadOrCreatePlayerStats()
+        {
+            var stats = AssetDatabase.LoadAssetAtPath<PlayerStats>(PlayerStatsPath);
+            if (stats != null) return stats;
+            EnsureFolder(System.IO.Path.GetDirectoryName(PlayerStatsPath));
+            stats = ScriptableObject.CreateInstance<PlayerStats>();
+            AssetDatabase.CreateAsset(stats, PlayerStatsPath);
+            AssetDatabase.SaveAssets();
+            return stats;
         }
 
         private static void AddToBuildSettings(string path)
