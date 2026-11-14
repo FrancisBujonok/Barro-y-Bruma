@@ -3,6 +3,8 @@ using BrumaPx.World;
 using BrumaPx.Player;
 using BrumaPx.Dialogue;
 using BrumaPx.Atmosphere;
+using BrumaPx.Combat;
+using BrumaPx.UI;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -592,6 +594,7 @@ namespace BrumaPx.EditorTools
             EditorUtility.SetDirty(rig);
 
             BuildAtmosphere(rig, cam, heroT);
+            BuildCombat(heroT, rig);
         }
 
         static Text _clockLabel;
@@ -650,6 +653,301 @@ namespace BrumaPx.EditorTools
             dnw.hud = _clockLabel;
 
             AddLight(hero, new Vector3(0f, 1.2f, 0f), 3.2f, new Color(0.82f, 0.8f, 0.66f), 0.5f, 0f);
+        }
+
+        // ------------------------------------------------------------------------------------------------ combat
+
+        static EnemyProfile GetProfile(string assetName, System.Action<SerializedObject> fill)
+        {
+            const string dir = "Assets/Data/Enemies";
+            if (!AssetDatabase.IsValidFolder(dir)) AssetDatabase.CreateFolder("Assets/Data", "Enemies");
+            string path = dir + "/" + assetName + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<EnemyProfile>(path);
+            if (existing != null) return existing;
+
+            var profile = ScriptableObject.CreateInstance<EnemyProfile>();
+            AssetDatabase.CreateAsset(profile, path);
+            var so = new SerializedObject(profile);
+            fill(so);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(profile);
+            AssetDatabase.SaveAssets();
+            return profile;
+        }
+
+        static void SetF(SerializedObject so, string prop, float v)
+        {
+            so.FindProperty(prop).floatValue = v;
+        }
+
+        // Combat for the hero (health, light level, sword), the HUD and the enemies. Safe to run again.
+        static void BuildCombat(Transform hero, PixelDioramaRig rig)
+        {
+            Material flash = M("Glow");
+
+            var health = hero.GetComponent<Health>();
+            if (health == null) health = hero.gameObject.AddComponent<Health>();
+            health.team = 0;
+            health.max = 100f;
+            health.flashMaterial = flash;
+
+            var vis = hero.GetComponent<HeroVisibility>();
+            if (vis == null) vis = hero.gameObject.AddComponent<HeroVisibility>();
+            vis.atmosphere = Object.FindFirstObjectByType<DayNightWeather>();
+
+            var combat = hero.GetComponent<HeroCombat>();
+            if (combat == null) combat = hero.gameObject.AddComponent<HeroCombat>();
+            combat.hero = hero.GetComponent<DioramaHero>();
+            combat.health = health;
+            combat.body = hero.Find("Body");
+            BuildHeroGear(hero, combat);
+
+            // The hero's own light only helps the player see; it must not make the hero easier to spot.
+            var heroLight = hero.GetComponent<PixelLight>();
+            if (heroLight != null) heroLight.countsForVisibility = false;
+
+            BuildHud(health, combat, vis);
+            BuildEnemies(rig.pixelsPerUnit, flash);
+        }
+
+        // The sword rests on the hero's back; while fighting a second one is held in the right hand and swings
+        // with the arm around the shoulder (Sword Pivot).
+        static void BuildHeroGear(Transform hero, HeroCombat combat)
+        {
+            Transform body = hero.Find("Body");
+
+            Transform sheath = body.Find("Sword Sheathed");
+            if (sheath == null)
+            {
+                sheath = new GameObject("Sword Sheathed").transform;
+                sheath.SetParent(body, false);
+                foreach (var n in new[] { "Sword Blade", "Sword Guard" })
+                {
+                    var t = body.Find(n);
+                    if (t != null) t.SetParent(sheath, true);
+                }
+            }
+
+            Transform pivot = body.Find("Sword Pivot");
+            if (pivot == null)
+            {
+                pivot = new GameObject("Sword Pivot").transform;
+                pivot.SetParent(body, false);
+                pivot.localPosition = new Vector3(0.42f, 1.40f, 0f);
+                var arm = body.Find("Arm R");
+                if (arm != null) arm.SetParent(pivot, true);
+            }
+
+            var old = pivot.Find("Drawn Sword");
+            if (old != null) Object.DestroyImmediate(old.gameObject);
+            var drawn = new GameObject("Drawn Sword").transform;
+            drawn.SetParent(pivot, false);
+            Prim(drawn, PrimitiveType.Cube, "Blade", new Vector3(-0.02f, -0.27f, 0.75f), new Vector3(0.08f, 1.25f, 0.03f), new Vector3(60f, 0f, 0f), "HeroBlade");
+            Prim(drawn, PrimitiveType.Cube, "Guard", new Vector3(-0.02f, -0.51f, 0.31f), new Vector3(0.30f, 0.06f, 0.06f), new Vector3(60f, 0f, 0f), "HeroHilt");
+            drawn.gameObject.SetActive(false);
+
+            combat.swordPivot = pivot;
+            combat.drawnSword = drawn.gameObject;
+            combat.sheathedSword = sheath.gameObject;
+        }
+
+        static void Place(RectTransform rt, Vector2 pos, Vector2 size)
+        {
+            rt.anchorMin = rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = pos;
+            rt.sizeDelta = size;
+        }
+
+        static RectTransform Bar(Transform parent, string name, Vector2 pos, Color fillColor, out Image fillImage)
+        {
+            var back = Img(parent, name + " Back", new Color32(0x7A, 0x66, 0x50, 255));
+            Place(back.rectTransform, pos, new Vector2(124f, 16f));
+            var inner = Img(back.transform, "Inner", new Color32(0x1B, 0x17, 0x14, 255));
+            Stretch(inner.rectTransform, 2f, 2f, 2f, 2f);
+            var fill = Img(inner.transform, "Fill", fillColor);
+            Stretch(fill.rectTransform, 0f, 0f, 0f, 0f);
+            fillImage = fill;
+            return fill.rectTransform;
+        }
+
+        // Top-right panel: health, stamina and the light icon. Also the centre message ("Has caido").
+        static void BuildHud(Health health, HeroCombat combat, HeroVisibility vis)
+        {
+            var root = GameObject.Find("UI");
+            if (root == null) return;
+            Color cream = new Color32(0xC4, 0xBF, 0xB2, 255);
+            Color warm = new Color32(0xCD, 0xBB, 0x94, 255);
+
+            var panel = Img(root.transform, "Hero HUD", new Color32(0x1B, 0x17, 0x14, 190));
+            var prt = panel.rectTransform;
+            prt.anchorMin = prt.anchorMax = new Vector2(1f, 1f);
+            prt.pivot = new Vector2(1f, 1f);
+            prt.anchoredPosition = new Vector2(-8f, -6f);
+            prt.sizeDelta = new Vector2(268f, 80f);
+
+            var lv = Txt(panel.transform, "Vida Label", 14, FontStyle.Bold, cream, TextAnchor.MiddleLeft);
+            Place(lv.rectTransform, new Vector2(10f, -10f), new Vector2(60f, 18f));
+            lv.text = "Vida";
+            Image hpImg;
+            var hp = Bar(panel.transform, "Vida", new Vector2(70f, -11f), new Color32(0xA8, 0x3A, 0x32, 255), out hpImg);
+
+            var la = Txt(panel.transform, "Aguante Label", 14, FontStyle.Bold, cream, TextAnchor.MiddleLeft);
+            Place(la.rectTransform, new Vector2(10f, -36f), new Vector2(60f, 18f));
+            la.text = "Aguante";
+            Image stImg;
+            var st = Bar(panel.transform, "Aguante", new Vector2(70f, -37f), new Color32(0xCD, 0xBB, 0x94, 255), out stImg);
+
+            var iconGo = new GameObject("Light Icon", typeof(RectTransform), typeof(RawImage));
+            iconGo.transform.SetParent(panel.transform, false);
+            var icon = iconGo.GetComponent<RawImage>();
+            icon.raycastTarget = false;
+            Place(icon.rectTransform, new Vector2(202f, -4f), new Vector2(52f, 52f));
+
+            var ll = Txt(panel.transform, "Light Label", 13, FontStyle.Bold, cream, TextAnchor.UpperCenter);
+            Place(ll.rectTransform, new Vector2(190f, -58f), new Vector2(76f, 18f));
+
+            var msg = Txt(root.transform, "Message", 34, FontStyle.Bold, warm, TextAnchor.MiddleCenter);
+            var mrt = msg.rectTransform;
+            mrt.anchorMin = mrt.anchorMax = new Vector2(0.5f, 0.65f);
+            mrt.pivot = new Vector2(0.5f, 0.5f);
+            mrt.anchoredPosition = Vector2.zero;
+            mrt.sizeDelta = new Vector2(700f, 60f);
+            msg.text = string.Empty;
+
+            var hud = panel.gameObject.AddComponent<HeroHud>();
+            hud.health = health;
+            hud.combat = combat;
+            hud.visibility = vis;
+            hud.healthFill = hp;
+            hud.staminaFill = st;
+            hud.staminaFillImage = stImg;
+            hud.lightIcon = icon;
+            hud.lightLabel = ll;
+            hud.message = msg;
+        }
+
+        static void BuildEnemies(int pixelsPerUnit, Material flash)
+        {
+            foreach (var e in Object.FindObjectsByType<EnemyBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                Object.DestroyImmediate(e.gameObject);
+
+            var infected = GetProfile("Infectado", delegate (SerializedObject so)
+            {
+                so.FindProperty("_displayName").stringValue = "Infectado";
+                SetF(so, "_maxHealth", 30f);
+                SetF(so, "_walkSpeed", 1.1f);
+                SetF(so, "_chaseSpeed", 2.2f);
+                SetF(so, "_sightRange", 7f);
+                SetF(so, "_minLightFactor", 0.3f);
+                SetF(so, "_fieldOfView", 120f);
+                SetF(so, "_hearingMultiplier", 1.3f);
+                SetF(so, "_loseTrackSeconds", 6f);
+                SetF(so, "_attackRange", 1.2f);
+                SetF(so, "_attackDamage", 14f);
+                SetF(so, "_attackStartup", 0.55f);
+                SetF(so, "_attackActive", 0.15f);
+                SetF(so, "_attackRecovery", 0.9f);
+                SetF(so, "_attackArcDegrees", 100f);
+                SetF(so, "_attackNoise", 3f);
+                SetF(so, "_staggerThreshold", 18f);
+                SetF(so, "_staggerSeconds", 0.6f);
+                SetF(so, "_knockbackScale", 1.2f);
+            });
+
+            var raider = GetProfile("Saqueador", delegate (SerializedObject so)
+            {
+                so.FindProperty("_displayName").stringValue = "Saqueador";
+                SetF(so, "_maxHealth", 45f);
+                SetF(so, "_walkSpeed", 1.5f);
+                SetF(so, "_chaseSpeed", 3.4f);
+                SetF(so, "_sightRange", 9f);
+                SetF(so, "_minLightFactor", 0.5f);
+                SetF(so, "_fieldOfView", 150f);
+                SetF(so, "_hearingMultiplier", 1f);
+                SetF(so, "_loseTrackSeconds", 8f);
+                SetF(so, "_attackRange", 1.5f);
+                SetF(so, "_attackDamage", 12f);
+                SetF(so, "_attackStartup", 0.35f);
+                SetF(so, "_attackActive", 0.12f);
+                SetF(so, "_attackRecovery", 0.55f);
+                SetF(so, "_attackArcDegrees", 90f);
+                SetF(so, "_attackNoise", 5f);
+                SetF(so, "_staggerThreshold", 18f);
+                SetF(so, "_staggerSeconds", 0.4f);
+                SetF(so, "_knockbackScale", 0.8f);
+                so.FindProperty("_canSidestep").boolValue = true;
+                SetF(so, "_sidestepChance", 0.4f);
+                SetF(so, "_sidestepDistance", 1.4f);
+            });
+
+            BuildInfected("Infectado A", new Vector3(7.5f, 0f, -5.5f), 210f, infected, pixelsPerUnit, flash);
+            BuildInfected("Infectado B", new Vector3(14.5f, 0f, -20.8f), 20f, infected, pixelsPerUnit, flash);
+            BuildRaider("Saqueador A", new Vector3(18f, 0f, -12.8f), 250f, raider, pixelsPerUnit, flash);
+        }
+
+        static void FinishEnemy(Transform g, Transform body, Transform legL, Transform legR, Transform arms, EnemyProfile profile, int pixelsPerUnit, Material flash)
+        {
+            var h = g.gameObject.AddComponent<Health>();
+            h.team = 1;
+            h.max = profile.MaxHealth;
+            h.flashMaterial = flash;
+
+            var b = g.gameObject.AddComponent<EnemyBrain>();
+            b.profile = profile;
+            b.body = body;
+            b.legL = legL;
+            b.legR = legR;
+            b.arms = arms;
+            b.pixelsPerUnit = pixelsPerUnit;
+        }
+
+        // Hunched, pale, arms hanging forward: a slow body that follows sound.
+        static void BuildInfected(string name, Vector3 pos, float yaw, EnemyProfile profile, int ppu, Material flash)
+        {
+            var g = Group(name, pos, yaw);
+            var body = new GameObject("Body").transform;
+            body.SetParent(g, false);
+            Prim(body, PrimitiveType.Cylinder, "Torso", new Vector3(0f, 0.95f, 0.06f), new Vector3(0.52f, 0.48f, 0.4f), new Vector3(16f, 0f, 0f), "RockLight");
+            Prim(body, PrimitiveType.Sphere, "Head", new Vector3(0f, 1.55f, 0.2f), new Vector3(0.34f, 0.36f, 0.34f), Vector3.zero, "HeroScarf");
+            Prim(body, PrimitiveType.Cube, "Eye L", new Vector3(-0.07f, 1.58f, 0.36f), new Vector3(0.06f, 0.05f, 0.03f), Vector3.zero, "Glow", false);
+            Prim(body, PrimitiveType.Cube, "Eye R", new Vector3(0.07f, 1.58f, 0.36f), new Vector3(0.06f, 0.05f, 0.03f), Vector3.zero, "Glow", false);
+
+            var arms = new GameObject("Arms").transform;
+            arms.SetParent(body, false);
+            arms.localPosition = new Vector3(0f, 1.25f, 0.1f);
+            Prim(arms, PrimitiveType.Cube, "Arm L", new Vector3(-0.36f, -0.42f, 0.08f), new Vector3(0.13f, 0.8f, 0.13f), new Vector3(0f, 0f, 6f), "Bark");
+            Prim(arms, PrimitiveType.Cube, "Arm R", new Vector3(0.36f, -0.42f, 0.08f), new Vector3(0.13f, 0.8f, 0.13f), new Vector3(0f, 0f, -6f), "Bark");
+
+            var legL = Prim(g, PrimitiveType.Cube, "Leg L", new Vector3(-0.15f, 0.38f, 0f), new Vector3(0.18f, 0.76f, 0.2f), Vector3.zero, "Bark");
+            var legR = Prim(g, PrimitiveType.Cube, "Leg R", new Vector3(0.15f, 0.38f, 0f), new Vector3(0.18f, 0.76f, 0.2f), Vector3.zero, "Bark");
+            FinishEnemy(g, body, legL.transform, legR.transform, arms, profile, ppu, flash);
+        }
+
+        // A hooded man with a club: faster, sees farther and steps aside from heavy blows.
+        static void BuildRaider(string name, Vector3 pos, float yaw, EnemyProfile profile, int ppu, Material flash)
+        {
+            var g = Group(name, pos, yaw);
+            var body = new GameObject("Body").transform;
+            body.SetParent(g, false);
+            Prim(body, PrimitiveType.Cylinder, "Cloak", new Vector3(0f, 0.85f, 0f), new Vector3(0.62f, 0.62f, 0.62f), Vector3.zero, "HeroCloakDark");
+            Prim(body, PrimitiveType.Sphere, "Shoulders", new Vector3(0f, 1.4f, 0f), new Vector3(0.72f, 0.4f, 0.55f), Vector3.zero, "HeroCloakDark");
+            Prim(body, PrimitiveType.Sphere, "Hood", new Vector3(0f, 1.68f, 0f), new Vector3(0.5f, 0.54f, 0.5f), Vector3.zero, "Black");
+            Prim(body, PrimitiveType.Sphere, "Face", new Vector3(0f, 1.64f, 0.13f), new Vector3(0.3f, 0.3f, 0.26f), Vector3.zero, "HeroScarf");
+            Prim(body, PrimitiveType.Cube, "Eye L", new Vector3(-0.07f, 1.67f, 0.26f), new Vector3(0.06f, 0.05f, 0.03f), Vector3.zero, "Glow", false);
+            Prim(body, PrimitiveType.Cube, "Eye R", new Vector3(0.07f, 1.67f, 0.26f), new Vector3(0.06f, 0.05f, 0.03f), Vector3.zero, "Glow", false);
+            Prim(body, PrimitiveType.Cube, "Arm L", new Vector3(-0.42f, 1.0f, 0.04f), new Vector3(0.14f, 0.62f, 0.14f), new Vector3(0f, 0f, 8f), "HeroCloakDark");
+
+            var arms = new GameObject("Weapon Arm").transform;
+            arms.SetParent(body, false);
+            arms.localPosition = new Vector3(0.42f, 1.34f, 0.05f);
+            Prim(arms, PrimitiveType.Cube, "Arm R", new Vector3(0f, -0.3f, 0.08f), new Vector3(0.14f, 0.62f, 0.14f), new Vector3(-20f, 0f, 0f), "HeroCloakDark");
+            Prim(arms, PrimitiveType.Cube, "Club", new Vector3(0f, -0.5f, 0.42f), new Vector3(0.12f, 0.95f, 0.12f), new Vector3(70f, 0f, 0f), "Wood");
+            Prim(arms, PrimitiveType.Sphere, "Club Head", new Vector3(0f, -0.28f, 0.84f), new Vector3(0.22f, 0.22f, 0.22f), Vector3.zero, "WoodDark");
+
+            var legL = Prim(g, PrimitiveType.Cube, "Leg L", new Vector3(-0.14f, 0.38f, 0f), new Vector3(0.2f, 0.76f, 0.22f), Vector3.zero, "HeroPants");
+            var legR = Prim(g, PrimitiveType.Cube, "Leg R", new Vector3(0.14f, 0.38f, 0f), new Vector3(0.2f, 0.76f, 0.22f), Vector3.zero, "HeroPants");
+            FinishEnemy(g, body, legL.transform, legR.transform, arms, profile, ppu, flash);
         }
 
         static void BuildUi(PixelDioramaRig rig, out DialogueBox dlg, out RectTransform prompt, out Text chunkLabel)
@@ -738,7 +1036,7 @@ namespace BrumaPx.EditorTools
             var hpr = hudPanel.rectTransform;
             hpr.anchorMin = hpr.anchorMax = new Vector2(0f, 1f); hpr.pivot = new Vector2(0f, 1f);
             hpr.anchoredPosition = new Vector2(8f, -6f);
-            hpr.sizeDelta = new Vector2(600f, 88f);
+            hpr.sizeDelta = new Vector2(800f, 88f);
 
             chunkLabel = Txt(root.transform, "Chunk Label", 16, FontStyle.Normal, cream, TextAnchor.UpperLeft);
             var crt = chunkLabel.rectTransform;
@@ -751,8 +1049,8 @@ namespace BrumaPx.EditorTools
             var hlp = help.rectTransform;
             hlp.anchorMin = hlp.anchorMax = new Vector2(0f, 1f); hlp.pivot = new Vector2(0f, 1f);
             hlp.anchoredPosition = new Vector2(14f, -34f);
-            hlp.sizeDelta = new Vector2(620f, 24f);
-            help.text = "WASD / flechas: mover   Shift: correr   E: hablar   F5: clima   F6: +1 hora   F7: pausar hora";
+            hlp.sizeDelta = new Vector2(800f, 24f);
+            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  E: hablar  F5/F6/F7: clima/hora";
 
             var clock = Txt(root.transform, "Clock Label", 18, FontStyle.Bold, warm, TextAnchor.UpperLeft);
             var klr = clock.rectTransform;

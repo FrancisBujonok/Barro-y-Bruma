@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f92eced6185b2244b820f5b84694b61, type: 3}
+  m_Name: Saqueador
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Combat.EnemyProfile
+  _displayName: Saqueador
+  _maxHealth: 45
+  _radius: 0.35
+  _walkSpeed: 1.5
+  _chaseSpeed: 3.4
+  _sightRange: 9
+  _minLightFactor: 0.5
+  _fieldOfView: 150
+  _hearingMultiplier: 1
+  _loseTrackSeconds: 8
+  _attackRange: 1.5
+  _attackDamage: 12
+  _attackStartup: 0.35
+  _attackActive: 0.12
+  _attackRecovery: 0.55
+  _attackArcDegrees: 90
+  _attackNoise: 5
+  _staggerThreshold: 18
+  _staggerSeconds: 0.4
+  _knockbackScale: 0.8
+  _canSidestep: 1
+  _sidestepChance: 0.4
+  _sidestepDistance: 1.4

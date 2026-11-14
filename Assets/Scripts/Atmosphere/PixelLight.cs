@@ -19,6 +19,9 @@ namespace BrumaPx.Atmosphere
         [Range(0f, 2f)] public float intensity = 1f;
         [Tooltip("0 = steady flame. Higher values flicker harder (stepped, 8 times a second).")]
         [Range(0f, 1f)] public float flicker = 0.25f;
+        [Tooltip("Off for lights that only help the player see (the hero's own light), so they do not make the hero easier to spot.")]
+        public bool countsForVisibility = true;
+
 
         public static readonly List<PixelLight> All = new List<PixelLight>();
 

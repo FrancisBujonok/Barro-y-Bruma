@@ -22,6 +22,13 @@ namespace BrumaPx.Atmosphere
         public Transform focus;
         public Text hud;
 
+        /// <summary>Ambient light of the current time and weather, 0 (deep night) to 1 (day).</summary>
+        public float AmbientLight { get; private set; } = 1f;
+
+        /// <summary>How strongly the lamps are on right now, 0 to 1.</summary>
+        public float LampStrength { get; private set; }
+
+
         [Header("Time")]
         [Range(0f, 24f)] public float timeOfDay = 16f;
         [Tooltip("Real minutes a full day takes.")]
@@ -227,6 +234,9 @@ void OnEnable()
             // Heavy weather turns the lamps on a little even by day.
             float avg = (tone.x + tone.y + tone.z) / 3f;
             float lamp = Mathf.Clamp01(key.lamp + (1f - Mathf.Min(avg, 1f)) * 0.8f);
+            AmbientLight = BrumaPx.Atmosphere.VisibilityMath.AmbientFromTone(avg);
+            LampStrength = lamp;
+
             CollectLights(s, lamp);
 
             rig.SetAtmosphere(s);
