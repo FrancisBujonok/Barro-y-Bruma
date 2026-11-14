@@ -1,44 +1,45 @@
 # Game Brief: Barro y Bruma
 
-**One-sentence pitch:** Un action RPG táctico, oscuro y medieval, en pixel art 2.5D, donde cazas a ciegas en una niebla de ceniza que oculta la cuadrícula y a los enemigos, y ganas flanqueándolos por la espalda antes de que te detecten.
+**One-sentence pitch:** Un action RPG táctico, oscuro y medieval, en pixel art 2.5D, donde grupos de enemigos salen de una niebla de ceniza y solo sobrevives eligiendo dónde plantar cara: en puertas, callejones y cuellos de botella donde te alcanzan de uno en uno.
 
 ## Core loop
-- Explorar aldeas y ruinas envueltas en niebla de ceniza, con visión muy limitada.
-- Leer al enemigo: sus conos de ataque solo se ven un instante antes del golpe.
-- Usar el terreno (muros, puertas, callejones) para flanquear y emboscar por la espalda antes de ser detectado.
-- Recoger botín y avanzar a la siguiente zona. La escasez de recursos y la presión de la niebla empujan a repetir con más cuidado.
+- Explorar aldeas y ruinas con visión limitada por la niebla, buscando el mejor terreno antes de que llegue el grupo.
+- Ser detectado: un grupo de enemigos carga y, en campo abierto, te rodea.
+- Colocarte en un cuello de botella (puerta, callejón, esquina) para que solo uno o dos puedan atacarte a la vez, y leer sus conos de ataque.
+- Eliminar al grupo, recoger botín y avanzar. Retirarse a un mal sitio o pelear al descubierto se castiga con la muerte.
 
 ## Player goal & fail state — what "working" looks like
-- Meta: limpiar una aldea o ruina de sus enemigos y llegar a su salida/objetivo, y luego repetirlo en la siguiente zona.
+- Meta: cruzar la aldea, sobrevivir a sus grupos de enemigos y llegar a la salida (o derrotar al jefe).
 - Fallo: la vida llega a 0, y se pierde el progreso de la zona actual.
-- Funciona si el jugador puede sobrevivir a un grupo de enemigos usando solo posicionamiento y terreno, y se castiga el avance a ciegas.
+- Funciona si un grupo que mata al jugador en campo abierto puede derrotarse usando un cuello de botella, y si pelear al descubierto es claramente peor.
 
 ## MVP — what must exist to be the game
-- Movimiento del jugador top-down 2.5D con ataque y esquiva.
-- Niebla de ceniza: la visibilidad del jugador es limitada y los enemigos quedan ocultos fuera de su radio.
-- IA enemiga con cono de visión y detección, que patrulla y persigue.
-- Conos de ataque enemigos que se revelan solo un instante antes del golpe.
-- Ataque por la espalda/emboscada con bonus de daño, y detección que rompe el sigilo.
-- Terreno que bloquea visión y movimiento (muros, puertas, callejones).
-- Una zona jugable (aldea) con 2–3 tipos de enemigo y un jefe o salida final.
+- Movimiento, ataque y esquiva del jugador (top-down 2.5D). *Ya implementado (historia 001).*
+- Terreno que bloquea movimiento y crea cuellos de botella (muros, puertas, callejones).
+- IA de grupo: los enemigos persiguen, rodean en campo abierto y hacen cola en los cuellos de botella; solo unos pocos pueden atacar a la vez.
+- Conos de ataque enemigos que se revelan un instante antes del golpe.
+- Niebla de ceniza: visibilidad limitada que oculta el tamaño del grupo hasta que está cerca.
+- Daño extra por la espalda, sin sistema de sigilo.
+- Una zona jugable (aldea) con 2–3 tipos de enemigo en grupos y un jefe o salida final.
 
 ## Out of scope — not building this
 - Multijugador.
 - Mundo abierto o varias zonas (una sola aldea para el MVP).
+- Sistema de sigilo: detección con rotura de sigilo y emboscadas como mecánica central.
 - Árbol de habilidades, crafteo y economía profunda.
 - Diálogos, historia y misiones extensas.
 - Sistema de guardado complejo.
 
 ## Build order
-1. Niebla de ceniza y visibilidad limitada (es lo menos probado y define el juego).
-2. Conos de visión y de ataque enemigos, con detección.
-3. Flanqueo y emboscada por la espalda.
-4. Terreno táctico (muros, puertas, callejones) y la zona de la aldea.
+1. Terreno con cuellos de botella más IA de grupo: es lo menos probado, y define si el juego funciona.
+2. Conos de ataque enemigos, para que la pelea en un cuello de botella se pueda leer.
+3. Niebla de ceniza como apoyo (ocultar el tamaño del grupo).
+4. Daño por la espalda y la zona de la aldea con varios grupos.
 5. Variedad de enemigos y jefe o salida final.
 
 ---
-**Who it's for / what they feel:** Jugadores de combate táctico y atmósfera opresiva que quieren tensión, cautela y la satisfacción de una emboscada bien planeada.
+**Who it's for / what they feel:** Jugadores de combate táctico que disfrutan resolviendo la pelea antes de empezarla, con la tensión de ver llegar un grupo y la satisfacción de haber elegido bien el sitio.
 
 **Art & audio direction:** Pixel art oscuro y desaturado (barro, ceniza, tonos apagados) con iluminación mínima, y audio ambiental sordo con sonidos amortiguados por la niebla.
 
-**Reference game:** Hyper Light Drifter, de la que el MVP conserva solo el combate top-down con lectura de ataques; aquí se le suma la niebla y el flanqueo táctico.
+**Reference game:** Hyper Light Drifter, de la que el MVP conserva solo el combate top-down con lectura de ataques; aquí se le suma la IA de grupo y el uso del terreno para controlar el flujo de enemigos.
