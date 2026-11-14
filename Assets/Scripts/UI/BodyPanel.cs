@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using BrumaPx.Combat;
@@ -45,7 +46,11 @@ namespace BrumaPx.UI
         int _selected;
         GameObject _panel;
         RectTransform _zoneBarFill;
-        Text _zoneTitle, _zoneStage, _zoneNote, _effects, _totalsHead, _totals, _general;
+        Text _zoneTitle, _zoneStage, _zoneNote, _effects, _totalsHead, _totals, _general, _actions;
+        Inventory _inventory;
+        Equipment _equipment;
+        string _flash = string.Empty;
+        float _flashUntil;
         readonly List<ZoneView> _zones = new List<ZoneView>();
         readonly StringBuilder _sb = new StringBuilder();
 
@@ -54,6 +59,8 @@ namespace BrumaPx.UI
         void Start()
         {
             if (canvasRoot == null || body == null || body.Count == 0) return;
+            _inventory = body.GetComponent<Inventory>();
+            _equipment = body.GetComponent<Equipment>();
             BuildPanel();
         }
 
@@ -80,6 +87,8 @@ namespace BrumaPx.UI
             }
 
             Time.timeScale = 0f;
+            int treat = DioramaInput.TreatPressed();
+            if (treat >= 0) Treat(treat);
             Vector2Int step = DioramaInput.MenuStep();
             if (step != Vector2Int.zero) MoveSelection(step);
             Refresh();
@@ -118,7 +127,7 @@ namespace BrumaPx.UI
         {
             var bg = UiKit.Img(canvasRoot, "Body Window", UiKit.Border);
             _panel = bg.gameObject;
-            UiKit.Place(bg.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(792f, 432f));
+            UiKit.Place(bg.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(792f, 476f));
             var inner = UiKit.Img(bg.transform, "Paper", UiKit.PanelBg);
             UiKit.Stretch(inner.rectTransform, 3f, 3f, 3f, 3f);
 
@@ -164,9 +173,13 @@ namespace BrumaPx.UI
             _general = UiKit.Txt(inner.transform, "General", 14, FontStyle.Bold, UiKit.Cream, TextAnchor.UpperLeft);
             TopLeft(_general.rectTransform, new Vector2(RightX, -366f), new Vector2(RightW, 22f));
 
+            _actions = UiKit.Txt(inner.transform, "Actions", 14, FontStyle.Bold, UiKit.Cream, TextAnchor.UpperLeft);
+            _actions.supportRichText = true;
+            TopLeft(_actions.rectTransform, new Vector2(18f, -388f), new Vector2(756f, 40f));
+
             var footer = UiKit.Txt(inner.transform, "Footer", 13, FontStyle.Normal, UiKit.Mid, TextAnchor.UpperLeft);
-            TopLeft(footer.rectTransform, new Vector2(18f, -392f), new Vector2(756f, 30f));
-            footer.text = "Flechas: elegir zona   B o Esc: cerrar\nLa Bruma entra por el aire, los golpes de infectados, las heridas abiertas y el contacto con cuerpos o aguas turbias.";
+            TopLeft(footer.rectTransform, new Vector2(18f, -430f), new Vector2(756f, 30f));
+            footer.text = "Flechas: elegir zona   1: vendar   2: ungüento   3: cura   B o Esc: cerrar\nLa Bruma entra por el aire, los golpes de infectados, las heridas abiertas y el contacto con cuerpos o aguas turbias.";
 
             _panel.SetActive(false);
         }
@@ -237,7 +250,9 @@ namespace BrumaPx.UI
                 v.frame.color = sel ? UiKit.Warm : UiKit.Border;
                 v.fill.color = lv <= 0f ? Blank : Color.Lerp(Blank, StageColor(body.Stage(i)), Mathf.Clamp01(0.3f + lv / 100f * 0.7f));
                 v.rt.localScale = sel ? new Vector3(1.06f, 1.06f, 1f) : Vector3.one;
-                v.wound.gameObject.SetActive(body.HasWound(i));
+                WoundState ws = body.Wound(i);
+                v.wound.gameObject.SetActive(ws != WoundState.None);
+                v.wound.color = WoundMarker(ws);
             }
 
             if (_selected < 0 || _selected >= body.Count) return;
@@ -254,8 +269,8 @@ namespace BrumaPx.UI
             _zoneBarFill.offsetMax = Vector2.zero;
             _zoneBarFill.GetComponent<Image>().color = level <= 0f ? UiKit.Mid : StageColor(stage);
 
-            _zoneNote.text = body.HasWound(_selected) ? "Herida abierta: la Bruma entra mucho más rápido" : "Sin herida";
-            _zoneNote.color = body.HasWound(_selected) ? WoundColor : UiKit.Mid;
+            UpdateWoundNote();
+            
 
             _sb.Length = 0;
             var fx = zone.effects;
@@ -276,6 +291,7 @@ namespace BrumaPx.UI
                 }
                 _sb.Append('\n');
             }
+            AppendCover(_sb, _selected);
             _effects.text = _sb.ToString();
 
             _sb.Length = 0;
@@ -297,6 +313,126 @@ namespace BrumaPx.UI
             if (body.PalliateLeft > 0f) _sb.Append("    Paliativo ").Append(Mathf.CeilToInt(body.PalliateLeft)).Append(" s");
             if (body.OpenWounds > 0) _sb.Append("    Heridas abiertas ").Append(body.OpenWounds);
             _general.text = _sb.ToString();
+            UpdateActions();
+        }
+
+        // ------------------------------------------------------------------------------------------ treatment
+
+        void Flash(string text)
+        {
+            _flash = text;
+            _flashUntil = Time.unscaledTime + 2.5f;
+        }
+
+        // 1 bandage, 2 salve, 3 cure: used on the selected zone with what is in the belt or the bag.
+        void Treat(int kind)
+        {
+            if (_inventory == null || _selected < 0 || _selected >= body.Count) return;
+            Func<ItemDef, bool> match;
+            bool can;
+            string lacks, cannot;
+            if (kind == 0)
+            {
+                match = delegate (ItemDef i) { return i.ClosesWound; };
+                can = body.CanBandage(_selected);
+                lacks = "No te quedan vendas";
+                cannot = "Esa zona no tiene una herida que vendar";
+            }
+            else if (kind == 1)
+            {
+                match = delegate (ItemDef i) { return i.Disinfects; };
+                can = body.CanSalve(_selected);
+                lacks = "No te queda ungüento";
+                cannot = "Esa zona no tiene herida abierta ni Bruma";
+            }
+            else
+            {
+                match = delegate (ItemDef i) { return i.Effect == ItemEffect.CureZone; };
+                can = body.CanCure(_selected);
+                lacks = "No te queda nada para curar";
+                cannot = "Esa zona no tiene Bruma";
+            }
+            if (!can)
+            {
+                Flash(cannot);
+                return;
+            }
+            ItemDef used;
+            if (!_inventory.TakeOne(match, out used))
+            {
+                Flash(lacks);
+                return;
+            }
+            if (kind == 0) body.Bandage(_selected);
+            else if (kind == 1) body.Salve(_selected, body.SalveRelief);
+            else body.Cure(_selected, used.Amount);
+            Flash(body.Zone(_selected).displayName + ": hecho");
+        }
+
+        void UpdateActions()
+        {
+            int bandages = _inventory != null ? _inventory.CountWhere(delegate (ItemDef i) { return i.ClosesWound; }) : 0;
+            int salves = _inventory != null ? _inventory.CountWhere(delegate (ItemDef i) { return i.Disinfects; }) : 0;
+            int cures = _inventory != null ? _inventory.CountWhere(delegate (ItemDef i) { return i.Effect == ItemEffect.CureZone; }) : 0;
+            _sb.Length = 0;
+            AppendAction(_sb, "1 Vendar", bandages, body.CanBandage(_selected));
+            _sb.Append("    ");
+            AppendAction(_sb, "2 Ungüento", salves, body.CanSalve(_selected));
+            _sb.Append("    ");
+            AppendAction(_sb, "3 Curar", cures, body.CanCure(_selected));
+            if (!string.IsNullOrEmpty(_flash) && Time.unscaledTime < _flashUntil)
+                _sb.Append("\n<color=#D9A441>").Append(_flash).Append("</color>");
+            _actions.text = _sb.ToString();
+        }
+
+        static void AppendAction(StringBuilder sb, string label, int count, bool can)
+        {
+            bool on = can && count > 0;
+            if (!on) sb.Append("<color=#9A968C>");
+            sb.Append(label).Append(" (x").Append(count).Append(')');
+            if (!on) sb.Append("</color>");
+        }
+
+        void UpdateWoundNote()
+        {
+            switch (body.Wound(_selected))
+            {
+                case WoundState.Open:
+                    _zoneNote.text = "Herida abierta: la Bruma entra mucho más rápido";
+                    _zoneNote.color = WoundColor;
+                    break;
+                case WoundState.Cleaned:
+                    _zoneNote.text = "Herida limpia: entra algo de Bruma. Falta vendarla";
+                    _zoneNote.color = InfectedColor;
+                    break;
+                case WoundState.Bandaged:
+                    _zoneNote.text = "Vendada: sellada " + Mathf.CeilToInt(body.BandageLeft(_selected)) + " s";
+                    _zoneNote.color = UiKit.Cream;
+                    break;
+                default:
+                    _zoneNote.text = "Sin herida";
+                    _zoneNote.color = UiKit.Mid;
+                    break;
+            }
+        }
+
+        static Color WoundMarker(WoundState s)
+        {
+            switch (s)
+            {
+                case WoundState.Cleaned: return InfectedColor;
+                case WoundState.Bandaged: return UiKit.Cream;
+                default: return WoundColor;
+            }
+        }
+
+        void AppendCover(StringBuilder sb, int zone)
+        {
+            if (_equipment == null) return;
+            ArmorDef piece = _equipment.PieceCovering(body.Zone(zone).id);
+            sb.Append('\n');
+            if (piece == null) sb.Append("<color=#9A968C>Sin prenda sobre esta zona</color>");
+            else sb.Append(piece.DisplayName).Append("   detiene la Bruma ").Append(Mathf.RoundToInt(body.Cover(zone) * 100f)).Append("%");
         }
 
         void MoveSelection(Vector2Int step)

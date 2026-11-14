@@ -3,7 +3,7 @@ using UnityEngine;
 namespace BrumaPx.Data
 {
     /// <summary>What an item does when it is used.</summary>
-    public enum ItemEffect { None, Heal, RestoreStamina, PalliateBruma }
+    public enum ItemEffect { None, Heal, RestoreStamina, PalliateBruma, CureZone }
 
     /// <summary>
     /// One kind of item, kept as a file so new ones are made in the editor without touching code.
@@ -27,6 +27,8 @@ namespace BrumaPx.Data
         [SerializeField] bool _closesWound;
         [Tooltip("Palliative: seconds the Bruma stays slowed. Amount is the resistance it gives back.")]
         [SerializeField, Min(0f)] float _duration = 0f;
+        [Tooltip("Palliative: used on a zone from the body window it also cleans an open wound.")]
+        [SerializeField] bool _disinfects;
 
         [Header("Look (placeholder until there is art)")]
         [SerializeField] Color _tint = Color.white;
@@ -44,6 +46,7 @@ namespace BrumaPx.Data
         public float Amount { get { return _amount; } }
         public bool ClosesWound { get { return _closesWound; } }
         public float Duration { get { return _duration; } }
+        public bool Disinfects { get { return _disinfects; } }
         public bool IsUsable { get { return _effect != ItemEffect.None; } }
         public Color Tint { get { return _tint; } }
         public PrimitiveType WorldShape { get { return _worldShape; } }
@@ -62,7 +65,8 @@ namespace BrumaPx.Data
                 {
                     case ItemEffect.Heal: return "Cura " + Mathf.RoundToInt(_amount) + " de vida" + (_closesWound ? " y cierra una herida" : string.Empty);
                     case ItemEffect.RestoreStamina: return "Devuelve " + Mathf.RoundToInt(_amount) + " de aguante";
-                    case ItemEffect.PalliateBruma: return "Frena la Bruma " + Mathf.RoundToInt(_duration) + " s y da " + Mathf.RoundToInt(_amount) + " de resistencia";
+                    case ItemEffect.PalliateBruma: return "Frena la Bruma " + Mathf.RoundToInt(_duration) + " s y da " + Mathf.RoundToInt(_amount) + " de resistencia" + (_disinfects ? "; limpia heridas" : string.Empty);
+                    case ItemEffect.CureZone: return "Baja " + Mathf.RoundToInt(_amount) + " de Bruma en una zona";
                     default: return "Sin uso directo";
                 }
             }

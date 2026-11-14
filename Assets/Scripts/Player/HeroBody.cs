@@ -16,7 +16,7 @@ namespace BrumaPx.Player
     /// or bodies (BrumaSource). A refuge stops everything and slowly cleans the zones that are only exposed.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HeroBody : MonoBehaviour
+    public sealed partial class HeroBody : MonoBehaviour
     {
         public static HeroBody Instance { get; private set; }
 
@@ -35,7 +35,7 @@ namespace BrumaPx.Player
         public event Action<string> Notice;
 
         float[] _level;
-        bool[] _wound;
+        WoundState[] _wound;
         BrumaStage[] _stage;
         readonly List<int> _woundOrder = new List<int>();
         readonly float[] _mult = new float[BodyStatInfo.Count];
@@ -56,7 +56,7 @@ namespace BrumaPx.Player
         public BodyZone Zone(int i) { return profile.Zones[i]; }
         public float Level(int i) { return _level[i]; }
         public BrumaStage Stage(int i) { return _stage[i]; }
-        public bool HasWound(int i) { return _wound[i]; }
+        public bool HasWound(int i) { return _wound[i] == WoundState.Open || _wound[i] == WoundState.Cleaned; }
         public bool HasOpenWound { get { return _woundOrder.Count > 0; } }
         public int OpenWounds { get { return _woundOrder.Count; } }
         public float Resistance01 { get { return tuning != null ? Mathf.Clamp01(_resistance / tuning.MaxResistance) : 1f; } }
@@ -113,7 +113,8 @@ namespace BrumaPx.Player
             {
                 int n = profile.Zones.Length;
                 _level = new float[n];
-                _wound = new bool[n];
+                _wound = new WoundState[n];
+                _bandageLeft = new float[n];
                 _stage = new BrumaStage[n];
             }
             _resistance = tuning != null ? tuning.MaxResistance : 100f;
@@ -149,6 +150,7 @@ namespace BrumaPx.Player
             _inAir = density > 0.25f;
 
             Recover(dt, refuge);
+            TickBandages(dt);
             RecomputeMods();
             ApplyHealthMax();
             VisionScale = _mult[(int)BodyStat.VisionRange];
@@ -162,7 +164,11 @@ namespace BrumaPx.Player
             _sinceExposure = 0f;
             _palliateLeft = 0f;
             _woundOrder.Clear();
-            for (int i = 0; i < _wound.Length; i++) _wound[i] = false;
+            for (int i = 0; i < _wound.Length; i++)
+            {
+                _wound[i] = WoundState.None;
+                _bandageLeft[i] = 0f;
+            }
         }
 
         // ------------------------------------------------------------------------------------------ exposure
@@ -186,12 +192,18 @@ namespace BrumaPx.Player
             if (!Active || zone < 0 || zone >= _level.Length || amount <= 0f) return;
             float gate = Mathf.Max(0.01f, tuning.ResistanceGate);
             float leak = Mathf.Clamp01((gate - Resistance01) / gate);
-            if (_wound[zone])
+            if (_wound[zone] == WoundState.Open)
             {
                 leak = Mathf.Max(leak, tuning.WoundLeak);
                 amount *= tuning.WoundMultiplier;
             }
+            else if (_wound[zone] == WoundState.Cleaned)
+            {
+                leak = Mathf.Max(leak, cleanedLeak);
+                amount *= cleanedMultiplier;
+            }
             if (_palliateLeft > 0f) amount *= tuning.PalliateRateFactor;
+            amount *= 1f - Cover(zone);
             amount *= leak;
             if (amount <= 0f) return;
             SetLevel(zone, _level[zone] + amount, true);
@@ -203,7 +215,7 @@ namespace BrumaPx.Player
             var zones = profile.Zones;
             for (int z = 0; z < zones.Length; z++)
             {
-                float w = zones[z].airWeight * (1f - zones[z].cover);
+                float w = zones[z].airWeight;
                 if (w <= 0f) continue;
                 Dose(z, tuning.AirZoneRate * density * w * dt);
             }
@@ -250,21 +262,21 @@ namespace BrumaPx.Player
 
         void OpenWound(int zone)
         {
-            if (_wound[zone]) return;
-            _wound[zone] = true;
-            _woundOrder.Add(zone);
+            if (_wound[zone] == WoundState.Open) return;
+            if (_wound[zone] == WoundState.None) _woundOrder.Add(zone);
+            else if (_wound[zone] == WoundState.Bandaged)
+            {
+                _woundOrder.Add(zone);
+                _bandageLeft[zone] = 0f;
+            }
+            _wound[zone] = WoundState.Open;
             Say("Herida abierta: " + profile.Zones[zone].displayName);
         }
 
         /// <summary>Closes the most recent open wound (a bandage). Returns false when there is none.</summary>
         public bool CloseWound()
         {
-            if (_woundOrder.Count == 0) return false;
-            int zone = _woundOrder[_woundOrder.Count - 1];
-            _woundOrder.RemoveAt(_woundOrder.Count - 1);
-            _wound[zone] = false;
-            Say("Herida cerrada: " + profile.Zones[zone].displayName);
-            return true;
+            return BandageNext();
         }
 
         /// <summary>A palliative: gives back some resistance and slows the Bruma for a while. It does not cure.</summary>
@@ -293,7 +305,7 @@ namespace BrumaPx.Player
                     if (_refugeWoundTimer >= tuning.RefugeWoundSeconds)
                     {
                         _refugeWoundTimer = 0f;
-                        CloseWound();
+                        HealOneWound();
                     }
                 }
                 else
@@ -335,6 +347,9 @@ namespace BrumaPx.Player
                     if (s > 0f) _mult[(int)fx[e].stat] *= 1f + fx[e].atFull * s;
                 }
             }
+            Equipment worn = Eq;
+            if (worn != null)
+                for (int i = 0; i < _mult.Length; i++) _mult[i] *= worn.StatMult((BodyStat)i);
             for (int i = 0; i < _mult.Length; i++) _mult[i] = Mathf.Clamp(_mult[i], 0.2f, 3f);
         }
 

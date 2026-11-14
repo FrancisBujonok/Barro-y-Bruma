@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a24af5f489a62ac4fa86eb5c13f359c7, type: 3}
+  m_Name: GrebasMalla
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Data.ArmorDef
+  _id: grebas_malla
+  _displayName: Grebas de malla
+  _description: "Malla en las piernas. Cuesta m\xE1s correr y rodar."
+  _slot: 3
+  _brumaCover: 0.1
+  _blowReduction: 0.07
+  _mods:
+  - stat: 9
+    change: -0.04
+  - stat: 10
+    change: -0.05
+  - stat: 11
+    change: -0.06
+  _equipSeconds: 4
+  _tint: {r: 0.5411765, g: 0.56078434, b: 0.5803922, a: 1}

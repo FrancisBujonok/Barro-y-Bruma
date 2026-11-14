@@ -100,6 +100,41 @@ namespace BrumaPx.Player
             return Consume(ref DebugBody) || real;
         }
 
+        /// <summary>Test hooks for the clothing window, its confirm key and the body-window treatment (consumed on read).</summary>
+        public static bool DebugEquip, DebugConfirm;
+        public static int DebugTreat = -1;
+
+        /// <summary>P: opens or closes the clothing window.</summary>
+        public static bool EquipPressed()
+        {
+            var k = Keyboard.current;
+            bool real = k != null && k.pKey.wasPressedThisFrame;
+            return Consume(ref DebugEquip) || real;
+        }
+
+        /// <summary>Enter, E or Space: confirms inside a window.</summary>
+        public static bool ConfirmPressed()
+        {
+            return Consume(ref DebugConfirm) || AdvancePressed();
+        }
+
+        /// <summary>1, 2, 3 in the body window: 0 bandage, 1 salve, 2 cure, or -1.</summary>
+        public static int TreatPressed()
+        {
+            if (DebugTreat >= 0)
+            {
+                int d = DebugTreat;
+                DebugTreat = -1;
+                return d;
+            }
+            var k = Keyboard.current;
+            if (k == null) return -1;
+            if (k.digit1Key.wasPressedThisFrame) return 0;
+            if (k.digit2Key.wasPressedThisFrame) return 1;
+            if (k.digit3Key.wasPressedThisFrame) return 2;
+            return -1;
+        }
+
         /// <summary>A, S, D, F: the belt pocket pressed this frame (0 to 3), or -1.</summary>
         public static int BeltPressed()
         {

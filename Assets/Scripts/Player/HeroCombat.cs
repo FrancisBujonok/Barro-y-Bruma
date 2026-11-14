@@ -487,13 +487,13 @@ namespace BrumaPx.Player
                 }
 
                 _blocking = true;
-                health.TakeDamage(damage * Mathf.Clamp01(guardDamageTaken * M(BodyStat.GuardLeak)), dir);
+                health.TakeDamage(damage * Armor() * Mathf.Clamp01(guardDamageTaken * M(BodyStat.GuardLeak)), dir);
                 _blocking = false;
                 NotifyBody(attacker, true);
                 return;
             }
 
-            health.TakeDamage(damage, dir);
+            health.TakeDamage(damage * Armor(), dir);
             NotifyBody(attacker, false);
         }
 
@@ -503,6 +503,12 @@ namespace BrumaPx.Player
         float M(BodyStat stat)
         {
             return _body != null ? _body.Mult(stat) : 1f;
+        }
+
+        // What the worn armour lets through of a blow (1 = all of it).
+        float Armor()
+        {
+            return _body != null ? _body.BlowTaken : 1f;
         }
 
         // A blow that landed: the body opens a wound and takes the Bruma the attacker carries.

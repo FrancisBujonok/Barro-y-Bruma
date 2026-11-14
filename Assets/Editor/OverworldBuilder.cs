@@ -930,12 +930,13 @@ namespace BrumaPx.EditorTools
                 ItemEffect.None, 0f, new Color32(0xA0, 0xA0, 0x64, 255), PrimitiveType.Sphere, new Vector3(0.2f, 0.1f, 0.2f), "Bark");
             var explorador = MakeExampleBranch();
             var unguento = MakeBrumaItems(venda);
+            var tintura = MakeTintura();
 
             var inv = GetOrAdd<Inventory>(hero.gameObject);
             inv.health = health;
             inv.combat = combat;
-            var items = new[] { venda, tonico, hierba, unguento };
-            var counts = new[] { 3, 2, 4, 2 };
+            var items = new[] { venda, tonico, hierba, unguento, tintura };
+            var counts = new[] { 3, 2, 4, 2, 1 };
             var so = new SerializedObject(inv);
             var start = so.FindProperty("startingItems");
             start.arraySize = items.Length;
@@ -1218,7 +1219,7 @@ namespace BrumaPx.EditorTools
             hlp.anchoredPosition = new Vector2(14f, -34f);
             hlp.sizeDelta = new Vector2(592f, 40f);
             help.fontSize = 14;
-            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  A S D F: cintur\u00f3n  Tab (mantener): morral  N: cuaderno  B: cuerpo  E: hablar  F5/F6/F7: clima/hora";
+            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  A S D F: cintur\u00f3n  Tab (mantener): morral  N: cuaderno  B: cuerpo  P: prendas  E: hablar  F5/F6/F7: clima/hora";
 
             var clock = Txt(root.transform, "Clock Label", 18, FontStyle.Bold, warm, TextAnchor.UpperLeft);
             var klr = clock.rectTransform;

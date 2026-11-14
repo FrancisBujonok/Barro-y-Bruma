@@ -129,6 +129,8 @@ namespace BrumaPx.EditorTools
             panel.combat = combat;
             panel.health = health;
             panel.canvasRoot = canvas;
+
+            BuildEquipment(hero, health, body, combat);
         }
 
         // The palliative, and the bandage that now closes wounds. Returns the new item.
@@ -140,6 +142,7 @@ namespace BrumaPx.EditorTools
                 ItemEffect.PalliateBruma, 30f, new Color32(0x5A, 0x48, 0x38, 255), PrimitiveType.Cylinder,
                 new Vector3(0.16f, 0.1f, 0.16f), "Bark");
             SetItemExtra(unguento, false, 150f);
+            SetDisinfects(unguento);
             return unguento;
         }
 

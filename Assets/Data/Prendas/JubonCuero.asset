@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a24af5f489a62ac4fa86eb5c13f359c7, type: 3}
+  m_Name: JubonCuero
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Data.ArmorDef
+  _id: jubon_cuero
+  _displayName: "Jub\xF3n de cuero"
+  _description: Cuero doble sobre el pecho y los hombros. Liviano y cerrado.
+  _slot: 1
+  _brumaCover: 0.35
+  _blowReduction: 0.08
+  _mods:
+  - stat: 2
+    change: -0.02
+  _equipSeconds: 2.5
+  _tint: {r: 0.41960785, g: 0.2901961, b: 0.18039216, a: 1}

@@ -163,6 +163,42 @@ namespace BrumaPx.Player
             return true;
         }
 
+        /// <summary>How many items in the belt and the bag match.</summary>
+        public int CountWhere(Func<ItemDef, bool> match)
+        {
+            int n = 0;
+            for (int i = 0; i < BeltSize; i++)
+                if (_belt[i] != null && _belt[i].item != null && match(_belt[i].item)) n += _belt[i].count;
+            for (int i = 0; i < _bag.Count; i++)
+                if (_bag[i].item != null && match(_bag[i].item)) n += _bag[i].count;
+            return n;
+        }
+
+        /// <summary>Takes one matching item out of the belt or the bag (the body window uses it on a zone).</summary>
+        public bool TakeOne(Func<ItemDef, bool> match, out ItemDef item)
+        {
+            item = null;
+            for (int i = 0; i < BeltSize; i++)
+            {
+                ItemStack s = _belt[i];
+                if (s == null || s.item == null || s.count <= 0 || !match(s.item)) continue;
+                item = s.item;
+                if (--s.count <= 0) _belt[i] = null;
+                RaiseChanged();
+                return true;
+            }
+            for (int i = 0; i < _bag.Count; i++)
+            {
+                ItemStack s = _bag[i];
+                if (s.item == null || s.count <= 0 || !match(s.item)) continue;
+                item = s.item;
+                if (--s.count <= 0) _bag.RemoveAt(i);
+                RaiseChanged();
+                return true;
+            }
+            return false;
+        }
+
         // Uses one item of the pile if its effect would do anything right now.
         bool TryApply(ItemStack s)
         {
@@ -183,6 +219,10 @@ namespace BrumaPx.Player
                 case ItemEffect.PalliateBruma:
                     if (_body == null || !_body.CanPalliate) return false;
                     _body.Palliate(s.item.Amount, s.item.Duration);
+                    break;
+                case ItemEffect.CureZone:
+                    if (_body == null || _body.WorstZone < 0) return false;
+                    _body.Cure(_body.WorstZone, s.item.Amount);
                     break;
                 case ItemEffect.RestoreStamina:
                     if (combat == null || combat.Stamina01 >= 0.999f) return false;

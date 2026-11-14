@@ -20,6 +20,7 @@ MonoBehaviour:
   _amount: 30
   _closesWound: 0
   _duration: 150
+  _disinfects: 1
   _tint: {r: 0.3529412, g: 0.28235295, b: 0.21960784, a: 1}
   _worldShape: 2
   _worldSize: {x: 0.16, y: 0.1, z: 0.16}
