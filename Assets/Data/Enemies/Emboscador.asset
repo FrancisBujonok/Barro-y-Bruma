@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f92eced6185b2244b820f5b84694b61, type: 3}
+  m_Name: Emboscador
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Combat.EnemyProfile
+  _displayName: Emboscador de la niebla
+  _maxHealth: 40
+  _radius: 0.35
+  _walkSpeed: 1.4
+  _chaseSpeed: 3
+  _sightRange: 6
+  _minLightFactor: 0.4
+  _fieldOfView: 360
+  _hearingMultiplier: 0.6
+  _loseTrackSeconds: 6
+  _attackRange: 1.3
+  _attackDamage: 20
+  _attackStartup: 0.25
+  _attackActive: 0.12
+  _attackRecovery: 0.8
+  _attackArcDegrees: 100
+  _attackNoise: 3
+  _brumaOnHit: 4
+  _staggerThreshold: 12
+  _staggerSeconds: 0.5
+  _knockbackScale: 1
+  _canSidestep: 0
+  _sidestepChance: 0.35
+  _sidestepDistance: 1.3
+  _packRadius: 0
+  _projectileSpeed: 0
+  _keepDistance: 0
+  _ambushRange: 4.5
+  _lungeSpeedFactor: 1.9
+  _lungeSeconds: 0.7
+  _auraRadius: 0
+  _auraDensity: 0.6
+  _deathCloudRadius: 0
+  _deathCloudSeconds: 25
+  _deathCloudDensity: 1

@@ -1052,6 +1052,7 @@ namespace BrumaPx.EditorTools
             BuildInfected("Infectado A", new Vector3(7.5f, 0f, -5.5f), 210f, infected, pixelsPerUnit, flash);
             BuildInfected("Infectado B", new Vector3(14.5f, 0f, -20.8f), 20f, infected, pixelsPerUnit, flash);
             BuildRaider("Saqueador A", new Vector3(18f, 0f, -12.8f), 250f, raider, pixelsPerUnit, flash);
+            BuildMoreEnemies(pixelsPerUnit, flash);
         }
 
         static void FinishEnemy(Transform g, Transform body, Transform legL, Transform legR, Transform arms, EnemyProfile profile, int pixelsPerUnit, Material flash)
@@ -1068,6 +1069,9 @@ namespace BrumaPx.EditorTools
             b.legR = legR;
             b.arms = arms;
             b.pixelsPerUnit = pixelsPerUnit;
+
+            var traits = g.gameObject.AddComponent<EnemyTraits>();
+            traits.cloudMaterial = M("HeroCloakDark");
         }
 
         // Hunched, pale, arms hanging forward: a slow body that follows sound.

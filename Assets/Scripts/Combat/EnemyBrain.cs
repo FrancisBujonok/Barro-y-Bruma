@@ -13,7 +13,7 @@ namespace BrumaPx.Combat
     /// All numbers come from the EnemyProfile.
     /// </summary>
     [RequireComponent(typeof(Health))]
-    public sealed class EnemyBrain : MonoBehaviour
+    public sealed partial class EnemyBrain : MonoBehaviour
     {
         public static readonly List<EnemyBrain> All = new List<EnemyBrain>();
 
@@ -105,7 +105,7 @@ namespace BrumaPx.Combat
 
         void Update()
         {
-            if (profile == null) return;
+            if (profile == null || Dormant) return;
             float dt = Mathf.Min(Time.deltaTime, 0.05f); // a long frame must not skip the active window of an attack
 
             if (_state == State.Dead) { TickDead(dt); return; }
@@ -150,7 +150,7 @@ namespace BrumaPx.Combat
 
         void OnNoise(Vector3 pos, float radius)
         {
-            if (profile == null || _state == State.Dead || _state == State.Attack || _state == State.Stagger || _state == State.Chase) return;
+            if (Dormant || profile == null || _state == State.Dead || _state == State.Attack || _state == State.Stagger || _state == State.Chase) return;
             if (_heroHealth != null && _heroHealth.IsDead) return;
             Vector3 d = Flat(pos - transform.position);
             if (d.sqrMagnitude < 0.04f) return;
@@ -180,6 +180,7 @@ namespace BrumaPx.Combat
             _lastKnown = _hero.transform.position;
             _lostTime = 0f;
             EnterState(State.Chase);
+            RallyPack();
         }
 
         void TickIdle(float dt)
@@ -243,9 +244,11 @@ namespace BrumaPx.Combat
                 return;
             }
 
+            if (sees && TryKeepDistance(toHero, dist, dt)) return;
+
             if (sees && dist <= profile.AttackRange * 0.9f) { StartAttack(toHero); return; }
 
-            MoveTowards(_lastKnown, profile.ChaseSpeed, dt);
+            MoveTowards(_lastKnown, profile.ChaseSpeed * LungeFactor(dt), dt);
             if (!sees && Flat(_lastKnown - transform.position).magnitude < 0.5f) EnterState(State.Search);
         }
 
@@ -294,6 +297,11 @@ namespace BrumaPx.Combat
         void DoHit()
         {
             NoiseBus.Emit(transform.position, profile.AttackNoise);
+            if (profile.ProjectileSpeed > 0f)
+            {
+                FireBolt();
+                return;
+            }
             Vector3 o3 = transform.position, t3 = _hero.transform.position, f3 = transform.forward;
             Vector2 origin = new Vector2(o3.x, o3.z);
             Vector2 target = new Vector2(t3.x, t3.z);
@@ -339,6 +347,7 @@ namespace BrumaPx.Combat
             _health.ResetFull();
             EnterState(State.Idle);
             _hasWander = false;
+            RaiseRespawned();
         }
 
         void OnDamaged(float amount, Vector2 dir)
@@ -495,6 +504,8 @@ namespace BrumaPx.Combat
                 lean = -20f;
                 armAngle = 40f;
             }
+
+            if (profile.ProjectileSpeed > 0f && _state == State.Attack && _attack.IsBusy) AimPose(ref lean, ref armAngle);
 
             if (body != null)
             {

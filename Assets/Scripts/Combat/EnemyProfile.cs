@@ -49,6 +49,25 @@ namespace BrumaPx.Combat
         [SerializeField, Range(0f, 1f)] private float _sidestepChance = 0.35f;
         [SerializeField, Min(0f)] private float _sidestepDistance = 1.3f;
 
+        [Header("Traits (0 = the enemy does not have it)")]
+        [Tooltip("Allies of the same kind within this distance join the chase when one of them spots the hero.")]
+        [SerializeField, Min(0f)] private float _packRadius;
+        [Tooltip("More than 0 makes it a ranged attacker: the speed of its bolt. Attack Range is then how far it shoots.")]
+        [SerializeField, Min(0f)] private float _projectileSpeed;
+        [Tooltip("Ranged: it backs away when the hero comes closer than this.")]
+        [SerializeField, Min(0f)] private float _keepDistance;
+        [Tooltip("More than 0 makes it an ambusher: hidden until the hero comes this close, then it lunges.")]
+        [SerializeField, Min(0f)] private float _ambushRange;
+        [SerializeField, Min(1f)] private float _lungeSpeedFactor = 1.9f;
+        [SerializeField, Min(0f)] private float _lungeSeconds = 0.7f;
+        [Tooltip("More than 0: it carries Bruma around it, this wide. The taken are patches that walk.")]
+        [SerializeField, Min(0f)] private float _auraRadius;
+        [SerializeField, Range(0f, 1f)] private float _auraDensity = 0.6f;
+        [Tooltip("More than 0: when it dies it leaves a cloud of Bruma this wide for a while.")]
+        [SerializeField, Min(0f)] private float _deathCloudRadius;
+        [SerializeField, Min(1f)] private float _deathCloudSeconds = 25f;
+        [SerializeField, Range(0f, 1f)] private float _deathCloudDensity = 1f;
+
         public string DisplayName => _displayName;
         public float MaxHealth => _maxHealth;
         public float Radius => _radius;
@@ -73,5 +92,16 @@ namespace BrumaPx.Combat
         public bool CanSidestep => _canSidestep;
         public float SidestepChance => _sidestepChance;
         public float SidestepDistance => _sidestepDistance;
+        public float PackRadius => _packRadius;
+        public float ProjectileSpeed => _projectileSpeed;
+        public float KeepDistance => _keepDistance;
+        public float AmbushRange => _ambushRange;
+        public float LungeSpeedFactor => _lungeSpeedFactor;
+        public float LungeSeconds => _lungeSeconds;
+        public float AuraRadius => _auraRadius;
+        public float AuraDensity => _auraDensity;
+        public float DeathCloudRadius => _deathCloudRadius;
+        public float DeathCloudSeconds => _deathCloudSeconds;
+        public float DeathCloudDensity => _deathCloudDensity;
     }
 }

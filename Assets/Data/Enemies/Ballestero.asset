@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f92eced6185b2244b820f5b84694b61, type: 3}
+  m_Name: Ballestero
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Combat.EnemyProfile
+  _displayName: Saqueador con ballesta
+  _maxHealth: 35
+  _radius: 0.35
+  _walkSpeed: 1.3
+  _chaseSpeed: 2.8
+  _sightRange: 11
+  _minLightFactor: 0.5
+  _fieldOfView: 140
+  _hearingMultiplier: 1
+  _loseTrackSeconds: 7
+  _attackRange: 9
+  _attackDamage: 16
+  _attackStartup: 0.9
+  _attackActive: 0.1
+  _attackRecovery: 1.2
+  _attackArcDegrees: 40
+  _attackNoise: 6
+  _brumaOnHit: 0
+  _staggerThreshold: 15
+  _staggerSeconds: 0.5
+  _knockbackScale: 1
+  _canSidestep: 0
+  _sidestepChance: 0.35
+  _sidestepDistance: 1.3
+  _packRadius: 0
+  _projectileSpeed: 11
+  _keepDistance: 4.5
+  _ambushRange: 0
+  _lungeSpeedFactor: 1.9
+  _lungeSeconds: 0.7
+  _auraRadius: 0
+  _auraDensity: 0.6
+  _deathCloudRadius: 0
+  _deathCloudSeconds: 25
+  _deathCloudDensity: 1

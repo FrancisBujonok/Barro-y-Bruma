@@ -17,6 +17,17 @@ namespace BrumaPx.World
 
         public string DisplayName { get { return displayName; } }
         public float Radius { get { return radius; } }
+        public float Density { get { return density; } }
+
+        /// <summary>Sets the patch up from code (clouds and auras made at run time).</summary>
+        public void Configure(string label, float newRadius, float newDensity)
+        {
+            displayName = label;
+            radius = Mathf.Max(0.5f, newRadius);
+            density = Mathf.Clamp01(newDensity);
+        }
+
+        public void SetDensity(float value) { density = Mathf.Clamp01(value); }
 
         void OnEnable() { All.Add(this); }
         void OnDisable() { All.Remove(this); }
