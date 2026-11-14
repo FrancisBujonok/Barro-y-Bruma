@@ -18,6 +18,8 @@ MonoBehaviour:
   _maxStack: 5
   _effect: 1
   _amount: 25
+  _closesWound: 1
+  _duration: 0
   _tint: {r: 0.89411765, g: 0.84705883, b: 0.72156864, a: 1}
   _worldShape: 3
   _worldSize: {x: 0.28, y: 0.08, z: 0.18}

@@ -89,6 +89,17 @@ namespace BrumaPx.Player
             return Consume(ref DebugNotebook) || real;
         }
 
+        /// <summary>Test hook for the body window (consumed on read).</summary>
+        public static bool DebugBody;
+
+        /// <summary>B: opens or closes the body window.</summary>
+        public static bool BodyPressed()
+        {
+            var k = Keyboard.current;
+            bool real = k != null && k.bKey.wasPressedThisFrame;
+            return Consume(ref DebugBody) || real;
+        }
+
         /// <summary>A, S, D, F: the belt pocket pressed this frame (0 to 3), or -1.</summary>
         public static int BeltPressed()
         {

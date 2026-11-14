@@ -29,6 +29,7 @@ MonoBehaviour:
   _attackRecovery: 0.9
   _attackArcDegrees: 100
   _attackNoise: 3
+  _brumaOnHit: 6
   _staggerThreshold: 18
   _staggerSeconds: 0.6
   _knockbackScale: 1.2

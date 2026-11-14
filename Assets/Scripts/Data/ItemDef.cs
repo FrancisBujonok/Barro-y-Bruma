@@ -3,7 +3,7 @@ using UnityEngine;
 namespace BrumaPx.Data
 {
     /// <summary>What an item does when it is used.</summary>
-    public enum ItemEffect { None, Heal, RestoreStamina }
+    public enum ItemEffect { None, Heal, RestoreStamina, PalliateBruma }
 
     /// <summary>
     /// One kind of item, kept as a file so new ones are made in the editor without touching code.
@@ -23,6 +23,10 @@ namespace BrumaPx.Data
         [Header("Use")]
         [SerializeField] ItemEffect _effect = ItemEffect.None;
         [SerializeField, Min(0f)] float _amount = 0f;
+        [Tooltip("Heal: also closes the most recent open wound.")]
+        [SerializeField] bool _closesWound;
+        [Tooltip("Palliative: seconds the Bruma stays slowed. Amount is the resistance it gives back.")]
+        [SerializeField, Min(0f)] float _duration = 0f;
 
         [Header("Look (placeholder until there is art)")]
         [SerializeField] Color _tint = Color.white;
@@ -38,6 +42,8 @@ namespace BrumaPx.Data
         public int MaxStack { get { return Mathf.Max(1, _maxStack); } }
         public ItemEffect Effect { get { return _effect; } }
         public float Amount { get { return _amount; } }
+        public bool ClosesWound { get { return _closesWound; } }
+        public float Duration { get { return _duration; } }
         public bool IsUsable { get { return _effect != ItemEffect.None; } }
         public Color Tint { get { return _tint; } }
         public PrimitiveType WorldShape { get { return _worldShape; } }
@@ -54,8 +60,9 @@ namespace BrumaPx.Data
             {
                 switch (_effect)
                 {
-                    case ItemEffect.Heal: return "Cura " + Mathf.RoundToInt(_amount) + " de vida";
+                    case ItemEffect.Heal: return "Cura " + Mathf.RoundToInt(_amount) + " de vida" + (_closesWound ? " y cierra una herida" : string.Empty);
                     case ItemEffect.RestoreStamina: return "Devuelve " + Mathf.RoundToInt(_amount) + " de aguante";
+                    case ItemEffect.PalliateBruma: return "Frena la Bruma " + Mathf.RoundToInt(_duration) + " s y da " + Mathf.RoundToInt(_amount) + " de resistencia";
                     default: return "Sin uso directo";
                 }
             }

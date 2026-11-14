@@ -1,0 +1,222 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 540c4630fb543b4488146903dc2094e9, type: 3}
+  m_Name: BodyProfile
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Data.BodyProfileDef
+  _zones:
+  - id: cabeza
+    displayName: Cabeza
+    center: {x: 0.5, y: 0.9}
+    extent: {x: 0.12, y: 0.12}
+    airWeight: 1
+    hitWeight: 0.06
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 0
+      startsAt: 0
+      atFull: -0.3
+    - stat: 2
+      startsAt: 50
+      atFull: -0.15
+  - id: torso
+    displayName: Torso
+    center: {x: 0.5, y: 0.68}
+    extent: {x: 0.24, y: 0.26}
+    airWeight: 1
+    hitWeight: 0.3
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 1
+      startsAt: 0
+      atFull: -0.3
+    - stat: 2
+      startsAt: 40
+      atFull: -0.25
+  - id: hombro.d
+    displayName: Hombro der.
+    center: {x: 0.325, y: 0.78}
+    extent: {x: 0.11, y: 0.09}
+    airWeight: 0.5
+    hitWeight: 0.06
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 4
+      startsAt: 0
+      atFull: -0.3
+    - stat: 3
+      startsAt: 50
+      atFull: -0.1
+  - id: hombro.i
+    displayName: Hombro izq.
+    center: {x: 0.675, y: 0.78}
+    extent: {x: 0.11, y: 0.09}
+    airWeight: 0.5
+    hitWeight: 0.06
+    cover: 0
+    guardSide: 1
+    effects:
+    - stat: 6
+      startsAt: 0
+      atFull: -0.4
+    - stat: 7
+      startsAt: 50
+      atFull: 0.15
+  - id: brazo.d
+    displayName: Brazo der.
+    center: {x: 0.3, y: 0.65}
+    extent: {x: 0.09, y: 0.15}
+    airWeight: 0.5
+    hitWeight: 0.08
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 3
+      startsAt: 0
+      atFull: -0.25
+    - stat: 4
+      startsAt: 60
+      atFull: -0.1
+  - id: brazo.i
+    displayName: Brazo izq.
+    center: {x: 0.7, y: 0.65}
+    extent: {x: 0.09, y: 0.15}
+    airWeight: 0.5
+    hitWeight: 0.08
+    cover: 0
+    guardSide: 1
+    effects:
+    - stat: 7
+      startsAt: 0
+      atFull: 0.35
+    - stat: 8
+      startsAt: 60
+      atFull: 0.1
+  - id: antebrazo.d
+    displayName: Antebrazo der.
+    center: {x: 0.28, y: 0.49}
+    extent: {x: 0.085, y: 0.17}
+    airWeight: 0.9
+    hitWeight: 0.07
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 5
+      startsAt: 0
+      atFull: 0.3
+  - id: antebrazo.i
+    displayName: Antebrazo izq.
+    center: {x: 0.72, y: 0.49}
+    extent: {x: 0.085, y: 0.17}
+    airWeight: 0.9
+    hitWeight: 0.07
+    cover: 0
+    guardSide: 1
+    effects:
+    - stat: 8
+      startsAt: 0
+      atFull: 0.5
+    - stat: 6
+      startsAt: 60
+      atFull: -0.1
+  - id: muslo.d
+    displayName: Muslo der.
+    center: {x: 0.435, y: 0.46}
+    extent: {x: 0.12, y: 0.13}
+    airWeight: 0.3
+    hitWeight: 0.07
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 9
+      startsAt: 0
+      atFull: -0.2
+    - stat: 10
+      startsAt: 40
+      atFull: -0.1
+  - id: muslo.i
+    displayName: Muslo izq.
+    center: {x: 0.565, y: 0.46}
+    extent: {x: 0.12, y: 0.13}
+    airWeight: 0.3
+    hitWeight: 0.07
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 9
+      startsAt: 0
+      atFull: -0.2
+    - stat: 10
+      startsAt: 40
+      atFull: -0.1
+  - id: rodilla.d
+    displayName: Rodilla der.
+    center: {x: 0.435, y: 0.345}
+    extent: {x: 0.11, y: 0.07}
+    airWeight: 0.3
+    hitWeight: 0.03
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 11
+      startsAt: 0
+      atFull: -0.2
+    - stat: 12
+      startsAt: 40
+      atFull: 0.15
+  - id: rodilla.i
+    displayName: Rodilla izq.
+    center: {x: 0.565, y: 0.345}
+    extent: {x: 0.11, y: 0.07}
+    airWeight: 0.3
+    hitWeight: 0.03
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 11
+      startsAt: 0
+      atFull: -0.2
+    - stat: 12
+      startsAt: 40
+      atFull: 0.15
+  - id: pantorrilla.d
+    displayName: Pantorrilla der.
+    center: {x: 0.435, y: 0.22}
+    extent: {x: 0.1, y: 0.19}
+    airWeight: 0.4
+    hitWeight: 0.06
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 10
+      startsAt: 0
+      atFull: -0.15
+    - stat: 9
+      startsAt: 50
+      atFull: -0.05
+  - id: pantorrilla.i
+    displayName: Pantorrilla izq.
+    center: {x: 0.565, y: 0.22}
+    extent: {x: 0.1, y: 0.19}
+    airWeight: 0.4
+    hitWeight: 0.06
+    cover: 0
+    guardSide: 0
+    effects:
+    - stat: 10
+      startsAt: 0
+      atFull: -0.15
+    - stat: 9
+      startsAt: 50
+      atFull: -0.05

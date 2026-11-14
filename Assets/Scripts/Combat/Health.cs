@@ -61,6 +61,12 @@ namespace BrumaPx.Combat
             SetFlash(false);
         }
 
+        /// <summary>Brings the current health down to the maximum (used when the maximum was lowered).</summary>
+        public void ClampToMax()
+        {
+            if (Current > max) Current = max;
+        }
+
         public void Heal(float amount)
         {
             if (!IsDead && amount > 0f) Current = Mathf.Min(max, Current + amount);

@@ -119,6 +119,7 @@ namespace BrumaPx.Player
         readonly HashSet<Health> _hitSet = new HashSet<Health>();
 
         AttackData _current;
+        HeroBody _body;
         bool _isHeavy, _guarding, _blocking;
         int _combo, _queued;
         float _stamina, _regenTimer, _attackClock, _curRecovery, _damageMul = 1f, _lungeLeft;
@@ -214,6 +215,7 @@ namespace BrumaPx.Player
         {
             _stamina = maxStamina;
             ApplyHealthFromProfile();
+            _body = GetComponent<HeroBody>();
             _spawnPos = transform.position;
             _spawnRot = transform.rotation;
             if (body != null) _bodyRest = body.localRotation;
@@ -312,7 +314,7 @@ namespace BrumaPx.Player
 
             int combo = 0;
             if (!isHeavy) combo = _comboTimer > 0f ? Mathf.Min(_combo + 1, 2) : 0;
-            float recovery = a.recovery * (combo == 2 ? 1.5f : 1f);
+            float recovery = a.recovery * (combo == 2 ? 1.5f : 1f) * M(BodyStat.AttackRecovery);
             if (!_attack.Start(a.startup, a.active, recovery)) return false;
 
             _combo = combo;
@@ -406,7 +408,7 @@ namespace BrumaPx.Player
                 _hitSet.Add(h);
                 Vector2 dir = target - origin;
                 dir = dir.sqrMagnitude > 1e-4f ? dir.normalized : facing.normalized;
-                h.TakeDamage(_current.damage * _damageMul, dir);
+                h.TakeDamage(_current.damage * _damageMul * M(BodyStat.MeleeDamage) * (_isHeavy ? M(BodyStat.HeavyDamage) : 1f), dir);
                 StartHitStop(_current.hitStop);
             }
         }
@@ -415,9 +417,10 @@ namespace BrumaPx.Player
 
         void TryDodge()
         {
-            if (!_dodge.IsReady || _stamina < dodgeStamina || _hurtTimer > 0f)
+            float dodgeCost = dodgeStamina * M(BodyStat.DodgeCost);
+            if (!_dodge.IsReady || _stamina < dodgeCost || _hurtTimer > 0f)
             {
-                if (_stamina < dodgeStamina && Exhausted != null) Exhausted();
+                if (_stamina < dodgeCost && Exhausted != null) Exhausted();
                 return;
             }
             if (_attack.IsBusy && _attack.Phase != AttackPhase.Recovery) return;
@@ -425,13 +428,13 @@ namespace BrumaPx.Player
             Vector3 dir = hero.InputDirection();
             bool hasInput = dir.sqrMagnitude > 0.01f;
             if (!hasInput) dir = -transform.forward;
-            if (!_dodge.TryStart(new Vector2(dir.x, dir.z), dodgeDistance, dodgeDuration, dodgeCooldown)) return;
+            if (!_dodge.TryStart(new Vector2(dir.x, dir.z), dodgeDistance * M(BodyStat.DodgeDistance), dodgeDuration, dodgeCooldown)) return;
 
             _attack.Cancel();
             _queued = 0;
             _comboTimer = 0f;
             _guarding = false;
-            _stamina -= dodgeStamina;
+            _stamina -= dodgeCost;
             _regenTimer = regenDelay;
             _dodgeClock = 0f;
             if (hasInput)
@@ -461,7 +464,7 @@ namespace BrumaPx.Player
 
             if (_guarding && facingAttacker)
             {
-                if (_guardTime <= parryWindow)
+                if (_guardTime <= parryWindow * M(BodyStat.ParryWindow))
                 {
                     _stamina = Mathf.Min(maxStamina, _stamina + parryStaminaBack);
                     if (attacker != null) attacker.Parried();
@@ -484,15 +487,31 @@ namespace BrumaPx.Player
                 }
 
                 _blocking = true;
-                health.TakeDamage(damage * guardDamageTaken, dir);
+                health.TakeDamage(damage * Mathf.Clamp01(guardDamageTaken * M(BodyStat.GuardLeak)), dir);
                 _blocking = false;
+                NotifyBody(attacker, true);
                 return;
             }
 
             health.TakeDamage(damage, dir);
+            NotifyBody(attacker, false);
         }
 
         // ------------------------------------------------------------------------------------------ reactions
+
+        // What the body has lost to the Bruma changes the numbers of the fight (1 = unchanged).
+        float M(BodyStat stat)
+        {
+            return _body != null ? _body.Mult(stat) : 1f;
+        }
+
+        // A blow that landed: the body opens a wound and takes the Bruma the attacker carries.
+        void NotifyBody(EnemyBrain attacker, bool guarded)
+        {
+            if (_body == null) return;
+            float dose = attacker != null && attacker.profile != null ? attacker.profile.BrumaOnHit : 0f;
+            _body.OnHitTaken(dose, guarded);
+        }
 
         void OnDamaged(float amount, Vector2 dir)
         {
@@ -560,7 +579,7 @@ namespace BrumaPx.Player
         {
             _regenTimer -= dt;
             if (_regenTimer > 0f || _guarding || _attack.IsBusy) return;
-            _stamina = Mathf.Min(maxStamina, _stamina + staminaRegen * dt);
+            _stamina = Mathf.Min(maxStamina, _stamina + staminaRegen * M(BodyStat.StaminaRegen) * dt);
         }
 
         void MoveBy(Vector3 delta)

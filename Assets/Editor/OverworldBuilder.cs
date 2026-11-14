@@ -23,7 +23,7 @@ namespace BrumaPx.EditorTools
     /// a talkable NPC with a portrait, and a dialogue UI. Safe to run again: generated content is rebuilt.
     /// Menu: BrumaPx / Overworld / Rebuild World.
     /// </summary>
-    public static class OverworldBuilder
+    public static partial class OverworldBuilder
     {
         const string ScenePath = "Assets/Scenes/Overworld.unity";
         const string MatDir = "Assets/Art/Materials/Diorama/";
@@ -83,6 +83,7 @@ namespace BrumaPx.EditorTools
             BuildNpc(npcPos, 45f);
             Zones.Add(new Vector3(npcPos.x, npcPos.z, 3.2f));
             PlaceLandmarks(tree, graves, fence, lantern, props, hut);
+            BuildBrumaWorld();
 
             // 3. Random scatter in every other chunk.
             Scatter(tree, graves, fence, props);
@@ -589,7 +590,7 @@ namespace BrumaPx.EditorTools
             if (streamer == null) streamer = _chunksRoot.gameObject.AddComponent<ChunkStreamer>();
             streamer.focus = heroT;
             streamer.chunkRoot = _chunksRoot;
-            streamer.activateRadius = 22f;
+            streamer.activateRadius = 26f;
             streamer.label = chunkLabel;
 
             EditorUtility.SetDirty(rig);
@@ -709,6 +710,7 @@ namespace BrumaPx.EditorTools
 
             BuildHud(health, combat, vis);
             BuildInventory(hero, health, combat);
+            BuildBody(hero, health, combat);
             BuildEnemies(rig.pixelsPerUnit, flash);
         }
 
@@ -927,12 +929,13 @@ namespace BrumaPx.EditorTools
             var hierba = MakeItem("HierbaSeca", "hierba_seca", "Hierba seca", "Material de herbolario. Todavía no sirve para nada.", 8,
                 ItemEffect.None, 0f, new Color32(0xA0, 0xA0, 0x64, 255), PrimitiveType.Sphere, new Vector3(0.2f, 0.1f, 0.2f), "Bark");
             var explorador = MakeExampleBranch();
+            var unguento = MakeBrumaItems(venda);
 
             var inv = GetOrAdd<Inventory>(hero.gameObject);
             inv.health = health;
             inv.combat = combat;
-            var items = new[] { venda, tonico, hierba };
-            var counts = new[] { 3, 2, 4 };
+            var items = new[] { venda, tonico, hierba, unguento };
+            var counts = new[] { 3, 2, 4, 2 };
             var so = new SerializedObject(inv);
             var start = so.FindProperty("startingItems");
             start.arraySize = items.Length;
@@ -1044,6 +1047,7 @@ namespace BrumaPx.EditorTools
                 SetF(so, "_sidestepDistance", 1.4f);
             });
 
+            SetBrumaOnHit(infected, 6f);
             BuildInfected("Infectado A", new Vector3(7.5f, 0f, -5.5f), 210f, infected, pixelsPerUnit, flash);
             BuildInfected("Infectado B", new Vector3(14.5f, 0f, -20.8f), 20f, infected, pixelsPerUnit, flash);
             BuildRaider("Saqueador A", new Vector3(18f, 0f, -12.8f), 250f, raider, pixelsPerUnit, flash);
@@ -1214,7 +1218,7 @@ namespace BrumaPx.EditorTools
             hlp.anchoredPosition = new Vector2(14f, -34f);
             hlp.sizeDelta = new Vector2(592f, 40f);
             help.fontSize = 14;
-            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  A S D F: cintur\u00f3n  Tab (mantener): morral  N: cuaderno  E: hablar  F5/F6/F7: clima/hora";
+            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  A S D F: cintur\u00f3n  Tab (mantener): morral  N: cuaderno  B: cuerpo  E: hablar  F5/F6/F7: clima/hora";
 
             var clock = Txt(root.transform, "Clock Label", 18, FontStyle.Bold, warm, TextAnchor.UpperLeft);
             var klr = clock.rectTransform;

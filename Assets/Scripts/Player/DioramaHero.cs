@@ -1,4 +1,5 @@
 using BrumaPx.Combat;
+using BrumaPx.Data;
 using BrumaPx.Dialogue;
 using BrumaPx.World;
 using UnityEngine;
@@ -50,6 +51,7 @@ namespace BrumaPx.Player
         float _targetYaw;
         bool _moving;
         bool _running;
+        HeroBody _bodyFx;
 
         void Awake()
         {
@@ -57,6 +59,7 @@ namespace BrumaPx.Player
             if (legL != null) _legLRest = legL.localPosition;
             if (legR != null) _legRRest = legR.localPosition;
             _targetYaw = transform.eulerAngles.y;
+            _bodyFx = GetComponent<HeroBody>();
             if (prompt != null) prompt.gameObject.SetActive(false);
         }
 
@@ -112,7 +115,7 @@ namespace BrumaPx.Player
             if (dir.sqrMagnitude < 0.01f) return;
 
             _running = DioramaInput.Run();
-            float speed = (_running ? runSpeed : walkSpeed) * SpeedMultiplier;
+            float speed = (_running ? runSpeed : walkSpeed) * SpeedMultiplier * BodySpeed(_running);
             Vector3 pos = transform.position + dir * (speed * Time.deltaTime);
 
             Vector2 p = ResolveGround(new Vector2(pos.x, pos.z), radius);
@@ -121,6 +124,14 @@ namespace BrumaPx.Player
             _targetYaw = Mathf.Round(Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg / 45f) * 45f;
             _moving = true;
             NoiseBus.Emit(transform.position, _running ? runNoise : walkNoise);
+        }
+
+        // The legs lose speed as the Bruma takes them (running also loses what walking loses).
+        float BodySpeed(bool running)
+        {
+            if (_bodyFx == null) return 1f;
+            float m = _bodyFx.Mult(BodyStat.WalkSpeed);
+            return running ? m * _bodyFx.Mult(BodyStat.RunSpeed) : m;
         }
 
         void Turn()

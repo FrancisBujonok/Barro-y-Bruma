@@ -37,6 +37,8 @@ namespace BrumaPx.Combat
         [SerializeField, Min(0f)] private float _attackRecovery = 0.8f;
         [SerializeField, Range(10f, 360f)] private float _attackArcDegrees = 100f;
         [SerializeField, Min(0f)] private float _attackNoise = 4f;
+        [Tooltip("Bruma that a blow of this enemy puts into the zone it hits (0 = none).")]
+        [SerializeField, Min(0f)] private float _brumaOnHit;
 
         [Header("Reactions")]
         [Tooltip("A single hit at or above this damage interrupts it (a heavy hit).")]
@@ -64,6 +66,7 @@ namespace BrumaPx.Combat
         public float AttackRecovery => _attackRecovery;
         public float AttackArcDegrees => _attackArcDegrees;
         public float AttackNoise => _attackNoise;
+        public float BrumaOnHit => _brumaOnHit;
         public float StaggerThreshold => _staggerThreshold;
         public float StaggerSeconds => _staggerSeconds;
         public float KnockbackScale => _knockbackScale;

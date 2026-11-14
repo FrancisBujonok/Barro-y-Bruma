@@ -50,6 +50,7 @@ namespace BrumaPx.Player
         readonly ItemStack[] _belt = new ItemStack[BeltSize];
         readonly List<ItemStack> _bag = new List<ItemStack>();
         float _nextUse;
+        HeroBody _body;
 
         public int BagCapacity { get { return bagCapacity; } }
         public IReadOnlyList<ItemStack> Bag { get { return _bag; } }
@@ -62,6 +63,7 @@ namespace BrumaPx.Player
 
         void Start()
         {
+            _body = GetComponent<HeroBody>();
             for (int i = 0; i < startingItems.Length; i++)
                 if (startingItems[i] != null && startingItems[i].item != null)
                     Add(startingItems[i].item, startingItems[i].count);
@@ -172,8 +174,15 @@ namespace BrumaPx.Player
             switch (s.item.Effect)
             {
                 case ItemEffect.Heal:
-                    if (health.Current >= health.max - 0.01f) return false;
-                    health.Heal(s.item.Amount);
+                    bool canHeal = health.Current < health.max - 0.01f;
+                    bool canClose = s.item.ClosesWound && _body != null && _body.HasOpenWound;
+                    if (!canHeal && !canClose) return false;
+                    if (canClose) _body.CloseWound();
+                    if (canHeal) health.Heal(s.item.Amount);
+                    break;
+                case ItemEffect.PalliateBruma:
+                    if (_body == null || !_body.CanPalliate) return false;
+                    _body.Palliate(s.item.Amount, s.item.Duration);
                     break;
                 case ItemEffect.RestoreStamina:
                     if (combat == null || combat.Stamina01 >= 0.999f) return false;
@@ -184,7 +193,7 @@ namespace BrumaPx.Player
             }
 
             s.count--;
-            _nextUse = Time.unscaledTime + useCooldown;
+            _nextUse = Time.unscaledTime + useCooldown * (_body != null ? _body.Mult(BodyStat.ItemSpeed) : 1f);
             NoiseBus.Emit(transform.position, useNoise);
             return true;
         }

@@ -94,10 +94,10 @@ namespace BrumaPx.Atmosphere
         // island: how far the hero sees. Thicker weather shortens it, which also means fewer chunks are loaded.
         static readonly Preset[] Presets =
         {
-            new Preset { mist = 1.0f, shift = 0.00f,  rain = 0.0f, wet = 0f,   grey = 0.00f, tone = new Vector3(1f, 1f, 1f),          island = new Vector2(8.5f, 8.0f), lightning = false },
-            new Preset { mist = 1.7f, shift = -0.14f, rain = 0.0f, wet = 0.15f, grey = 0.35f, tone = new Vector3(0.96f, 0.97f, 0.99f), island = new Vector2(6.0f, 5.6f), lightning = false },
-            new Preset { mist = 1.25f, shift = -0.05f, rain = 1.0f, wet = 1f,   grey = 0.45f, tone = new Vector3(0.86f, 0.90f, 0.96f), island = new Vector2(7.8f, 7.3f), lightning = false },
-            new Preset { mist = 1.5f, shift = -0.10f, rain = 1.9f, wet = 1f,   grey = 0.60f, tone = new Vector3(0.68f, 0.74f, 0.86f), island = new Vector2(6.8f, 6.3f), lightning = true }
+            new Preset { mist = 1.0f, shift = 0.00f,  rain = 0.0f, wet = 0f,   grey = 0.00f, tone = new Vector3(1f, 1f, 1f),          island = new Vector2(10.2f, 9.6f), lightning = false },
+            new Preset { mist = 1.7f, shift = -0.14f, rain = 0.0f, wet = 0.15f, grey = 0.35f, tone = new Vector3(0.96f, 0.97f, 0.99f), island = new Vector2(7.2f, 6.7f), lightning = false },
+            new Preset { mist = 1.25f, shift = -0.05f, rain = 1.0f, wet = 1f,   grey = 0.45f, tone = new Vector3(0.86f, 0.90f, 0.96f), island = new Vector2(9.4f, 8.8f), lightning = false },
+            new Preset { mist = 1.5f, shift = -0.10f, rain = 1.9f, wet = 1f,   grey = 0.60f, tone = new Vector3(0.68f, 0.74f, 0.86f), island = new Vector2(8.2f, 7.6f), lightning = true }
         };
 
         static readonly float[] AutoWeights = { 0.45f, 0.20f, 0.25f, 0.10f };
@@ -106,7 +106,7 @@ namespace BrumaPx.Atmosphere
         // current (blended) weather values
         float _mist = 1f, _shift, _rain, _wet, _grey;
         Vector3 _tone = Vector3.one;
-        Vector2 _island = new Vector2(8.5f, 8f);
+        Vector2 _island = new Vector2(10.2f, 9.6f);
         bool _inited;
 
         float _autoTimer;
@@ -229,7 +229,7 @@ void OnEnable()
             s.shadowLength = key.length;
             s.shadowAngle = key.angle;
             s.weather = new Vector4(_mist, _shift, _rain, _wet);
-            s.island = _island;
+            s.island = _island * BrumaPx.Player.HeroBody.VisionScale;
 
             // Heavy weather turns the lamps on a little even by day.
             float avg = (tone.x + tone.y + tone.z) / 3f;

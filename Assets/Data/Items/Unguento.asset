@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8949785af603b404298785ebf9439ef1, type: 3}
+  m_Name: Unguento
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Data.ItemDef
+  _id: unguento
+  _displayName: "Ung\xFCento de brea"
+  _description: Frena la Bruma un rato y devuelve algo de resistencia. No cura.
+  _maxStack: 3
+  _effect: 3
+  _amount: 30
+  _closesWound: 0
+  _duration: 150
+  _tint: {r: 0.3529412, g: 0.28235295, b: 0.21960784, a: 1}
+  _worldShape: 2
+  _worldSize: {x: 0.16, y: 0.1, z: 0.16}
+  _worldMaterial: {fileID: 2100000, guid: 759a2d4a2be46cb4381d1c0ecc312440, type: 2}

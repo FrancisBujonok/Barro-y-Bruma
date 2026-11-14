@@ -31,12 +31,13 @@ namespace BrumaPx.World
             if (_chunks == null || focus == null) return;
 
             Vector3 f = focus.position;
+            float radius = activateRadius * Mathf.Max(1f, HeroBody.VisionScale);
             int active = 0;
             for (int i = 0; i < _chunks.Length; i++)
             {
                 Vector3 d = _chunks[i].center - f;
                 d.y = 0f;
-                bool on = d.magnitude <= activateRadius;
+                bool on = d.magnitude <= radius;
                 if (_chunks[i].gameObject.activeSelf != on) _chunks[i].gameObject.SetActive(on);
                 if (on) active++;
             }
