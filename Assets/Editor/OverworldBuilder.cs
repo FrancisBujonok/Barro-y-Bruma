@@ -4,6 +4,7 @@ using BrumaPx.Player;
 using BrumaPx.Dialogue;
 using BrumaPx.Atmosphere;
 using BrumaPx.Combat;
+using BrumaPx.Data;
 using BrumaPx.UI;
 using System.Collections.Generic;
 using UnityEditor;
@@ -707,6 +708,7 @@ namespace BrumaPx.EditorTools
             if (heroLight != null) heroLight.countsForVisibility = false;
 
             BuildHud(health, combat, vis);
+            BuildInventory(hero, health, combat);
             BuildEnemies(rig.pixelsPerUnit, flash);
         }
 
@@ -825,6 +827,167 @@ namespace BrumaPx.EditorTools
             hud.lightIcon = icon;
             hud.lightLabel = ll;
             hud.message = msg;
+        }
+
+        // ------------------------------------------------------------------------------------------------ inventory and data
+
+        static void EnsureFolder(string parent, string name)
+        {
+            if (!AssetDatabase.IsValidFolder(parent + "/" + name)) AssetDatabase.CreateFolder(parent, name);
+        }
+
+        // Creates a data file only when it is missing, so hand edits to existing files survive a rebuild.
+        static T GetAsset<T>(string folderName, string assetName, System.Action<SerializedObject> fill) where T : ScriptableObject
+        {
+            EnsureFolder("Assets/Data", folderName);
+            string path = "Assets/Data/" + folderName + "/" + assetName + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<T>(path);
+            if (existing != null) return existing;
+
+            var asset = ScriptableObject.CreateInstance<T>();
+            AssetDatabase.CreateAsset(asset, path);
+            if (fill != null)
+            {
+                var so = new SerializedObject(asset);
+                fill(so);
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            EditorUtility.SetDirty(asset);
+            AssetDatabase.SaveAssets();
+            return asset;
+        }
+
+        static ItemDef MakeItem(string file, string id, string displayName, string description, int maxStack,
+            ItemEffect effect, float amount, Color tint, PrimitiveType shape, Vector3 size, string material)
+        {
+            return GetAsset<ItemDef>("Items", file, delegate (SerializedObject so)
+            {
+                so.FindProperty("_id").stringValue = id;
+                so.FindProperty("_displayName").stringValue = displayName;
+                so.FindProperty("_description").stringValue = description;
+                so.FindProperty("_maxStack").intValue = maxStack;
+                so.FindProperty("_effect").enumValueIndex = (int)effect;
+                so.FindProperty("_amount").floatValue = amount;
+                so.FindProperty("_tint").colorValue = tint;
+                so.FindProperty("_worldShape").enumValueIndex = (int)shape;
+                so.FindProperty("_worldSize").vector3Value = size;
+                so.FindProperty("_worldMaterial").objectReferenceValue = M(material);
+            });
+        }
+
+        // The example branch: six blank notes tied together, so the page can be judged by eye. No real skills yet.
+        static SkillBranchDef MakeExampleBranch()
+        {
+            return GetAsset<SkillBranchDef>("Skills", "Explorador", delegate (SerializedObject so)
+            {
+                so.FindProperty("_displayName").stringValue = "Explorador";
+                so.FindProperty("_summary").stringValue = "Rama de ejemplo: muestra cómo se ve una página. Todavía no tiene habilidades.";
+                var spots = new[]
+                {
+                    new Vector2(0.06f, 0.50f), new Vector2(0.30f, 0.80f), new Vector2(0.30f, 0.20f),
+                    new Vector2(0.58f, 0.80f), new Vector2(0.58f, 0.20f), new Vector2(0.92f, 0.50f)
+                };
+                var needs = new[]
+                {
+                    new string[0], new[] { "explorador.1" }, new[] { "explorador.1" },
+                    new[] { "explorador.2" }, new[] { "explorador.3" }, new[] { "explorador.4", "explorador.5" }
+                };
+                var nodes = so.FindProperty("_nodes");
+                nodes.arraySize = spots.Length;
+                for (int i = 0; i < spots.Length; i++)
+                {
+                    var el = nodes.GetArrayElementAtIndex(i);
+                    el.FindPropertyRelative("id").stringValue = "explorador." + (i + 1);
+                    el.FindPropertyRelative("title").stringValue = "???";
+                    el.FindPropertyRelative("description").stringValue = string.Empty;
+                    el.FindPropertyRelative("position").vector2Value = spots[i];
+                    el.FindPropertyRelative("cost").intValue = 1;
+                    var rq = el.FindPropertyRelative("requires");
+                    rq.arraySize = needs[i].Length;
+                    for (int k = 0; k < needs[i].Length; k++) rq.GetArrayElementAtIndex(k).stringValue = needs[i][k];
+                }
+            });
+        }
+
+        static T GetOrAdd<T>(GameObject go) where T : Component
+        {
+            var c = go.GetComponent<T>();
+            return c != null ? c : go.AddComponent<T>();
+        }
+
+        // Belt, bag, notebook and the data behind them. Safe to run again.
+        static void BuildInventory(Transform hero, Health health, HeroCombat combat)
+        {
+            combat.profile = GetAsset<HeroCombatProfile>("Heroe", "HeroCombatProfile", null);
+
+            var venda = MakeItem("Venda", "venda", "Venda", "Tela limpia para cerrar una herida.", 5,
+                ItemEffect.Heal, 25f, new Color32(0xE4, 0xD8, 0xB8, 255), PrimitiveType.Cube, new Vector3(0.28f, 0.08f, 0.18f), "HeroScarf");
+            var tonico = MakeItem("Tonico", "tonico", "Tónico", "Amargo, pero devuelve el aliento.", 3,
+                ItemEffect.RestoreStamina, 60f, new Color32(0x7F, 0xA0, 0x70, 255), PrimitiveType.Cylinder, new Vector3(0.14f, 0.11f, 0.14f), "Glow");
+            var hierba = MakeItem("HierbaSeca", "hierba_seca", "Hierba seca", "Material de herbolario. Todavía no sirve para nada.", 8,
+                ItemEffect.None, 0f, new Color32(0xA0, 0xA0, 0x64, 255), PrimitiveType.Sphere, new Vector3(0.2f, 0.1f, 0.2f), "Bark");
+            var explorador = MakeExampleBranch();
+
+            var inv = GetOrAdd<Inventory>(hero.gameObject);
+            inv.health = health;
+            inv.combat = combat;
+            var items = new[] { venda, tonico, hierba };
+            var counts = new[] { 3, 2, 4 };
+            var so = new SerializedObject(inv);
+            var start = so.FindProperty("startingItems");
+            start.arraySize = items.Length;
+            for (int i = 0; i < items.Length; i++)
+            {
+                var el = start.GetArrayElementAtIndex(i);
+                el.FindPropertyRelative("item").objectReferenceValue = items[i];
+                el.FindPropertyRelative("count").intValue = counts[i];
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var progress = GetOrAdd<HeroProgress>(hero.gameObject);
+
+            var ui = GameObject.Find("UI");
+            Transform canvas = ui != null ? ui.transform : null;
+
+            var bag = GetOrAdd<BagView>(hero.gameObject);
+            bag.inventory = inv;
+            bag.combat = combat;
+            bag.hero = hero.GetComponent<DioramaHero>();
+            bag.health = health;
+            bag.canvasRoot = canvas;
+            bag.clothMaterial = M("WoodDark");
+            bag.cellMaterial = M("Wood");
+            bag.cursorMaterial = M("Glow");
+            var bagSo = new SerializedObject(bag);
+            bagSo.FindProperty("cellSize").floatValue = 0.8f;
+            bagSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var belt = GetOrAdd<BeltHud>(hero.gameObject);
+            belt.inventory = inv;
+            belt.canvasRoot = canvas;
+
+            var book = GetOrAdd<NotebookView>(hero.gameObject);
+            book.branches = new[] { explorador };
+            book.progress = progress;
+            book.combat = combat;
+            book.health = health;
+            book.heroTransform = hero;
+            book.canvasRoot = canvas;
+
+            BuildRefuge();
+        }
+
+        // A stone ring with an ember next to the starting point. Skill points can be spent inside its radius.
+        static void BuildRefuge()
+        {
+            foreach (var old in Object.FindObjectsByType<Refuge>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                Object.DestroyImmediate(old.gameObject);
+
+            var g = Group("Refugio Casa", new Vector3(-1.0f, 0f, 1.2f), 0f);
+            g.gameObject.AddComponent<Refuge>();
+            Prim(g, PrimitiveType.Cylinder, "Ring", new Vector3(0f, 0.06f, 0f), new Vector3(0.9f, 0.06f, 0.9f), Vector3.zero, "RockLight");
+            Prim(g, PrimitiveType.Cylinder, "Ash", new Vector3(0f, 0.1f, 0f), new Vector3(0.6f, 0.03f, 0.6f), Vector3.zero, "Black", false);
+            Prim(g, PrimitiveType.Cube, "Ember", new Vector3(0f, 0.2f, 0f), new Vector3(0.14f, 0.2f, 0.14f), new Vector3(0f, 35f, 0f), "Glow", false);
         }
 
         static void BuildEnemies(int pixelsPerUnit, Material flash)
@@ -1036,7 +1199,7 @@ namespace BrumaPx.EditorTools
             var hpr = hudPanel.rectTransform;
             hpr.anchorMin = hpr.anchorMax = new Vector2(0f, 1f); hpr.pivot = new Vector2(0f, 1f);
             hpr.anchoredPosition = new Vector2(8f, -6f);
-            hpr.sizeDelta = new Vector2(800f, 88f);
+            hpr.sizeDelta = new Vector2(610f, 112f);
 
             chunkLabel = Txt(root.transform, "Chunk Label", 16, FontStyle.Normal, cream, TextAnchor.UpperLeft);
             var crt = chunkLabel.rectTransform;
@@ -1049,13 +1212,14 @@ namespace BrumaPx.EditorTools
             var hlp = help.rectTransform;
             hlp.anchorMin = hlp.anchorMax = new Vector2(0f, 1f); hlp.pivot = new Vector2(0f, 1f);
             hlp.anchoredPosition = new Vector2(14f, -34f);
-            hlp.sizeDelta = new Vector2(800f, 24f);
-            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  E: hablar  F5/F6/F7: clima/hora";
+            hlp.sizeDelta = new Vector2(592f, 40f);
+            help.fontSize = 14;
+            help.text = "Flechas: mover  Shift: correr  Z/X: golpe  C: esquivar  V: guardia  A S D F: cintur\u00f3n  Tab (mantener): morral  N: cuaderno  E: hablar  F5/F6/F7: clima/hora";
 
             var clock = Txt(root.transform, "Clock Label", 18, FontStyle.Bold, warm, TextAnchor.UpperLeft);
             var klr = clock.rectTransform;
             klr.anchorMin = klr.anchorMax = new Vector2(0f, 1f); klr.pivot = new Vector2(0f, 1f);
-            klr.anchoredPosition = new Vector2(14f, -58f);
+            klr.anchoredPosition = new Vector2(14f, -80f);
             klr.sizeDelta = new Vector2(300f, 26f);
             _clockLabel = clock;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BarroYBruma.Combat;
 using BarroYBruma.Player;
 using BrumaPx.Combat;
+using BrumaPx.Data;
 using UnityEngine;
 
 namespace BrumaPx.Player
@@ -47,6 +48,10 @@ namespace BrumaPx.Player
         public GameObject sheathedSword;
 
 
+        [Header("Data")]
+        [Tooltip("When set, its numbers replace the ones below at start. Edit the file to tune the combat.")]
+        public HeroCombatProfile profile;
+
         [Header("Stamina")]
         [Min(1f)] public float maxStamina = 100f;
         public float staminaRegen = 30f;
@@ -90,6 +95,17 @@ namespace BrumaPx.Player
         /// <summary>The player tried to act without enough stamina.</summary>
         public event Action Exhausted;
 
+        /// <summary>While true the hero ignores combat input (the bag or the notebook is open).</summary>
+        public bool InputLocked { get; set; }
+
+        /// <summary>True when the hero is free to use an item: not dead, swinging, rolling or stunned.</summary>
+        public bool CanAct { get { return health != null && !health.IsDead && !_attack.IsBusy && !_dodge.IsDodging && _hurtTimer <= 0f; } }
+
+        public void RestoreStamina(float amount)
+        {
+            _stamina = Mathf.Min(maxStamina, _stamina + amount);
+        }
+
         public float Stamina01 { get { return Mathf.Clamp01(_stamina / Mathf.Max(1f, maxStamina)); } }
         public bool IsGuarding { get { return _guarding; } }
         public bool IsDodging { get { return _dodge.IsDodging; } }
@@ -118,6 +134,53 @@ namespace BrumaPx.Player
         void Awake()
         {
             Instance = this;
+            ApplyProfile();
+        }
+
+        // Copies the numbers of the profile file over the inline ones.
+        void ApplyProfile()
+        {
+            if (profile == null) return;
+            maxStamina = profile.MaxStamina;
+            staminaRegen = profile.StaminaRegen;
+            regenDelay = profile.RegenDelay;
+            Copy(profile.Light, lightAttack);
+            Copy(profile.Heavy, heavy);
+            comboWindow = profile.ComboWindow;
+            inputBuffer = profile.InputBuffer;
+            dodgeDistance = profile.DodgeDistance;
+            dodgeDuration = profile.DodgeDuration;
+            dodgeCooldown = profile.DodgeCooldown;
+            dodgeStamina = profile.DodgeStamina;
+            dodgeNoise = profile.DodgeNoise;
+            parryWindow = profile.ParryWindow;
+            guardDamageTaken = profile.GuardDamageTaken;
+            guardStaminaPerDamage = profile.GuardStaminaPerDamage;
+            guardMoveSpeed = profile.GuardMoveSpeed;
+            parryStaminaBack = profile.ParryStaminaBack;
+            hurtStun = profile.HurtStun;
+            respawnDelay = profile.RespawnDelay;
+        }
+
+        void ApplyHealthFromProfile()
+        {
+            if (profile == null || health == null) return;
+            health.max = profile.MaxHealth;
+            health.ResetFull();
+        }
+
+        static void Copy(HeroAttackStats s, AttackData d)
+        {
+            d.damage = s.damage;
+            d.startup = s.startup;
+            d.active = s.active;
+            d.recovery = s.recovery;
+            d.range = s.range;
+            d.arcDegrees = s.arcDegrees;
+            d.stamina = s.stamina;
+            d.lunge = s.lunge;
+            d.noise = s.noise;
+            d.hitStop = s.hitStop;
         }
 
         void OnEnable()
@@ -150,6 +213,7 @@ namespace BrumaPx.Player
         void Start()
         {
             _stamina = maxStamina;
+            ApplyHealthFromProfile();
             _spawnPos = transform.position;
             _spawnRot = transform.rotation;
             if (body != null) _bodyRest = body.localRotation;
@@ -179,6 +243,7 @@ namespace BrumaPx.Player
 
             bool talking = hero.dialogue != null && hero.dialogue.IsOpen;
             if (talking) _guarding = false;
+            else if (InputLocked) _guarding = false;
             else ReadInput();
 
             if (_guarding) _guardTime += dt;
@@ -191,7 +256,7 @@ namespace BrumaPx.Player
             TickKnock(dt);
             TickStamina(dt);
 
-            hero.MovementLocked = _attack.IsBusy || _dodge.IsDodging || _hurtTimer > 0f;
+            hero.MovementLocked = _attack.IsBusy || _dodge.IsDodging || _hurtTimer > 0f || InputLocked;
             hero.SpeedMultiplier = _guarding ? guardMoveSpeed : 1f;
             Animate();
         }

@@ -69,6 +69,77 @@ namespace BrumaPx.Player
             return DebugGuard || (k != null && k.vKey.isPressed);
         }
 
+        /// <summary>Test hooks for the bag, the belt and the notebook (zero or false in normal play).</summary>
+        public static bool DebugBag, DebugNotebook;
+        public static int DebugBelt = -1;
+        public static Vector2Int DebugStep;
+
+        /// <summary>Tab held: the bag is laid out on the ground.</summary>
+        public static bool BagHeld()
+        {
+            var k = Keyboard.current;
+            return DebugBag || (k != null && k.tabKey.isPressed);
+        }
+
+        /// <summary>N: opens or closes the notebook.</summary>
+        public static bool NotebookPressed()
+        {
+            var k = Keyboard.current;
+            bool real = k != null && k.nKey.wasPressedThisFrame;
+            return Consume(ref DebugNotebook) || real;
+        }
+
+        /// <summary>A, S, D, F: the belt pocket pressed this frame (0 to 3), or -1.</summary>
+        public static int BeltPressed()
+        {
+            if (DebugBelt >= 0)
+            {
+                int d = DebugBelt;
+                DebugBelt = -1;
+                return d;
+            }
+            var k = Keyboard.current;
+            if (k == null) return -1;
+            if (k.aKey.wasPressedThisFrame) return 0;
+            if (k.sKey.wasPressedThisFrame) return 1;
+            if (k.dKey.wasPressedThisFrame) return 2;
+            if (k.fKey.wasPressedThisFrame) return 3;
+            return -1;
+        }
+
+        /// <summary>Test hook for PageStep (consumed on read).</summary>
+        public static int DebugPage;
+
+        /// <summary>Q and W: previous and next notebook page (-1, 0 or 1).</summary>
+        public static int PageStep()
+        {
+            if (DebugPage != 0)
+            {
+                int d = DebugPage;
+                DebugPage = 0;
+                return d;
+            }
+            var k = Keyboard.current;
+            if (k == null) return 0;
+            return (k.wKey.wasPressedThisFrame ? 1 : 0) - (k.qKey.wasPressedThisFrame ? 1 : 0);
+        }
+
+        /// <summary>Arrow pressed this frame, for moving a cursor in the bag and the notebook (y up is positive).</summary>
+        public static Vector2Int MenuStep()
+        {
+            if (DebugStep != Vector2Int.zero)
+            {
+                var d = DebugStep;
+                DebugStep = Vector2Int.zero;
+                return d;
+            }
+            var k = Keyboard.current;
+            if (k == null) return Vector2Int.zero;
+            int x = (k.rightArrowKey.wasPressedThisFrame ? 1 : 0) - (k.leftArrowKey.wasPressedThisFrame ? 1 : 0);
+            int y = (k.upArrowKey.wasPressedThisFrame ? 1 : 0) - (k.downArrowKey.wasPressedThisFrame ? 1 : 0);
+            return new Vector2Int(x, y);
+        }
+
         public static bool InteractPressed()
         {
             var k = Keyboard.current;
