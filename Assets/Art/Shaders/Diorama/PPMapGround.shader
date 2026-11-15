@@ -79,7 +79,7 @@ Shader "BrumaPx/Diorama/PPMapGround"
 
                 // Ragged borders: look the terrain up at a slightly warped position.
                 float2 warp = float2(PP_Noise(p * 0.7 + 11.0), PP_Noise(p * 0.7 + 53.0)) - 0.5;
-                int id = CellId(p + warp * 1.7);
+                int id = CellId(p + warp * 0.8);
 
                 float large = PP_Fbm(p * 0.45);
                 float fine = PP_Noise(p * 2.4);

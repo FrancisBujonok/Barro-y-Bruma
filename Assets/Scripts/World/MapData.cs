@@ -126,7 +126,7 @@ namespace BrumaPx.World
         /// Pushes a circle out of the blocked cells (water, cliffs, mountains) and keeps it inside the map.
         /// Used by the hero and the enemies; does nothing while no map is loaded.
         /// </summary>
-        public static Vector2 Resolve(Vector2 p, float r)
+public static Vector2 Resolve(Vector2 p, float r)
         {
             if (!Loaded) return p;
             for (int pass = 0; pass < 2; pass++)
@@ -138,7 +138,17 @@ namespace BrumaPx.World
                     {
                         int c = c0 + dc, rr = r0 + dr;
                         if (InBounds(c, rr) && !IsBlockedId(_ids[rr * Cols + c])) continue;
-                        p = PushOutOfBox(p, new Vector2(CellX(c), CellZ(rr)), Cell * 0.5f, r);
+
+                        // Every side that faces walkable ground is pulled back by Inset, so the invisible wall sits
+                        // inside the blocked cell, where the ragged drawn border (which wanders) still looks blocked.
+                        float h = Cell * 0.5f;
+                        float cx = CellX(c), cz = CellZ(rr);
+                        float minX = cx - h, maxX = cx + h, minZ = cz - h, maxZ = cz + h;
+                        if (Walkable(c - 1, rr)) minX += Inset;
+                        if (Walkable(c + 1, rr)) maxX -= Inset;
+                        if (Walkable(c, rr - 1)) maxZ -= Inset;   // row - 1 is the north neighbour
+                        if (Walkable(c, rr + 1)) minZ += Inset;
+                        p = PushOutOfRect(p, minX, maxX, minZ, maxZ, r);
                     }
                 }
             }
@@ -147,19 +157,29 @@ namespace BrumaPx.World
             return p;
         }
 
-        static Vector2 PushOutOfBox(Vector2 p, Vector2 c, float half, float r)
+static bool Walkable(int c, int r)
         {
-            Vector2 local = p - c;
-            Vector2 clamped = new Vector2(Mathf.Clamp(local.x, -half, half), Mathf.Clamp(local.y, -half, half));
-            Vector2 delta = local - clamped;
+            return InBounds(c, r) && !IsBlockedId(_ids[r * Cols + c]);
+        }
+
+        const float Inset = 0.5f;
+
+        static Vector2 PushOutOfRect(Vector2 p, float minX, float maxX, float minZ, float maxZ, float r)
+        {
+            Vector2 clamped = new Vector2(Mathf.Clamp(p.x, minX, maxX), Mathf.Clamp(p.y, minZ, maxZ));
+            Vector2 delta = p - clamped;
             float dist = delta.magnitude;
             if (dist >= r) return p;
-            if (dist > 1e-4f) return c + clamped + delta / dist * r;
-            float px = half - Mathf.Abs(local.x);
-            float py = half - Mathf.Abs(local.y);
-            if (px < py) local.x = (local.x < 0f ? -1f : 1f) * (half + r);
-            else local.y = (local.y < 0f ? -1f : 1f) * (half + r);
-            return c + local;
+            if (dist > 1e-4f) return clamped + delta / dist * r;
+
+            // Centre inside the rectangle: leave through the nearest side.
+            float left = p.x - minX, right = maxX - p.x, down = p.y - minZ, up = maxZ - p.y;
+            float m = Mathf.Min(Mathf.Min(left, right), Mathf.Min(down, up));
+            if (m == left) p.x = minX - r;
+            else if (m == right) p.x = maxX + r;
+            else if (m == down) p.y = minZ - r;
+            else p.y = maxZ + r;
+            return p;
         }
     }
 }

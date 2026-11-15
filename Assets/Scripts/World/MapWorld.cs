@@ -330,7 +330,7 @@ namespace BrumaPx.World
         {
             bool edge = !MapMath.IsBlocked(c + 1, r) || !MapMath.IsBlocked(c - 1, r) || !MapMath.IsBlocked(c, r + 1) || !MapMath.IsBlocked(c, r - 1);
             float px = x + R(rng) * MapGrid.Cell, pz = zTop - R(rng) * MapGrid.Cell;
-            if (edge && R(rng) < 0.6f) PlaceBarrier(parent, "RockBig", px, pz, 1.4f + R(rng) * 0.9f, rng);
+            if (edge && R(rng) < 0.95f) PlaceBarrier(parent, "RockBig", px, pz, 1.4f + R(rng) * 0.9f, rng);
             else if (!edge && R(rng) < 0.05f) PlaceBarrier(parent, "RockMid", px, pz, 1.6f + R(rng) * 1.0f, rng);
         }
 
