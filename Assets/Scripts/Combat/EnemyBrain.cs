@@ -409,6 +409,7 @@ namespace BrumaPx.Combat
                 var obstacles = WorldObstacle.All;
                 for (int i = 0; i < obstacles.Count; i++) p = obstacles[i].Resolve(p, profile.Radius);
             }
+            p = MapGrid.Resolve(p, profile.Radius);
             for (int i = 0; i < All.Count; i++)
             {
                 if (All[i] == this) continue;

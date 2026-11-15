@@ -104,6 +104,7 @@ namespace BrumaPx.Player
                 var all = WorldObstacle.All;
                 for (int i = 0; i < all.Count; i++) p = all[i].Resolve(p, r);
             }
+            p = MapGrid.Resolve(p, r);
             p.x = Mathf.Clamp(p.x, -worldLimit, worldLimit);
             p.y = Mathf.Clamp(p.y, -worldLimit, worldLimit);
             return p;
