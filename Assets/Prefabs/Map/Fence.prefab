@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 0
-  radius: 0.2
+  radius: 0.15
   halfSize: {x: 1, y: 1}
 --- !u!1 &5723680796021348236
 GameObject:
@@ -431,7 +431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 0
-  radius: 0.2
+  radius: 0.15
   halfSize: {x: 1, y: 1}
 --- !u!1 &6843591597404823476
 GameObject:
@@ -538,7 +538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 0
-  radius: 0.2
+  radius: 0.15
   halfSize: {x: 1, y: 1}
 --- !u!1 &7054526081512714578
 GameObject:
@@ -677,5 +677,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 0
-  radius: 0.2
+  radius: 0.15
   halfSize: {x: 1, y: 1}

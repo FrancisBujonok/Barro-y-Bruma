@@ -691,7 +691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 1.9, y: 1.6}
+  halfSize: {x: 1.75, y: 1.45}
 --- !u!114 &4589122674387632269
 MonoBehaviour:
   m_ObjectHideFlags: 0

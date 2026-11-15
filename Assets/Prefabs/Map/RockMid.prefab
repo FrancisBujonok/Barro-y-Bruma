@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestObstacle
   kind: 0
-  radius: 0.45
+  radius: 0.33
   halfSize: {x: 1, y: 1}
 --- !u!1 &8593246040432897168
 GameObject:

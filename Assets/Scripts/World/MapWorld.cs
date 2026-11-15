@@ -52,6 +52,27 @@ namespace BrumaPx.World
         bool _first = true;
         int _chunkMinX, _chunkMaxX, _chunkMinZ, _chunkMaxZ;
 
+        // Temporary test switch (F8): no fog island, so the whole screen can be looked at. Not for the final game.
+        public static bool FreeView;
+        const float FreeViewRadius = 34f;
+        Transform _mistLow, _mistHigh;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetFreeView() { FreeView = false; }
+
+        void HandleFreeViewKey()
+        {
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb == null || !kb.f8Key.wasPressedThisFrame) return;
+            FreeView = !FreeView;
+            BrumaPx.Rendering.PixelDioramaRig.NoIsland = FreeView;
+            if (_mistLow == null) { var g = GameObject.Find("Mist Low"); if (g != null) _mistLow = g.transform; }
+            if (_mistHigh == null) { var g = GameObject.Find("Mist High"); if (g != null) _mistHigh = g.transform; }
+            if (_mistLow != null) _mistLow.gameObject.SetActive(!FreeView);
+            if (_mistHigh != null) _mistHigh.gameObject.SetActive(!FreeView);
+            Banner(FreeView ? "Vista libre: niebla apagada (F8)" : "Niebla activada (F8)", 2.5f);
+        }
+
         static string _banner = string.Empty;
         static float _bannerUntil;
 
@@ -146,9 +167,10 @@ namespace BrumaPx.World
         void Update()
         {
             if (_hero == null) return;
+            HandleFreeViewKey();
 
             Vector3 f = _hero.position;
-            float radius = activateRadius * Mathf.Max(1f, HeroBody.VisionScale);
+            float radius = FreeView ? FreeViewRadius : activateRadius * Mathf.Max(1f, HeroBody.VisionScale);
             int span = Mathf.CeilToInt(radius / ChunkSize) + 1;
             Vector2Int cc = ChunkOf(f.x, f.z);
             int budget = _first ? 200 : 3;
@@ -264,7 +286,7 @@ namespace BrumaPx.World
                     {
                         case 0:
                             Roll(parent, rng, "Tree", 0.025f, x, zTop, 0.9f, 0.9f, 1.3f, true);
-                            Roll(parent, rng, "RockMid", 0.035f, x, zTop, 0.7f, 0.7f, 1.2f, false);
+                            Roll(parent, rng, "RockMid", 0.035f, x, zTop, 0.7f, 0.7f, 1.2f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
                             break;
                         case 1:
@@ -273,7 +295,7 @@ namespace BrumaPx.World
                             break;
                         case 2:
                             Roll(parent, rng, "Tree", 0.16f, x, zTop, 0.9f, 0.8f, 1.2f, true);
-                            Roll(parent, rng, "RockMid", 0.03f, x, zTop, 0.7f, 0.7f, 1.1f, false);
+                            Roll(parent, rng, "RockMid", 0.03f, x, zTop, 0.7f, 0.7f, 1.1f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
                             break;
                         case 3:
@@ -315,7 +337,10 @@ namespace BrumaPx.World
         void PlaceBarrier(Transform parent, string key, float x, float z, float scale, System.Random rng)
         {
             if (InClear(x, z, 1f)) return;
-            Spawn(key, new Vector3(x, 0f, z), R(rng) * 360f, scale, parent);
+            var rock = Spawn(key, new Vector3(x, 0f, z), R(rng) * 360f, scale, parent);
+            // The cell grid already blocks the walls; a rock-sized collider would stick out into the walkable side.
+            if (rock != null)
+                foreach (var o in rock.GetComponentsInChildren<WorldObstacle>(true)) Destroy(o);
         }
 
         void Roll(Transform parent, System.Random rng, string key, float chance, float x, float zTop, float radius, float sMin, float sMax, bool avoidRoad)

@@ -96,7 +96,13 @@ namespace BrumaPx.Rendering
 
         public void Rebuild() { Apply(); }
 
-        Vector2 Island { get { return _atmo != null ? _atmo.island : islandRadius; } }
+        /// <summary>Temporary test switch: no fog island at all (MapWorld toggles it with F8).</summary>
+        public static bool NoIsland;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetNoIsland() { NoIsland = false; }
+
+        Vector2 Island { get { return NoIsland ? new Vector2(1e6f, 1e6f) : (_atmo != null ? _atmo.island : islandRadius); } }
         Color Fog { get { return _atmo != null ? _atmo.fog : fogColor; } }
 
         void OnEnable()

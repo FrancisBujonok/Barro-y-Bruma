@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 0
-  radius: 1.05
+  radius: 0.75
   halfSize: {x: 1, y: 1}
 --- !u!1 &3175498901459222756
 GameObject:
