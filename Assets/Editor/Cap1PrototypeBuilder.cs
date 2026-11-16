@@ -70,6 +70,8 @@ namespace BrumaPx.EditorTools
 
             AssetDatabase.SaveAssets();
 
+            ApplyHitboxes();
+
             // The copy of the scene becomes the prototype.
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(DstScene) != null) AssetDatabase.DeleteAsset(DstScene);
             AssetDatabase.CopyAsset(SrcScene, DstScene);
@@ -112,6 +114,28 @@ namespace BrumaPx.EditorTools
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             Debug.Log("Cap1: prototipo listo con " + entries.Count + " prefabs en " + DstScene);
+        }
+
+        // Collision sizes tuned by hand (smaller than the old values, which blocked more than what is drawn).
+        static void ApplyHitboxes()
+        {
+            var circ = new Dictionary<string, float> { { "RockBig", 0.60f }, { "RockMid", 0.33f }, { "StoneA", 0.30f }, { "StoneB", 0.28f }, { "Tree", 0.32f }, { "Cross", 0.20f }, { "Lantern", 0.18f }, { "Fence", 0.15f }, { "Cart", 0.90f }, { "Well", 0.75f }, { "Npc", 0.35f } };
+            var box = new Dictionary<string, Vector2> { { "Hut", new Vector2(1.75f, 1.45f) }, { "RuinedHut", new Vector2(1.55f, 1.25f) } };
+            foreach (var kv in circ) EditPrefab(kv.Key, kv.Value, Vector2.zero);
+            foreach (var kv in box) EditPrefab(kv.Key, 0f, kv.Value);
+        }
+
+        static void EditPrefab(string key, float radius, Vector2 half)
+        {
+            string path = PrefabDir + "/" + key + ".prefab";
+            var root = PrefabUtility.LoadPrefabContents(path);
+            foreach (var o in root.GetComponentsInChildren<WorldObstacle>(true))
+            {
+                if (o.kind == WorldObstacle.Kind.Circle && radius > 0f) o.radius = radius;
+                else if (o.kind == WorldObstacle.Kind.Box && half.x > 0f) o.halfSize = half;
+            }
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            PrefabUtility.UnloadPrefabContents(root);
         }
 
         static bool NeedsOwnRoot(Transform t)

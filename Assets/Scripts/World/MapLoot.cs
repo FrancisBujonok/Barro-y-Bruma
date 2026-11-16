@@ -61,10 +61,21 @@ namespace BrumaPx.World
         }
 
         /// <summary>The prompt line for the loot the hero stands next to (empty when none).</summary>
-        public static string Prompt()
+public static string Prompt()
         {
-            if (_near == null || _nearFrame < Time.frameCount - 1 || _near._taken) return string.Empty;
-            return "[Interactuar] " + _near.title;
+            if (_near != null && _nearFrame >= Time.frameCount - 1 && !_near._taken) return "[Interactuar] " + _near.title;
+            if (_extra.Length > 0 && _extraFrame >= Time.frameCount - 1) return _extra;
+            return string.Empty;
+        }
+
+        static string _extra = string.Empty;
+        static int _extraFrame = -1;
+
+        /// <summary>Another world object (a refuge) asks for its prompt line this frame.</summary>
+        public static void SetPrompt(string text)
+        {
+            _extra = text;
+            _extraFrame = Time.frameCount;
         }
     }
 

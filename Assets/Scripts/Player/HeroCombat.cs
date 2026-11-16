@@ -106,6 +106,13 @@ namespace BrumaPx.Player
             _stamina = Mathf.Min(maxStamina, _stamina + amount);
         }
 
+        /// <summary>Where the hero comes back after falling (a refuge sets it when the hero rests).</summary>
+        public void SetCheckpoint(Vector3 position, Quaternion rotation)
+        {
+            _spawnPos = new Vector3(position.x, 0f, position.z);
+            _spawnRot = rotation;
+        }
+
         public float Stamina01 { get { return Mathf.Clamp01(_stamina / Mathf.Max(1f, maxStamina)); } }
         public bool IsGuarding { get { return _guarding; } }
         public bool IsDodging { get { return _dodge.IsDodging; } }

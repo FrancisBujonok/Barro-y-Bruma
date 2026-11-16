@@ -109,7 +109,15 @@
   {"id":"k211","type":"saqueador","x":176,"z":127.5,"label":"","note":"","n":1,"phase":0},
   {"id":"k212","type":"tomado","x":131.5,"z":155.5,"label":"","note":"","n":1,"phase":0},
   {"id":"k213","type":"sabueso","x":70.5,"z":135,"label":"","note":"","n":1,"phase":0},
-  {"id":"k214","type":"emboscador","x":135,"z":-156,"label":"","note":"","n":1,"phase":0}
+  {"id":"k214","type":"emboscador","x":135,"z":-156,"label":"","note":"","n":1,"phase":0},
+  {"id":"a1","type":"jefe","x":-209,"z":71,"label":"Rey Sapo","note":"Jefe oculto de la Marisma Muerta. Mordida pesada; al caer suelta una nube de Bruma.","n":1,"phase":0},
+  {"id":"a2","type":"refugio","x":-129,"z":51,"label":"Cabaña del cazador","note":"Refugio. Un cazador la dejó abierta.","n":1,"phase":0},
+  {"id":"a3","type":"refugio","x":91,"z":-13,"label":"Campamento del puente","note":"Refugio. Carreta y vallas junto al camino.","n":1,"phase":0},
+  {"id":"a4","type":"refugio","x":59,"z":103,"label":"Capilla del río","note":"Refugio. Capilla en ruinas con cruces.","n":1,"phase":0},
+  {"id":"a5","type":"refugio","x":119,"z":137,"label":"Cabaña del Soto","note":"Refugio. Cabaña en el borde del bosque.","n":1,"phase":0},
+  {"id":"a6","type":"refugio","x":179,"z":65,"label":"Fogata del Campo Quemado","note":"Refugio. Fogata entre rocas.","n":1,"phase":0},
+  {"id":"a7","type":"refugio","x":-187,"z":61,"label":"Cabaña del marismeño","note":"Refugio antes de la marisma del Rey Sapo.","n":1,"phase":0},
+  {"id":"a8","type":"refugio","x":-39,"z":-97,"label":"Posada abandonada","note":"Refugio. Posada sin dueño.","n":1,"phase":0}
  ],
  "comments": [
 

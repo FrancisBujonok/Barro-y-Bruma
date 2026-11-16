@@ -134,6 +134,7 @@ namespace BrumaPx.World
                 case "carruaje": return 3f;
                 case "aldea": return 7f;
                 case "salida": return 4.5f;
+                case "jefe": return 4f;
                 case "refugio": return 6f;
                 case "poi": return 5.5f;
                 case "npc": return 2.5f;
@@ -448,6 +449,9 @@ namespace BrumaPx.World
                 case "refugio":
                     SpawnRefuge(parent, m, p);
                     break;
+                case "jefe":
+                    SpawnBoss(parent, m, p);
+                    break;
                 case "poi":
                     Decor(parent, m, p, rng);
                     break;
@@ -470,7 +474,7 @@ namespace BrumaPx.World
             }
         }
 
-        void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
+void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
         {
             var g = Spawn("Refugio", p, 0f, 1f, parent);
             if (g == null) return;
@@ -479,11 +483,39 @@ namespace BrumaPx.World
             {
                 var f = typeof(Refuge).GetField("displayName", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (f != null) f.SetValue(refuge, m.label);
+                if (g.GetComponent<RefugeRest>() == null) g.AddComponent<RefugeRest>();
             }
+
+            // What stands around the fire depends on the name given in the map.
             string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
             if (l.Contains("caba")) Spawn("Hut", p + new Vector3(4.6f, 0f, 3.2f), 0f, 1f, parent);
+            else if (l.Contains("capilla"))
+            {
+                Spawn("RuinedHut", p + new Vector3(4.4f, 0f, 3.4f), 0f, 1.1f, parent);
+                Spawn("Cross", p + new Vector3(-3.2f, 0f, -2.4f), 12f, 1f, parent);
+                Spawn("Cross", p + new Vector3(-4.2f, 0f, -1.2f), -9f, 1f, parent);
+            }
+            else if (l.Contains("campamento"))
+            {
+                Spawn("Cart", p + new Vector3(3.8f, 0f, 2.2f), 70f, 1f, parent);
+                Spawn("Fence", p + new Vector3(-4.2f, 0f, 2.6f), 0f, 1f, parent);
+                Spawn("Fence", p + new Vector3(-4.2f, 0f, -0.6f), 0f, 1f, parent);
+            }
+            else if (l.Contains("fogata"))
+            {
+                for (int i = 0; i < 4; i++) Spawn("RockMid", Ring(p, 2.9f, i, 4, 0.5f), 0f, 0.9f, parent);
+            }
             else Spawn("RuinedHut", p + new Vector3(4.2f, 0f, 3.2f), 0f, 1f, parent);
             Spawn("Lantern", p + new Vector3(-1.8f, 0f, 1.2f), 0f, 1f, parent);
+        }
+
+        void SpawnBoss(Transform parent, MapMarker m, Vector3 p)
+        {
+            var g = Spawn("ReySapo", p, 330f, 1f, parent);
+            if (g == null) return;
+            g.name = "Jefe " + m.label;
+            var b = g.GetComponent<BossMarker>();
+            if (b != null && !string.IsNullOrEmpty(m.label)) b.title = m.label;
         }
 
         void SpawnNpc(Transform parent, MapMarker m, Vector3 p)
@@ -682,6 +714,20 @@ namespace BrumaPx.World
 
             if (Time.unscaledTime < _bannerUntil && _banner.Length > 0)
                 Shadowed(new Rect(0f, 28f, w, 40f), _banner, new Color(0.86f, 0.82f, 0.7f));
+
+            var heroT = DioramaHeroCache.Hero;
+            var boss = heroT != null ? BossMarker.Nearest(heroT.position) : null;
+            if (boss != null)
+            {
+                Shadowed(new Rect(0f, 52f, w, 28f), boss.title, new Color(0.9f, 0.55f, 0.45f));
+                float bw = 360f;
+                var back = new Rect((w - bw) * 0.5f, 84f, bw, 12f);
+                GUI.color = new Color(0.08f, 0.07f, 0.06f, 0.9f);
+                GUI.DrawTexture(new Rect(back.x - 2f, back.y - 2f, back.width + 4f, back.height + 4f), Texture2D.whiteTexture);
+                GUI.color = new Color(0.62f, 0.2f, 0.17f, 1f);
+                GUI.DrawTexture(new Rect(back.x, back.y, back.width * boss.Fraction, back.height), Texture2D.whiteTexture);
+                GUI.color = Color.white;
+            }
 
             string prompt = MapLoot.Prompt();
             if (prompt.Length > 0)

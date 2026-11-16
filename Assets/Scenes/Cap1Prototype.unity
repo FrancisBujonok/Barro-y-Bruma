@@ -2146,7 +2146,7 @@ Transform:
   m_GameObject: {fileID: 655168021}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7, y: 1.35, z: -0.7}
+  m_LocalPosition: {x: -191.5, y: 1.35, z: -18}
   m_LocalScale: {x: 6, y: 1, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2399,6 +2399,8 @@ MonoBehaviour:
     prefab: {fileID: 347487341019291356, guid: 1f8b5739089fb4c4196f840c3e5a7f77, type: 3}
   - key: Tomado
     prefab: {fileID: 619071895788194654, guid: 6cf7d3cc997146844bd9d3f4e6b6bebf, type: 3}
+  - key: ReySapo
+    prefab: {fileID: 8778314503496005348, guid: fca9baad21b648249a058658ccd0ecc3, type: 3}
   wood: {fileID: 2100000, guid: 90713cfcdb5752246bb3de1f85feb1fb, type: 2}
   woodDark: {fileID: 2100000, guid: 31ab67c9e87684140ab038bea6a2ae80, type: 2}
   glow: {fileID: 2100000, guid: e047d7a481eb7e942b4704c298649e57, type: 2}
@@ -5051,7 +5053,7 @@ Transform:
   m_GameObject: {fileID: 1578591843}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7, y: 0, z: -0.7}
+  m_LocalPosition: {x: -191.5, y: 0, z: -18}
   m_LocalScale: {x: 6, y: 1, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5739,7 +5741,7 @@ Transform:
   m_GameObject: {fileID: 1776230383}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911761, y: 0.36964384, z: -0.09904577, w: 0.8923991}
-  m_LocalPosition: {x: -37.444126, y: 29.995647, z: -37.444122}
+  m_LocalPosition: {x: -228.24748, y: 30.016829, z: -54.723454}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6267,7 +6269,7 @@ Transform:
   m_GameObject: {fileID: 2075953678}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.7, y: 0.28, z: -0.7}
+  m_LocalPosition: {x: -191.5, y: 0.28, z: -18}
   m_LocalScale: {x: 6, y: 1, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []

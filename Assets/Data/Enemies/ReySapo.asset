@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f92eced6185b2244b820f5b84694b61, type: 3}
+  m_Name: ReySapo
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Combat.EnemyProfile
+  _displayName: Rey Sapo
+  _maxHealth: 320
+  _radius: 1
+  _walkSpeed: 1
+  _chaseSpeed: 2.7
+  _sightRange: 11
+  _minLightFactor: 0.6
+  _fieldOfView: 200
+  _hearingMultiplier: 1
+  _loseTrackSeconds: 10
+  _attackRange: 2.8
+  _attackDamage: 30
+  _attackStartup: 1.1
+  _attackActive: 0.25
+  _attackRecovery: 1.9
+  _attackArcDegrees: 150
+  _attackNoise: 9
+  _brumaOnHit: 14
+  _staggerThreshold: 45
+  _staggerSeconds: 0.5
+  _knockbackScale: 0.2
+  _canSidestep: 0
+  _sidestepChance: 0.35
+  _sidestepDistance: 1.3
+  _packRadius: 0
+  _projectileSpeed: 0
+  _keepDistance: 0
+  _ambushRange: 0
+  _lungeSpeedFactor: 1.9
+  _lungeSeconds: 0.7
+  _auraRadius: 4
+  _auraDensity: 0.7
+  _deathCloudRadius: 5.5
+  _deathCloudSeconds: 40
+  _deathCloudDensity: 1
