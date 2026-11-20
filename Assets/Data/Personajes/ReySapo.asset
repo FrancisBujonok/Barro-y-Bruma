@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: ReySapo
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  views: 8
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers: []
+  baseLayers: []
+  hiddenUnderHeadgear: []
+  zoneMap: {fileID: 0}
+  zoneIds: []
+  clips:
+  - name: idle
+    frames: 6
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: 5efc4a0907b0ad64f86cbdb0f2852f22, type: 3}
+    size: {x: 148, y: 131}
+    feet: {x: 74, y: 36}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: crawl
+    frames: 6
+    directions: 8
+    fps: 7
+    loop: 1
+    sheet: {fileID: 2800000, guid: 0caea0c246cecb141b1aec0fd40dbaa8, type: 3}
+    size: {x: 158, y: 146}
+    feet: {x: 79, y: 41}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: bite
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: f465fee40ff5cd241ba4eb3ca7744fd3, type: 3}
+    size: {x: 172, y: 149}
+    feet: {x: 86, y: 53}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: death
+    frames: 10
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 53a999e6d345a674495673232c1ab730, type: 3}
+    size: {x: 206, y: 149}
+    feet: {x: 103, y: 52}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: p2idle
+    frames: 6
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: 499882f980c90b84fb42f3ce19c313c6, type: 3}
+    size: {x: 158, y: 130}
+    feet: {x: 79, y: 35}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: crawl2
+    frames: 6
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: 9d1b0c4e7d6aa9d4fbcac974c35676ee, type: 3}
+    size: {x: 162, y: 143}
+    feet: {x: 81, y: 38}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: bite2
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 8d4dee5ff98162143b6174fa4a9eb070, type: 3}
+    size: {x: 174, y: 150}
+    feet: {x: 87, y: 54}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: hop
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: ed1fc74e2267ae541a08b46df908f748, type: 3}
+    size: {x: 176, y: 179}
+    feet: {x: 88, y: 48}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: tongue
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: c5440b1270f9a3d4794a95ec5fb29d0e, type: 3}
+    size: {x: 222, y: 138}
+    feet: {x: 111, y: 43}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0

@@ -12,14 +12,256 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
   m_Name: HeroBlender
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
-  views: 4
+  views: 8
   cell: 128
-  columns: 9
-  rows: 13
+  columns: 8
+  rows: 32
   feet: {x: 64, y: 36}
   layers: []
   baseLayers: []
   hiddenUnderHeadgear: []
   zoneMap: {fileID: 0}
-  zoneIds: []
-  clips: []
+  zoneIds:
+  - cabeza
+  - torso
+  - hombro.d
+  - hombro.i
+  - brazo.d
+  - brazo.i
+  - antebrazo.d
+  - antebrazo.i
+  - muslo.d
+  - muslo.i
+  - rodilla.d
+  - rodilla.i
+  - pantorrilla.d
+  - pantorrilla.i
+  clips:
+  - name: idle
+    frames: 4
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: 82b47644b42ca7342a96274407581ac6, type: 3}
+    size: {x: 49, y: 51}
+    feet: {x: 27, y: 5}
+    zoneSheet: {fileID: 2800000, guid: c34328005935db442941223912d859e3, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: 4afe1213afb95e645a1aa66ad0a95c36, type: 3}
+    size: {x: 54, y: 52}
+    feet: {x: 28, y: 6}
+    zoneSheet: {fileID: 2800000, guid: 7b0e974b9deed35498097df58d29847a, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: sprint
+    frames: 6
+    directions: 8
+    fps: 12
+    loop: 1
+    sheet: {fileID: 2800000, guid: 0d055ab091c606a47a763172f958a758, type: 3}
+    size: {x: 56, y: 53}
+    feet: {x: 28, y: 6}
+    zoneSheet: {fileID: 2800000, guid: 3cbf5abe4812f1c41a6cf40355ae6297, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: roll
+    frames: 7
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 7e696bf6689e6d34883f7782b9e2985b, type: 3}
+    size: {x: 54, y: 60}
+    feet: {x: 27, y: 14}
+    zoneSheet: {fileID: 2800000, guid: 4358cf666c86b084ea6a35fcfff91171, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: hurt
+    frames: 3
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 4328e6b4279b4fb4d9cf6cb76815fb0c, type: 3}
+    size: {x: 54, y: 53}
+    feet: {x: 27, y: 5}
+    zoneSheet: {fileID: 2800000, guid: 7b612120a3bbe3d4597f905f5173bcf5, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: death
+    frames: 6
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 772a5da63b29fa9459ef3cd44c6eb365, type: 3}
+    size: {x: 114, y: 80}
+    feet: {x: 57, y: 32}
+    zoneSheet: {fileID: 2800000, guid: 14e6a6120525ff446940c3817b267773, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: idle_s
+    frames: 4
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: e80586fab5f0cfb45931a107e99eb370, type: 3}
+    size: {x: 30, y: 51}
+    feet: {x: 15, y: 5}
+    zoneSheet: {fileID: 2800000, guid: 14eecf5576ca7ae47a24981259353034, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk_s
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: 405f9ae2c86b03847aed5d2a92542175, type: 3}
+    size: {x: 38, y: 52}
+    feet: {x: 19, y: 6}
+    zoneSheet: {fileID: 2800000, guid: d90b1262e2fa27a49b445eac37d7886b, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: sprint_s
+    frames: 6
+    directions: 8
+    fps: 12
+    loop: 1
+    sheet: {fileID: 2800000, guid: 9ac47b621f1643c46b3a727c355cc043, type: 3}
+    size: {x: 54, y: 53}
+    feet: {x: 27, y: 6}
+    zoneSheet: {fileID: 2800000, guid: ee692447b95a99e41b00abc1eb2576b6, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: roll_s
+    frames: 7
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 1c0f36dd5c5bf8846aa7d4eb57b61066, type: 3}
+    size: {x: 54, y: 59}
+    feet: {x: 27, y: 13}
+    zoneSheet: {fileID: 2800000, guid: 0a802955ff3c7094ca46a0a1ed7588f0, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: hurt_s
+    frames: 3
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: a0fbdeba37da9b24ca4dda8c57c65530, type: 3}
+    size: {x: 36, y: 53}
+    feet: {x: 18, y: 5}
+    zoneSheet: {fileID: 2800000, guid: 48f05577885b83e4f89f8036cf5c5905, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: sheathe
+    frames: 6
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: af89d32a875be574e835421226e05260, type: 3}
+    size: {x: 49, y: 52}
+    feet: {x: 27, y: 5}
+    zoneSheet: {fileID: 2800000, guid: f9610f52195469b43b6ecdd5962a9109, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: light1
+    frames: 5
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: d0b9354c4089a5548b33133f98e5d5eb, type: 3}
+    size: {x: 79, y: 58}
+    feet: {x: 40, y: 6}
+    zoneSheet: {fileID: 2800000, guid: c3a5fa72e60775249a6565ee255c7292, type: 3}
+    reverse: 0
+    hitFrom: 2
+    hitTo: 4
+  - name: light2
+    frames: 5
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 4ce10c17c1f583d4da7fffc535fec77d, type: 3}
+    size: {x: 74, y: 76}
+    feet: {x: 37, y: 8}
+    zoneSheet: {fileID: 2800000, guid: 622ff30177fed274e8a1fe15d290d70e, type: 3}
+    reverse: 0
+    hitFrom: 2
+    hitTo: 4
+  - name: light3
+    frames: 6
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 37f9f2797b5a74b43bb713f2575c2c3b, type: 3}
+    size: {x: 86, y: 59}
+    feet: {x: 43, y: 7}
+    zoneSheet: {fileID: 2800000, guid: 26bd0bd68befe1e4ea691dec816342b4, type: 3}
+    reverse: 0
+    hitFrom: 3
+    hitTo: 4
+  - name: heavy1
+    frames: 6
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: a671af354688b2e4abb3b7d975cd9f1f, type: 3}
+    size: {x: 80, y: 76}
+    feet: {x: 40, y: 10}
+    zoneSheet: {fileID: 2800000, guid: 8358834357aadde49bdb4c184b5cbf4d, type: 3}
+    reverse: 0
+    hitFrom: 3
+    hitTo: 5
+  - name: heavy2
+    frames: 6
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 0c4e4068517d6a64383af6c855df00e9, type: 3}
+    size: {x: 86, y: 70}
+    feet: {x: 43, y: 8}
+    zoneSheet: {fileID: 2800000, guid: b52b577e0cca24442a55cbb6b7310994, type: 3}
+    reverse: 0
+    hitFrom: 2
+    hitTo: 5
+  - name: heavy3
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 119ca064925701d4f978ed479598f98f, type: 3}
+    size: {x: 78, y: 91}
+    feet: {x: 39, y: 19}
+    zoneSheet: {fileID: 2800000, guid: a0dfbd7b0bf16324387dbf5bf1647d07, type: 3}
+    reverse: 0
+    hitFrom: 4
+    hitTo: 5
+  - name: draw
+    frames: 6
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: af89d32a875be574e835421226e05260, type: 3}
+    size: {x: 49, y: 52}
+    feet: {x: 27, y: 5}
+    zoneSheet: {fileID: 2800000, guid: f9610f52195469b43b6ecdd5962a9109, type: 3}
+    reverse: 1
+    hitFrom: 0
+    hitTo: 0
