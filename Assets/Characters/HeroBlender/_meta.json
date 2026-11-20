@@ -1,0 +1,60 @@
+{
+ "cell": 128,
+ "cols": 8,
+ "rows": 32,
+ "views": 8,
+ "dir_order": [
+  "abajo",
+  "abajo-derecha",
+  "derecha",
+  "arriba-derecha",
+  "arriba",
+  "arriba-izquierda",
+  "izquierda",
+  "abajo-izquierda"
+ ],
+ "anims": [
+  {
+   "name": "idle",
+   "frames": 4,
+   "dirs": 8
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8
+  },
+  {
+   "name": "slash",
+   "frames": 6,
+   "dirs": 8
+  },
+  {
+   "name": "death",
+   "frames": 6,
+   "dirs": 8
+  }
+ ],
+ "layers": [
+  {
+   "id": "cuerpo",
+   "z": 10
+  }
+ ],
+ "zones": [
+  "cabeza",
+  "torso",
+  "hombro.d",
+  "hombro.i",
+  "brazo.d",
+  "brazo.i",
+  "antebrazo.d",
+  "antebrazo.i",
+  "muslo.d",
+  "muslo.i",
+  "rodilla.d",
+  "rodilla.i",
+  "pantorrilla.d",
+  "pantorrilla.i"
+ ]
+}

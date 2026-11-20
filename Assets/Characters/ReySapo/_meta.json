@@ -1,0 +1,86 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 148,
+   "h": 131,
+   "feetX": 74,
+   "feetY": 36
+  },
+  {
+   "name": "crawl",
+   "frames": 6,
+   "dirs": 8,
+   "w": 158,
+   "h": 146,
+   "feetX": 79,
+   "feetY": 41
+  },
+  {
+   "name": "bite",
+   "frames": 8,
+   "dirs": 8,
+   "w": 172,
+   "h": 149,
+   "feetX": 86,
+   "feetY": 53
+  },
+  {
+   "name": "death",
+   "frames": 10,
+   "dirs": 8,
+   "w": 206,
+   "h": 149,
+   "feetX": 103,
+   "feetY": 52
+  },
+  {
+   "name": "p2idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 158,
+   "h": 130,
+   "feetX": 79,
+   "feetY": 35
+  },
+  {
+   "name": "crawl2",
+   "frames": 6,
+   "dirs": 8,
+   "w": 162,
+   "h": 143,
+   "feetX": 81,
+   "feetY": 38
+  },
+  {
+   "name": "bite2",
+   "frames": 8,
+   "dirs": 8,
+   "w": 174,
+   "h": 150,
+   "feetX": 87,
+   "feetY": 54
+  },
+  {
+   "name": "hop",
+   "frames": 8,
+   "dirs": 8,
+   "w": 176,
+   "h": 179,
+   "feetX": 88,
+   "feetY": 48
+  },
+  {
+   "name": "tongue",
+   "frames": 8,
+   "dirs": 8,
+   "w": 222,
+   "h": 138,
+   "feetX": 111,
+   "feetY": 43
+  }
+ ]
+}

@@ -1,0 +1,143 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: HeroLayers
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers:
+  - id: capa_atras
+    sheet: {fileID: 2800000, guid: 6de2d5c6e97170b4a89b3e96c865f4c7, type: 3}
+    order: 0
+  - id: arma_ligera_atras
+    sheet: {fileID: 2800000, guid: ad2143c9318244148b24b14db0dd2aaa, type: 3}
+    order: 1
+  - id: arma_pesada_atras
+    sheet: {fileID: 2800000, guid: ee2d315df470aa845ae90fe9306c0ad8, type: 3}
+    order: 1
+  - id: cuerpo
+    sheet: {fileID: 2800000, guid: 300f7e8c27dc3054db2fd4b060d53761, type: 3}
+    order: 10
+  - id: cabeza
+    sheet: {fileID: 2800000, guid: 9d339fc54348ca2409df3ab00804d279, type: 3}
+    order: 11
+  - id: zapatos
+    sheet: {fileID: 2800000, guid: 7121bcce271708d4bb6d5b80942667ba, type: 3}
+    order: 20
+  - id: calzas
+    sheet: {fileID: 2800000, guid: 43be2fc4f69823247b2d058305a56d74, type: 3}
+    order: 21
+  - id: camisa
+    sheet: {fileID: 2800000, guid: 76999cd52eb49d2488400b7cdf391892, type: 3}
+    order: 22
+  - id: pelo
+    sheet: {fileID: 2800000, guid: 34e838ab0c542c14dbc9f6f1eb6c3518, type: 3}
+    order: 23
+  - id: grebas_malla
+    sheet: {fileID: 2800000, guid: abefa1f86ec5b5040abba215ac18c8d2, type: 3}
+    order: 30
+  - id: polainas_cuero
+    sheet: {fileID: 2800000, guid: 9584cea6fb7e63d47bc1785c8fa09ff2, type: 3}
+    order: 30
+  - id: grebas_malla_pies
+    sheet: {fileID: 2800000, guid: ba418d66a880a344e82bab47aa61f3c8, type: 3}
+    order: 31
+  - id: polainas_cuero_botas
+    sheet: {fileID: 2800000, guid: f0e0d04c671526e489434a32c4a9bca0, type: 3}
+    order: 31
+  - id: cota_malla
+    sheet: {fileID: 2800000, guid: 541383fc7db5bea4d82b8d2d34c527ee, type: 3}
+    order: 32
+  - id: jubon_cuero
+    sheet: {fileID: 2800000, guid: 3c5077cbed06eba408c45cc858c0cc2e, type: 3}
+    order: 32
+  - id: mangas_cuero
+    sheet: {fileID: 2800000, guid: 62d01c58038a3114084e13a8d92e4cd3, type: 3}
+    order: 33
+  - id: mangas_malla
+    sheet: {fileID: 2800000, guid: 8bf1e32c3f545ce40a4bc1f5bcdd2216, type: 3}
+    order: 33
+  - id: mangas_cuero_guantes
+    sheet: {fileID: 2800000, guid: 0fa3cd69a919bbc428de6eac7b8001c3, type: 3}
+    order: 34
+  - id: capucha_cuero
+    sheet: {fileID: 2800000, guid: 5508d31d4ad20f24c97b016eabb9d6ed, type: 3}
+    order: 40
+  - id: cofia_malla
+    sheet: {fileID: 2800000, guid: 58682b08fb08cc3449f48a1a6ac69e01, type: 3}
+    order: 40
+  - id: capelina
+    sheet: {fileID: 2800000, guid: f48603c182f750141b4fcaf41f5a748f, type: 3}
+    order: 41
+  - id: bufanda
+    sheet: {fileID: 2800000, guid: bbbcb6b275d50c846b651bdd99e3af3f, type: 3}
+    order: 45
+  - id: capa_frente
+    sheet: {fileID: 2800000, guid: 94b169e8da8f60341b85bacd4c6abf8d, type: 3}
+    order: 46
+  - id: escudo
+    sheet: {fileID: 2800000, guid: cb41cb0da6371524d99d0d0a615f117e, type: 3}
+    order: 50
+  - id: arma_ligera
+    sheet: {fileID: 2800000, guid: 19555d89218b3ee4ba4262f1c9086e3d, type: 3}
+    order: 60
+  - id: arma_pesada
+    sheet: {fileID: 2800000, guid: f758dad5ae600a9459cc10e1f27143e4, type: 3}
+    order: 60
+  baseLayers:
+  - cuerpo
+  - cabeza
+  - zapatos
+  - calzas
+  - camisa
+  - pelo
+  hiddenUnderHeadgear:
+  - pelo
+  zoneMap: {fileID: 2800000, guid: c80eb927530fb194d93992e23f0dc6e5, type: 3}
+  zoneIds:
+  - cabeza
+  - torso
+  - hombro.d
+  - hombro.i
+  - brazo.d
+  - brazo.i
+  - antebrazo.d
+  - antebrazo.i
+  - muslo.d
+  - muslo.i
+  - rodilla.d
+  - rodilla.i
+  - pantorrilla.d
+  - pantorrilla.i
+  clips:
+  - name: idle
+    frames: 2
+    directions: 4
+    fps: 2
+    loop: 1
+  - name: walk
+    frames: 9
+    directions: 4
+    fps: 8
+    loop: 1
+  - name: slash
+    frames: 6
+    directions: 4
+    fps: 10
+    loop: 0
+  - name: hurt
+    frames: 6
+    directions: 1
+    fps: 8
+    loop: 0

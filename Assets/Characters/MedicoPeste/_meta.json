@@ -1,0 +1,25 @@
+{
+ "cell": 128,
+ "cols": 8,
+ "rows": 16,
+ "views": 8,
+ "anims": [
+  {
+   "name": "idle",
+   "frames": 1,
+   "dirs": 8
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8
+  }
+ ],
+ "layers": [
+  {
+   "id": "cuerpo",
+   "z": 10
+  }
+ ],
+ "zones": []
+}
