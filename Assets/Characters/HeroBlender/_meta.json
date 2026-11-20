@@ -172,6 +172,40 @@
    "feetY": 19,
    "hitFrom": 4,
    "hitTo": 5
+  },
+  {
+   "name": "guard",
+   "frames": 3,
+   "w": 54,
+   "h": 65,
+   "feetX": 27,
+   "feetY": 6
+  },
+  {
+   "name": "guard_walk",
+   "frames": 8,
+   "w": 42,
+   "h": 65,
+   "feetX": 21,
+   "feetY": 6
+  },
+  {
+   "name": "block",
+   "frames": 3,
+   "w": 40,
+   "h": 66,
+   "feetX": 20,
+   "feetY": 7
+  },
+  {
+   "name": "parry",
+   "frames": 5,
+   "w": 83,
+   "h": 65,
+   "feetX": 42,
+   "feetY": 6,
+   "hitFrom": 2,
+   "hitTo": 3
   }
  ]
 }

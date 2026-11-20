@@ -40,9 +40,9 @@ MonoBehaviour:
     hitStop: 0.07
   _comboWindow: 0.45
   _inputBuffer: 0.35
-  _dodgeDistance: 2.6
-  _dodgeDuration: 0.22
-  _dodgeCooldown: 0.45
+  _dodgeDistance: 3.4
+  _dodgeDuration: 0.5
+  _dodgeCooldown: 0.15
   _dodgeStamina: 22
   _dodgeNoise: 4
   _parryWindow: 0.2

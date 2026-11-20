@@ -80,6 +80,10 @@ namespace BrumaPx.Player
         public float dodgeCooldown = 0.45f;
         public float dodgeStamina = 22f;
         public float dodgeNoise = 4f;
+        [Tooltip("0 = constant speed. Higher: the roll starts fast and slows down while he gets up.")]
+        public float dodgeEase = 0.6f;
+        [Tooltip("Part of the roll (0..1) where blows go through him without harm.")]
+        public Vector2 dodgeIFrames = new Vector2(0.08f, 0.62f);
 
         [Header("Guard")]
         [Tooltip("A guard pressed this recently before a blow is a parry.")]
@@ -134,6 +138,16 @@ namespace BrumaPx.Player
         public float SheathProgress { get { return Mathf.Clamp01(_sheathClock / Mathf.Max(0.01f, sheathTime)); } }
         /// <summary>0..1 through the roll (only while IsDodging).</summary>
         public float DodgeProgress { get { return Mathf.Clamp01(_dodgeClock / Mathf.Max(0.01f, dodgeDuration)); } }
+        /// <summary>Raising the guard: 0..1 over the first moments of holding it.</summary>
+        public float GuardRaise { get { return Mathf.Clamp01(_guardTime / 0.12f); } }
+        /// <summary>A blow was stopped on the guard just now (the arms take the shock).</summary>
+        public bool IsBlockHit { get { return _blockAnim > 0f; } }
+        public float BlockProgress { get { return 1f - Mathf.Clamp01(_blockAnim / BlockAnimTime); } }
+        /// <summary>A parry is being played (the sword beats the enemy's blow aside).</summary>
+        public bool IsParrying { get { return _parryAnim > 0f; } }
+        public float ParryProgress { get { return 1f - Mathf.Clamp01(_parryAnim / ParryAnimTime); } }
+        const float BlockAnimTime = 0.26f, ParryAnimTime = 0.4f;
+        float _blockAnim, _parryAnim;
         /// <summary>Hit and staggered (not a blocked blow).</summary>
         public bool IsHurt { get { return _hurtTimer > 0f && _hurtAnim; } }
         public float HurtProgress { get { return 1f - Mathf.Clamp01(_hurtTimer / Mathf.Max(0.01f, hurtStun)); } }
@@ -283,6 +297,8 @@ namespace BrumaPx.Player
             }
 
             _hurtTimer = Mathf.Max(0f, _hurtTimer - dt);
+            _blockAnim = Mathf.Max(0f, _blockAnim - dt);
+            _parryAnim = Mathf.Max(0f, _parryAnim - dt);
             _comboTimer = Mathf.Max(0f, _comboTimer - dt);
             _queueTimer = Mathf.Max(0f, _queueTimer - dt);
             if (_graceTimer > 0f)
@@ -491,7 +507,7 @@ namespace BrumaPx.Player
             Vector3 dir = hero.InputDirection();
             bool hasInput = dir.sqrMagnitude > 0.01f;
             if (!hasInput) dir = -transform.forward;
-            if (!_dodge.TryStart(new Vector2(dir.x, dir.z), dodgeDistance * M(BodyStat.DodgeDistance), dodgeDuration, dodgeCooldown)) return;
+            if (!_dodge.TryStart(new Vector2(dir.x, dir.z), dodgeDistance * M(BodyStat.DodgeDistance), dodgeDuration, dodgeCooldown, dodgeEase)) return;
 
             _attack.Cancel();
             _queued = 0;
@@ -520,7 +536,8 @@ namespace BrumaPx.Player
         public void ReceiveAttack(EnemyBrain attacker, float damage, Vector2 dir)
         {
             if (health == null || health.IsDead || health.Invulnerable) return;
-            if (_dodge.IsDodging) return;
+            // Only the middle of the roll dodges: rolling late, or staying in the getting-up, still gets him hit.
+            if (_dodge.IsDodging && DodgeProgress >= dodgeIFrames.x && DodgeProgress <= dodgeIFrames.y) return;
 
             Vector3 f3 = transform.forward;
             Vector2 facing = new Vector2(f3.x, f3.z).normalized;
@@ -532,6 +549,7 @@ namespace BrumaPx.Player
                 {
                     _stamina = Mathf.Min(maxStamina, _stamina + parryStaminaBack);
                     if (attacker != null) attacker.Parried();
+                    _parryAnim = ParryAnimTime;
                     NoiseBus.Emit(transform.position, 7f);
                     StartHitStop(0.08f);
                     return;
@@ -545,11 +563,13 @@ namespace BrumaPx.Player
                     _stamina = 0f;
                     _guarding = false;
                     _hurtTimer = 0.5f;
+                    _hurtAnim = true;
                     _attack.Cancel();
                     StartHitStop(0.06f);
                     return;
                 }
 
+                _blockAnim = BlockAnimTime;
                 _blocking = true;
                 health.TakeDamage(damage * Armor() * Mathf.Clamp01(guardDamageTaken * M(BodyStat.GuardLeak)), dir);
                 _blocking = false;

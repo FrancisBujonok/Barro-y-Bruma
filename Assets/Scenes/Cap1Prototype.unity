@@ -2975,7 +2975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.StyleTest.StyleTestHero
   walkSpeed: 3.2
-  runSpeed: 5.4
+  runSpeed: 7.4
   radius: 0.32
   worldLimit: 38
   turnSpeed: 900
@@ -3066,12 +3066,17 @@ MonoBehaviour:
     noise: 8
     hitStop: 0.07
   comboWindow: 0.45
+  finisherDamage: 1.5
+  finisherRecovery: 1.5
+  sheathTime: 0.45
   inputBuffer: 0.35
   dodgeDistance: 2.6
   dodgeDuration: 0.22
   dodgeCooldown: 0.45
   dodgeStamina: 22
   dodgeNoise: 4
+  dodgeEase: 0.6
+  dodgeIFrames: {x: 0.08, y: 0.62}
   parryWindow: 0.2
   guardDamageTaken: 0.3
   guardStaminaPerDamage: 1.2

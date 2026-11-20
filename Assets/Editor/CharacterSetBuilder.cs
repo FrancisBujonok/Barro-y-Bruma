@@ -191,7 +191,9 @@ namespace BrumaPx.EditorTools
             {
                 case "idle": case "p2idle": case "idle_s": fps = 5f; break;
                 case "walk": case "walk_s": fps = 9f; break;
-                case "sprint": case "sprint_s": fps = 12f; break;
+                case "sprint": case "sprint_s": fps = 14f; break;
+                case "guard_walk": fps = 7f; break;
+                case "guard": case "block": case "parry": loop = false; break;
                 case "roll": case "roll_s": case "hurt_s": case "sheathe": case "draw": loop = false; break;
                 case "light1": case "light2": case "light3": case "heavy1": case "heavy2": case "heavy3": loop = false; fps = 10f; break;
                 case "crawl": fps = 7f; break;

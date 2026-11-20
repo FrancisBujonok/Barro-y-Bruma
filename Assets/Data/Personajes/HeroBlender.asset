@@ -64,7 +64,7 @@ MonoBehaviour:
   - name: sprint
     frames: 6
     directions: 8
-    fps: 12
+    fps: 14
     loop: 1
     sheet: {fileID: 2800000, guid: 0d055ab091c606a47a763172f958a758, type: 3}
     size: {x: 56, y: 53}
@@ -136,7 +136,7 @@ MonoBehaviour:
   - name: sprint_s
     frames: 6
     directions: 8
-    fps: 12
+    fps: 14
     loop: 1
     sheet: {fileID: 2800000, guid: 9ac47b621f1643c46b3a727c355cc043, type: 3}
     size: {x: 54, y: 53}
@@ -253,6 +253,54 @@ MonoBehaviour:
     reverse: 0
     hitFrom: 4
     hitTo: 5
+  - name: guard
+    frames: 3
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 906e1c45fa259274d84e142eafb33c4e, type: 3}
+    size: {x: 54, y: 65}
+    feet: {x: 27, y: 6}
+    zoneSheet: {fileID: 2800000, guid: 6711f1ce7004bde47851b775e35e77c7, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: guard_walk
+    frames: 8
+    directions: 8
+    fps: 7
+    loop: 1
+    sheet: {fileID: 2800000, guid: 0bedc07c1fbbb3747b6d04b62a5c01d6, type: 3}
+    size: {x: 42, y: 65}
+    feet: {x: 21, y: 6}
+    zoneSheet: {fileID: 2800000, guid: 6ce8d06655c54634eb366906362eac2c, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: block
+    frames: 3
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 60c4f24cf366c3f4288a4480f161462e, type: 3}
+    size: {x: 40, y: 66}
+    feet: {x: 20, y: 7}
+    zoneSheet: {fileID: 2800000, guid: 8a12e0189eaf9514a98cea4f41fff3ef, type: 3}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: parry
+    frames: 5
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 2301a93375b337b47a6f29e43f04ef13, type: 3}
+    size: {x: 83, y: 65}
+    feet: {x: 42, y: 6}
+    zoneSheet: {fileID: 2800000, guid: ac8df0742f5e2d04f9680f834a90e625, type: 3}
+    reverse: 0
+    hitFrom: 2
+    hitTo: 3
   - name: draw
     frames: 6
     directions: 8

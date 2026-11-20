@@ -26,9 +26,7 @@ namespace BrumaPx.Characters
         Armament _armament;
         int[] _zoneBodyIndex;
         int _testWeapon;
-        bool _wasDodging, _wasSheathed;
-        float _rollTail;
-        const float RollTail = 0.14f;   // the last frames of the roll (getting up) play after the dash ends
+        bool _wasSheathed;
         readonly List<CharacterLayerSet.Layer> _layers = new List<CharacterLayerSet.Layer>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -143,10 +141,6 @@ namespace BrumaPx.Characters
             bool sheathed = _combat.Sheathed;
             string s = sheathed && _sprite.HasClip("idle_s") ? "_s" : string.Empty;
             bool dodging = _combat.IsDodging;
-            if (_wasDodging && !dodging) _rollTail = RollTail;
-            else if (dodging) _rollTail = 0f;
-            _wasDodging = dodging;
-            _rollTail = Mathf.Max(0f, _rollTail - Time.deltaTime);
 
             if (_combat.IsSheathing && _sprite.HasClip("sheathe"))
             {
@@ -156,11 +150,7 @@ namespace BrumaPx.Characters
             else if (_combat.IsHurt && _sprite.HasClip("hurt" + s))
                 Hold("hurt" + s, _combat.HurtProgress);
             else if (dodging && _sprite.HasClip("roll" + s))
-            {
-                // the roll itself on all frames but the last two, which are getting up
-                int n = _sprite.FramesOf("roll" + s);
-                _sprite.Hold("roll" + s, Mathf.Min(n - 3, Mathf.FloorToInt(_combat.DodgeProgress * (n - 2))));
-            }
+                Hold("roll" + s, _combat.DodgeProgress);   // the whole roll, getting up included, over the dodge
             else if (_combat.IsAttacking)
             {
                 string clip = (_combat.IsHeavyAttack ? "heavy" : "light") + (_combat.ComboStep + 1);
@@ -169,10 +159,14 @@ namespace BrumaPx.Characters
                 int to = c.hitTo > c.hitFrom ? c.hitTo : c.frames;
                 _sprite.Hold(clip, _combat.AttackFrame(c.frames, c.hitFrom, to));
             }
-            else if (_rollTail > 0f && !(_hero != null && _hero.IsMoving) && _sprite.HasClip("roll" + s))
+            else if (_combat.IsParrying && _sprite.HasClip("parry"))
+                Hold("parry", _combat.ParryProgress);
+            else if (_combat.IsBlockHit && _combat.IsGuarding && _sprite.HasClip("block"))
+                Hold("block", _combat.BlockProgress);
+            else if (_combat.IsGuarding && _sprite.HasClip("guard"))
             {
-                int n = _sprite.FramesOf("roll" + s);
-                _sprite.Hold("roll" + s, _rollTail > RollTail * 0.5f ? n - 2 : n - 1);
+                if (_hero != null && _hero.IsMoving && _sprite.HasClip("guard_walk")) _sprite.Play("guard_walk", 1f, false);
+                else Hold("guard", _combat.GuardRaise);
             }
             else if (_hero != null && _hero.IsMoving)
             {

@@ -291,11 +291,61 @@ def heavy3():
     ]
 
 
+# ---- guard, block, parry -------------------------------------------------------------------------
+
+GUARD_ARMS = {'gripL': True, 'ikR': (-0.10, -0.32, 1.22), 'sw': (nrm((0.35, -0.35, 0.87)), (0, -1, 0))}
+GUARD_BODY = {'b': {'waist': (6, 0, -6), 'chest': (2, 0, -6), 'neck': (-4, 0, 6)}}
+
+
+def guard():
+    half = {'gripL': True, 'ikR': (-0.18, -0.26, 1.10), 'sw': (nrm((0.05, -0.6, 0.6)), (0, -1, 0))}
+    return [M(KNEES, LEFT_RELAXED, READY_SWORD),
+            M(GUARD_LEGS, half, {'b': {'waist': (4, 0, -3)}}),
+            M(GUARD_LEGS, GUARD_ARMS, GUARD_BODY)]
+
+
+def guard_walk(n=8):
+    out = []
+    for i in range(n):
+        p = gait(i, n, 16, 26, 0.012, 6, 0, True)
+        p['b'].pop('el.L', None)
+        p['b'].pop('wr.L', None)
+        p.pop('ikR', None)
+        p.pop('sw', None)
+        out.append(M(p, GUARD_ARMS, GUARD_BODY, {'cloak': (4, 0, 0)}))
+    return out
+
+
+def block():
+    hit = {'gripL': True, 'ikR': (-0.08, -0.20, 1.27), 'sw': (nrm((0.45, -0.05, 0.9)), (0, -1, 0)),
+           'b': {'waist': (-8, 0, -10), 'chest': (-6, 0, -6), 'neck': (-10, 0, 0),
+                 'kn.L': (8, 0, 0), 'an.L': (6, 0, 0)}, 'pl': (0, 0.06, -0.05)}
+    mid = {'gripL': True, 'ikR': (-0.09, -0.27, 1.24), 'sw': (nrm((0.4, -0.25, 0.88)), (0, -1, 0)),
+           'b': {'waist': (0, 0, -8), 'neck': (-4, 0, 3)}, 'pl': (0, 0.03, -0.04)}
+    return [M(GUARD_LEGS, hit), M(GUARD_LEGS, mid), M(GUARD_LEGS, GUARD_ARMS, GUARD_BODY)]
+
+
+def parry():
+    st = M(GUARD_LEGS)
+    return [
+        M(st, GUARD_ARMS, GUARD_BODY),
+        M(st, {'ikR': (0.04, -0.30, 1.25), 'sw': (nrm((0.85, -0.3, 0.45)), (0, -1, 0)),
+               'b': {'waist': (2, 0, 14), 'chest': (0, 0, 12), 'el.L': (-30, -20, 0)}}),
+        M(st, {'ikR': (-0.30, -0.36, 1.18), 'sw': (nrm((-0.85, -0.45, 0.25)), (0, 0, 1)),
+               'b': {'waist': (8, 0, -22), 'chest': (4, 0, -20), 'el.L': (10, -40, 0)}, 'pl': (0, -0.04, -0.05)}),
+        M(st, {'ikR': (-0.34, -0.24, 1.08), 'sw': (nrm((-0.75, -0.25, -0.35)), (0, 0, 1)),
+               'b': {'waist': (6, 0, -18), 'chest': (2, 0, -16), 'el.L': (0, -30, 0)}, 'pl': (0, -0.03, -0.05)}),
+        M(st, {'gripL': True, 'ikR': (-0.14, -0.30, 1.16), 'sw': (nrm((0.1, -0.45, 0.85)), (0, -1, 0)),
+               'b': {'waist': (4, 0, -6)}}),
+    ]
+
+
 CLIPS = None
 
 # Frames that sweep the blade (they get a smear) and the phase ranges used by the game:
 # startup = frames before the hit, active = the frames with the smear, recovery = the rest.
-SMEAR = {'light1': [2, 3], 'light2': [2, 3], 'light3': [3], 'heavy1': [3, 4], 'heavy2': [2, 3, 4], 'heavy3': [4]}
+SMEAR = {'light1': [2, 3], 'light2': [2, 3], 'light3': [3], 'heavy1': [3, 4], 'heavy2': [2, 3, 4], 'heavy3': [4],
+         'parry': [2]}
 
 
 def mark(clips):
@@ -316,6 +366,7 @@ def build():
         'sheathe': sh,
         'light1': light1(), 'light2': light2(), 'light3': light3(),
         'heavy1': heavy1(), 'heavy2': heavy2(), 'heavy3': heavy3(),
+        'guard': guard(), 'guard_walk': guard_walk(), 'block': block(), 'parry': parry(),
     }
     mark(CLIPS)
     return CLIPS
