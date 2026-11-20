@@ -26,7 +26,9 @@ namespace BrumaPx.Characters
         Armament _armament;
         int[] _zoneBodyIndex;
         int _testWeapon;
-        bool _wasAttacking;
+        bool _wasDodging, _wasSheathed;
+        float _rollTail;
+        const float RollTail = 0.14f;   // the last frames of the roll (getting up) play after the dash ends
         readonly List<CharacterLayerSet.Layer> _layers = new List<CharacterLayerSet.Layer>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -66,6 +68,7 @@ namespace BrumaPx.Characters
             _zoneBodyIndex = new int[ids.Length];
             for (int i = 0; i < ids.Length; i++) _zoneBodyIndex[i] = _body != null ? _body.IndexOf(ids[i]) : -1;
 
+            if (_config.Active.ClipsHaveSheets) _sprite.UseClipSheets();
             if (_equipment != null) _equipment.Changed += Rebuild;
             _armament.Changed += Rebuild;
             Rebuild();
@@ -82,6 +85,7 @@ namespace BrumaPx.Characters
         {
             if (_sprite == null) return;
             var set = _config.Active;
+            if (set.ClipsHaveSheets) return;   // the Blender hero: one picture per clip, no layers to stack
             _layers.Clear();
 
             bool headgear = _equipment != null && _equipment.Worn(ArmorSlot.Cabeza) != null;
@@ -120,19 +124,70 @@ namespace BrumaPx.Characters
             _sprite.direction = CharacterLayerSet.ViewFor(transform.eulerAngles.y - camYaw, _sprite.set.views);
         }
 
+        // Picks the clip from what HeroCombat and DioramaHero are doing. Timed actions (attacks, roll, hurt,
+        // sheathing) hold the frame that matches their own clock, so the picture never runs ahead of the hit.
         void Animate()
         {
             bool dead = _health != null && _health.IsDead;
-            bool attacking = _combat != null && _combat.IsAttacking;
-            if (dead) _sprite.Play(_sprite.HasClip("death") ? "death" : "hurt", 1f, false);
-            else if (attacking)
+            if (dead)
             {
-                bool heavy = _armament.Weapon != null && _armament.Weapon.TwoHanded;
-                _sprite.Play("slash", heavy ? _config.heavyAttackSpeed : _config.lightAttackSpeed, !_wasAttacking);
+                _sprite.Play(_sprite.HasClip("death") ? "death" : "hurt", 1f, false);
+                return;
             }
-            else if (_hero != null && _hero.IsMoving) _sprite.Play("walk", DioramaInput.Run() ? _config.runSpeed : 1f, false);
-            else _sprite.Play("idle", 1f, false);
-            _wasAttacking = attacking;
+            if (_combat == null)
+            {
+                _sprite.Play(_hero != null && _hero.IsMoving ? "walk" : "idle", 1f, false);
+                return;
+            }
+
+            bool sheathed = _combat.Sheathed;
+            string s = sheathed && _sprite.HasClip("idle_s") ? "_s" : string.Empty;
+            bool dodging = _combat.IsDodging;
+            if (_wasDodging && !dodging) _rollTail = RollTail;
+            else if (dodging) _rollTail = 0f;
+            _wasDodging = dodging;
+            _rollTail = Mathf.Max(0f, _rollTail - Time.deltaTime);
+
+            if (_combat.IsSheathing && _sprite.HasClip("sheathe"))
+            {
+                string clip = _combat.SheathingIn || !_sprite.HasClip("draw") ? "sheathe" : "draw";
+                Hold(clip, _combat.SheathProgress);
+            }
+            else if (_combat.IsHurt && _sprite.HasClip("hurt" + s))
+                Hold("hurt" + s, _combat.HurtProgress);
+            else if (dodging && _sprite.HasClip("roll" + s))
+            {
+                // the roll itself on all frames but the last two, which are getting up
+                int n = _sprite.FramesOf("roll" + s);
+                _sprite.Hold("roll" + s, Mathf.Min(n - 3, Mathf.FloorToInt(_combat.DodgeProgress * (n - 2))));
+            }
+            else if (_combat.IsAttacking)
+            {
+                string clip = (_combat.IsHeavyAttack ? "heavy" : "light") + (_combat.ComboStep + 1);
+                if (!_sprite.HasClip(clip)) clip = _sprite.HasClip("slash") ? "slash" : "light1";
+                var c = _sprite.set.clips[_sprite.set.ClipIndex(clip)];
+                int to = c.hitTo > c.hitFrom ? c.hitTo : c.frames;
+                _sprite.Hold(clip, _combat.AttackFrame(c.frames, c.hitFrom, to));
+            }
+            else if (_rollTail > 0f && !(_hero != null && _hero.IsMoving) && _sprite.HasClip("roll" + s))
+            {
+                int n = _sprite.FramesOf("roll" + s);
+                _sprite.Hold("roll" + s, _rollTail > RollTail * 0.5f ? n - 2 : n - 1);
+            }
+            else if (_hero != null && _hero.IsMoving)
+            {
+                bool run = _hero.IsRunning && _sprite.HasClip("sprint" + s);
+                _sprite.Play(run ? "sprint" + s : (_sprite.HasClip("walk" + s) ? "walk" + s : "walk"),
+                             run ? 1f : (_hero.IsRunning ? _config.runSpeed : 1f), false);
+            }
+            else _sprite.Play(_sprite.HasClip("idle" + s) ? "idle" + s : "idle", 1f, sheathed != _wasSheathed);
+            _wasSheathed = sheathed;
+        }
+
+        void Hold(string clip, float progress)
+        {
+            int n = _sprite.FramesOf(clip);
+            _sprite.Hold(clip, Mathf.Min(n - 1, Mathf.FloorToInt(progress * n)));
         }
 
         void Zones()

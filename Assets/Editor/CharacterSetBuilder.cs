@@ -24,7 +24,7 @@ namespace BrumaPx.EditorTools
 
         [Serializable] class MetaLayer { public string id; public int z; }
         [Serializable] class MetaAnim { public string name; public int frames; public int dirs; }
-        [Serializable] class MetaClip { public string name; public int frames; public int w; public int h; public float feetX; public float feetY; }
+        [Serializable] class MetaClip { public string name; public int frames; public int w; public int h; public float feetX; public float feetY; public int hitFrom; public int hitTo; }
         [Serializable]
         class Meta
         {
@@ -150,7 +150,9 @@ namespace BrumaPx.EditorTools
             var shadow = LoadOrCreateMaterial(MaterialFolder + "/PP_SpriteShadow.mat", "BrumaPx/Diorama/PPSpriteShadow", log);
             LoadOrCreateMaterial("Assets/Resources/LayerBlit.mat", "Hidden/BrumaPx/LayerBlit", log);
 
-            var hero = GridSet("Assets/Characters/HeroBlender", DataFolder + "/HeroBlender.asset", log);
+            // The hero has one cropped sheet per clip (with its zone map), like the Rey Sapo.
+            var hero = ClipSheetSet("Assets/Characters/HeroBlender", DataFolder + "/HeroBlender.asset", log);
+            if (hero != null) AddReverse(hero, "sheathe", "draw");
             if (hero != null)
             {
                 var config = LoadOrCreate<HeroSpriteConfig>("Assets/Resources/HeroSpriteConfig.asset");
@@ -187,8 +189,11 @@ namespace BrumaPx.EditorTools
             fps = 8f;
             switch (name)
             {
-                case "idle": case "p2idle": fps = 5f; break;
-                case "walk": fps = 9f; break;
+                case "idle": case "p2idle": case "idle_s": fps = 5f; break;
+                case "walk": case "walk_s": fps = 9f; break;
+                case "sprint": case "sprint_s": fps = 12f; break;
+                case "roll": case "roll_s": case "hurt_s": case "sheathe": case "draw": loop = false; break;
+                case "light1": case "light2": case "light3": case "heavy1": case "heavy2": case "heavy3": loop = false; fps = 10f; break;
                 case "crawl": fps = 7f; break;
                 case "crawl2": fps = 9f; break;
                 case "slash": fps = 10f; loop = false; break;
@@ -245,7 +250,7 @@ namespace BrumaPx.EditorTools
             set.layers.Clear();
             set.baseLayers = new string[0];
             set.hiddenUnderHeadgear = new string[0];
-            set.zoneIds = new string[0];
+            set.zoneIds = meta.zones != null ? meta.zones : new string[0];
             set.zoneMap = null;
             set.clips.Clear();
             int texels = 0;
@@ -260,13 +265,29 @@ namespace BrumaPx.EditorTools
                 set.clips.Add(new CharacterLayerSet.Clip
                 {
                     name = c.name, frames = c.frames, directions = meta.views, fps = fps, loop = loop,
-                    sheet = tex, size = new Vector2Int(c.w, c.h), feet = new Vector2(c.feetX, c.feetY)
+                    sheet = tex, size = new Vector2Int(c.w, c.h), feet = new Vector2(c.feetX, c.feetY),
+                    zoneSheet = AssetDatabase.LoadAssetAtPath<Texture2D>(folder + "/_zonas_" + c.name + ".png"),
+                    hitFrom = c.hitFrom, hitTo = c.hitTo
                 });
                 texels += tex.width * tex.height;
             }
             EditorUtility.SetDirty(set);
             log.AppendLine(Path.GetFileName(folder) + ": " + set.clips.Count + " clips con hoja propia, " + (texels * 4 / (1024 * 1024)) + " MB sin comprimir");
             return set;
+        }
+
+        // A clip that plays another one backwards (drawing the sword is putting it away in reverse).
+        static void AddReverse(CharacterLayerSet set, string source, string name)
+        {
+            int i = set.ClipIndex(source);
+            if (i < 0) return;
+            var c = set.clips[i];
+            set.clips.Add(new CharacterLayerSet.Clip
+            {
+                name = name, frames = c.frames, directions = c.directions, fps = c.fps, loop = false,
+                sheet = c.sheet, size = c.size, feet = c.feet, zoneSheet = c.zoneSheet, reverse = true
+            });
+            EditorUtility.SetDirty(set);
         }
 
         static void Actor(string id, CharacterLayerSet set, Material mat, Material shadow)

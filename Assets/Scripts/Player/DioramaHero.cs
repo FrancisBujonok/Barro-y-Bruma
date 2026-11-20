@@ -45,6 +45,8 @@ namespace BrumaPx.Player
         public float SpeedMultiplier { get; set; } = 1f;
 
         public bool IsMoving { get { return _moving; } }
+        /// <summary>Moving with the run key held.</summary>
+        public bool IsRunning { get { return _moving && _running; } }
 
         Vector3 _bodyRest, _legLRest, _legRRest;
         float _clock;

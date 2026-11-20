@@ -161,6 +161,7 @@ namespace BrumaPx.Characters
                 frame = (int)(_time * clip.fps);
                 frame = clip.loop ? frame % Mathf.Max(1, clip.frames) : Mathf.Min(frame, clip.frames - 1);
             }
+            if (clip.reverse) frame = clip.frames - 1 - frame;
             int views = Mathf.Max(1, clip.directions);
             int row = own ? (views > 1 ? Mathf.Clamp(direction, 0, views - 1) : 0) : set.RowOf(_clip, direction);
 
@@ -168,6 +169,7 @@ namespace BrumaPx.Characters
             if (own)
             {
                 _block.SetTexture(MainTexId, clip.sheet);
+                _block.SetTexture(ZoneTexId, clip.zoneSheet != null ? clip.zoneSheet : Texture2D.blackTexture);
                 _block.SetVector(GridId, new Vector4(clip.frames, views, clip.size.x, clip.size.y));
                 _block.SetVector(FeetId, new Vector4(clip.feet.x, clip.feet.y, 0f, 0f));
             }

@@ -40,6 +40,13 @@ namespace BrumaPx.Characters
             public Vector2Int size;
             [Tooltip("Feet inside a cell of that sheet, texels from the left and from the bottom.")]
             public Vector2 feet;
+            [Tooltip("Optional zone map with the same layout as the sheet (wounds, bandages, Bruma).")]
+            public Texture2D zoneSheet;
+            [Tooltip("Plays the frames backwards (e.g. drawing the sword reuses the sheathe sheet).")]
+            public bool reverse;
+            [Tooltip("Attacks: frames [hitFrom, hitTo) are the blow itself; before is the wind-up, after the recovery.")]
+            public int hitFrom;
+            public int hitTo;
         }
 
         [Header("Grid")]

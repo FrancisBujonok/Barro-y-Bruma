@@ -66,6 +66,11 @@ namespace BrumaPx.Player
         };
         [Tooltip("Seconds after a light attack in which the next press continues the combo.")]
         public float comboWindow = 0.45f;
+        [Tooltip("Third blow of a combo: damage and recovery multipliers (light, heavy).")]
+        public float finisherDamage = 1.5f;
+        public float finisherRecovery = 1.5f;
+        [Tooltip("Seconds to put the sword away or draw it (R).")]
+        public float sheathTime = 0.45f;
         [Tooltip("A press during an attack is remembered this long.")]
         public float inputBuffer = 0.35f;
 
@@ -99,7 +104,7 @@ namespace BrumaPx.Player
         public bool InputLocked { get; set; }
 
         /// <summary>True when the hero is free to use an item: not dead, swinging, rolling or stunned.</summary>
-        public bool CanAct { get { return health != null && !health.IsDead && !_attack.IsBusy && !_dodge.IsDodging && _hurtTimer <= 0f; } }
+        public bool CanAct { get { return health != null && !health.IsDead && !_attack.IsBusy && !_dodge.IsDodging && _hurtTimer <= 0f && _sheathDir == 0; } }
 
         public void RestoreStamina(float amount)
         {
@@ -117,6 +122,40 @@ namespace BrumaPx.Player
         public bool IsGuarding { get { return _guarding; } }
         public bool IsDodging { get { return _dodge.IsDodging; } }
         public bool IsAttacking { get { return _attack.IsBusy; } }
+        /// <summary>True while the attack in progress is a heavy one.</summary>
+        public bool IsHeavyAttack { get { return _isHeavy; } }
+        /// <summary>Place of the attack in progress inside its combo: 0, 1 or 2 (the finisher).</summary>
+        public int ComboStep { get { return _combo; } }
+        /// <summary>The sword is in its scabbard.</summary>
+        public bool Sheathed { get; private set; }
+        /// <summary>Putting the sword away (true) or drawing it (false); only meaningful while IsSheathing.</summary>
+        public bool SheathingIn { get { return _sheathDir > 0; } }
+        public bool IsSheathing { get { return _sheathDir != 0; } }
+        public float SheathProgress { get { return Mathf.Clamp01(_sheathClock / Mathf.Max(0.01f, sheathTime)); } }
+        /// <summary>0..1 through the roll (only while IsDodging).</summary>
+        public float DodgeProgress { get { return Mathf.Clamp01(_dodgeClock / Mathf.Max(0.01f, dodgeDuration)); } }
+        /// <summary>Hit and staggered (not a blocked blow).</summary>
+        public bool IsHurt { get { return _hurtTimer > 0f && _hurtAnim; } }
+        public float HurtProgress { get { return 1f - Mathf.Clamp01(_hurtTimer / Mathf.Max(0.01f, hurtStun)); } }
+
+        /// <summary>
+        /// Frame of an attack animation for the current moment of the swing. The clip has <paramref name="frames"/>
+        /// frames; [hitFrom, hitTo) are the frames of the blow itself (the active window), the ones before cover
+        /// the wind-up and the ones after the recovery.
+        /// </summary>
+        public int AttackFrame(int frames, int hitFrom, int hitTo)
+        {
+            if (!_attack.IsBusy || _current == null) return 0;
+            hitFrom = Mathf.Clamp(hitFrom, 0, frames - 1);
+            hitTo = Mathf.Clamp(hitTo, hitFrom + 1, frames);
+            float s = Mathf.Max(0.01f, _current.startup * _startupMul), a = Mathf.Max(0.01f, _current.active), r = Mathf.Max(0.01f, _curRecovery);
+            float t = _attackClock;
+            int f;
+            if (t < s) f = Mathf.FloorToInt(t / s * hitFrom);
+            else if (t < s + a) f = hitFrom + Mathf.FloorToInt((t - s) / a * (hitTo - hitFrom));
+            else f = hitTo + Mathf.FloorToInt((t - s - a) / r * (frames - hitTo));
+            return Mathf.Clamp(f, 0, frames - 1);
+        }
 
         /// <summary>True while a heavy blow is winding up (some enemies react to it).</summary>
         public bool IsHeavyWindup { get { return _attack.IsBusy && _isHeavy && _attack.Phase == AttackPhase.Startup; } }
@@ -132,7 +171,9 @@ namespace BrumaPx.Player
         float _stamina, _regenTimer, _attackClock, _curRecovery, _damageMul = 1f, _lungeLeft;
         float _comboTimer, _queueTimer, _hurtTimer, _guardTime, _dodgeClock, _hitStopLeft;
         float _deadClock, _graceTimer;
-        float _drawnTimer;
+        float _sheathClock, _startupMul = 1f, _arcMul = 1f;
+        int _sheathDir;
+        bool _hurtAnim;
 
         Vector3 _knock, _spawnPos;
         Quaternion _spawnRot, _bodyRest = Quaternion.identity, _swordRest = Quaternion.identity;
@@ -256,16 +297,14 @@ namespace BrumaPx.Player
             else ReadInput();
 
             if (_guarding) _guardTime += dt;
-            if (_attack.IsBusy || _guarding) _drawnTimer = 1.2f;
-            else _drawnTimer = Mathf.Max(0f, _drawnTimer - dt);
-
+            TickSheath(dt);
 
             TickAttack(dt);
             TickDodge(dt);
             TickKnock(dt);
             TickStamina(dt);
 
-            hero.MovementLocked = _attack.IsBusy || _dodge.IsDodging || _hurtTimer > 0f || InputLocked;
+            hero.MovementLocked = _attack.IsBusy || _dodge.IsDodging || _hurtTimer > 0f || _sheathDir != 0 || InputLocked;
             hero.SpeedMultiplier = _guarding ? guardMoveSpeed : 1f;
             Animate();
         }
@@ -279,12 +318,16 @@ namespace BrumaPx.Player
             bool lightPress = DioramaInput.LightPressed();
             bool heavyPress = DioramaInput.HeavyPressed();
             bool dodgePress = DioramaInput.DodgePressed();
+            bool sheathPress = DioramaInput.SheathPressed();
 
             if (dodgePress) TryDodge();
             else if (lightPress) TryAttack(false);
             else if (heavyPress) TryAttack(true);
+            else if (sheathPress) TrySheath();
 
-            bool wantGuard = DioramaInput.GuardHeld() && !_attack.IsBusy && !_dodge.IsDodging;
+            bool guardHeld = DioramaInput.GuardHeld();
+            if (guardHeld && Sheathed && _sheathDir == 0 && CanAct) StartSheath(false);   // raising the guard draws the sword
+            bool wantGuard = guardHeld && !Sheathed && _sheathDir == 0 && !_attack.IsBusy && !_dodge.IsDodging;
             if (wantGuard && !_guarding)
             {
                 _guarding = true;
@@ -301,6 +344,15 @@ namespace BrumaPx.Player
         void TryAttack(bool isHeavy)
         {
             if (_dodge.IsDodging) return;
+            if (Sheathed || _sheathDir != 0)
+            {
+                // Draw first; the blow comes out as soon as the sword is in hand.
+                if (Sheathed && _sheathDir == 0) StartSheath(false);
+                else if (_sheathDir > 0) return;     // he is putting it away: ignore
+                _queued = isHeavy ? 2 : 1;
+                _queueTimer = sheathTime + inputBuffer;
+                return;
+            }
             if (_attack.IsBusy)
             {
                 _queued = isHeavy ? 2 : 1;
@@ -319,10 +371,13 @@ namespace BrumaPx.Player
                 return false;
             }
 
-            int combo = 0;
-            if (!isHeavy) combo = _comboTimer > 0f ? Mathf.Min(_combo + 1, 2) : 0;
-            float recovery = a.recovery * (combo == 2 ? 1.5f : 1f) * M(BodyStat.AttackRecovery);
-            if (!_attack.Start(a.startup, a.active, recovery)) return false;
+            // Light and heavy blows each chain into a combo of three; switching kind starts over.
+            int combo = _comboTimer > 0f && isHeavy == _isHeavy ? (_combo + 1) % 3 : 0;
+            float recovery = a.recovery * (combo == 2 ? finisherRecovery : 1f) * M(BodyStat.AttackRecovery);
+            // The heavy finisher is a leap: a longer wind-up. The second heavy blow sweeps wider.
+            _startupMul = isHeavy && combo == 2 ? 1.35f : 1f;
+            _arcMul = isHeavy && combo == 1 ? 1.35f : 1f;
+            if (!_attack.Start(a.startup * _startupMul, a.active, recovery)) return false;
 
             _combo = combo;
             _current = a;
@@ -330,8 +385,8 @@ namespace BrumaPx.Player
             _curRecovery = recovery;
             _attackClock = 0f;
             _hitSet.Clear();
-            _lungeLeft = a.lunge;
-            _damageMul = combo == 2 ? 1.5f : 1f;
+            _lungeLeft = a.lunge * (combo == 2 ? 1.8f : 1f);
+            _damageMul = combo == 2 ? finisherDamage : (isHeavy && combo == 1 ? 1.15f : 1f);
             _stamina -= a.stamina;
             _regenTimer = regenDelay;
             _guarding = false;
@@ -374,6 +429,11 @@ namespace BrumaPx.Player
                 {
                     bool h = _queued == 2;
                     _queued = 0;
+                    if (_sheathDir != 0 || Sheathed)      // still drawing: keep the blow waiting while the buffer lasts
+                    {
+                        if (_queueTimer > 0f) _queued = h ? 2 : 1;
+                        return;
+                    }
                     if (_queueTimer > 0f && _hurtTimer <= 0f && !_dodge.IsDodging) StartAttack(h);
                 }
                 if (!_attack.IsBusy) return;
@@ -386,17 +446,13 @@ namespace BrumaPx.Player
 
             if (_lungeLeft > 0f && (_attack.Phase == AttackPhase.Startup || _attack.Phase == AttackPhase.Active))
             {
-                float total = Mathf.Max(0.01f, _current.startup + _current.active);
+                float total = Mathf.Max(0.01f, _current.startup * _startupMul + _current.active);
                 float step = Mathf.Min(_lungeLeft, _current.lunge * dt / total);
                 _lungeLeft -= step;
                 MoveBy(transform.forward * step);
             }
 
-            if (!_attack.IsBusy)
-            {
-                if (_isHeavy) { _comboTimer = 0f; _combo = 0; }
-                else _comboTimer = comboWindow;
-            }
+            if (!_attack.IsBusy) _comboTimer = _combo == 2 ? 0f : comboWindow;
         }
 
         void HitCheck()
@@ -410,7 +466,7 @@ namespace BrumaPx.Player
                 if (h == health || h.team == health.team || h.IsDead || _hitSet.Contains(h)) continue;
                 Vector3 t3 = h.transform.position;
                 Vector2 target = new Vector2(t3.x, t3.z);
-                if (!ArcMath.IsInArc(origin, facing, target, _current.range + TargetRadius, _current.arcDegrees)) continue;
+                if (!ArcMath.IsInArc(origin, facing, target, _current.range + TargetRadius, Mathf.Min(359f, _current.arcDegrees * _arcMul))) continue;
 
                 _hitSet.Add(h);
                 Vector2 dir = target - origin;
@@ -441,6 +497,7 @@ namespace BrumaPx.Player
             _queued = 0;
             _comboTimer = 0f;
             _guarding = false;
+            _sheathDir = 0;
             _stamina -= dodgeCost;
             _regenTimer = regenDelay;
             _dodgeClock = 0f;
@@ -531,14 +588,17 @@ namespace BrumaPx.Player
             if (_blocking)
             {
                 _hurtTimer = 0.1f;
+                _hurtAnim = false;
                 _knock = new Vector3(dir.x, 0f, dir.y) * 1.5f;
                 return;
             }
             _hurtTimer = hurtStun;
+            _hurtAnim = true;
             _attack.Cancel();
             _queued = 0;
             _guarding = false;
             _comboTimer = 0f;
+            _sheathDir = 0;
             _knock = new Vector3(dir.x, 0f, dir.y) * Mathf.Clamp(amount / 6f, 1.5f, 4f);
             StartHitStop(0.05f);
         }
@@ -573,6 +633,7 @@ namespace BrumaPx.Player
             _stamina = maxStamina;
             _knock = Vector3.zero;
             _hurtTimer = 0f;
+            _sheathDir = 0;
             _deadClock = 0f;
             hero.MovementLocked = false;
             hero.SpeedMultiplier = 1f;
@@ -630,9 +691,34 @@ namespace BrumaPx.Player
             return k * k * (3f - 2f * k);
         }
 
+        // ------------------------------------------------------------------------------------------ sheath
+
+        void TrySheath()
+        {
+            if (!CanAct || _guarding) return;
+            StartSheath(!Sheathed);
+        }
+
+        void StartSheath(bool putAway)
+        {
+            _sheathDir = putAway ? 1 : -1;
+            _sheathClock = 0f;
+            _comboTimer = 0f;
+            _guarding = false;
+        }
+
+        void TickSheath(float dt)
+        {
+            if (_sheathDir == 0) return;
+            _sheathClock += dt;
+            if (_sheathClock < sheathTime) return;
+            Sheathed = _sheathDir > 0;
+            _sheathDir = 0;
+        }
+
         void Animate()
         {
-            bool drawn = _drawnTimer > 0f;
+            bool drawn = !Sheathed;
             if (drawnSword != null && drawnSword.activeSelf != drawn) drawnSword.SetActive(drawn);
             if (sheathedSword != null && sheathedSword.activeSelf == drawn) sheathedSword.SetActive(!drawn);
 

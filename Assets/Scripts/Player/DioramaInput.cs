@@ -23,7 +23,7 @@ namespace BrumaPx.Player
         public static Vector2 DebugMove;
 
         /// <summary>Test hooks for the combat keys. The press ones are consumed on read; DebugGuard stays until cleared.</summary>
-        public static bool DebugLight, DebugHeavy, DebugDodge, DebugGuard;
+        public static bool DebugLight, DebugHeavy, DebugDodge, DebugGuard, DebugSheath;
 
         static bool Consume(ref bool flag)
         {
@@ -52,6 +52,14 @@ namespace BrumaPx.Player
             var k = Keyboard.current;
             bool real = k != null && k.xKey.wasPressedThisFrame;
             return Consume(ref DebugHeavy) || real;
+        }
+
+        /// <summary>R: put the sword away or draw it.</summary>
+        public static bool SheathPressed()
+        {
+            var k = Keyboard.current;
+            bool real = k != null && k.rKey.wasPressedThisFrame;
+            return Consume(ref DebugSheath) || real;
         }
 
         /// <summary>C: dodge roll.</summary>
