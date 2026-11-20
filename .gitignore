@@ -178,3 +178,9 @@ $RECYCLE.BIN/
 # the project root. Anchored so a reports/ folder elsewhere stays tracked.
 /reports/
 /test-results/
+
+# === Fuentes de arte (Blender) ===
+# Los renders a 4x son intermedios: se regeneran desde los .blend y pesan cientos de MB.
+/art_src/**/render/
+/art_src/**/render8/
+*.blend1
