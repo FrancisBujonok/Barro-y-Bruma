@@ -1,0 +1,177 @@
+using BrumaPx.Combat;
+using BrumaPx.Player;
+using UnityEngine;
+
+namespace BrumaPx.Characters
+{
+    /// <summary>
+    /// Shows an NPC or a boss as a sprite made in Blender. It hides the old primitives (they keep moving, nobody
+    /// draws them) and picks view and clip from what already exists: the yaw of the object, EnemyBrain and Health
+    /// for a boss, the hero's position for an NPC. MapWorld attaches it when it spawns the marker.
+    /// Boss clips: idle, crawl, bite, death and, below <see cref="ActorSpriteConfig.phase2Below"/>, p2idle, crawl2,
+    /// bite2. The bite follows the attack timer of the EnemyProfile frame by frame.
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class ActorSpriteDriver : MonoBehaviour
+    {
+        public enum Mode { Npc, Boss }
+
+        public ActorSpriteConfig config;
+        public Mode mode;
+
+        DioramaSprite _sprite;
+        EnemyBrain _brain;
+        Health _health;
+        Transform _hero;
+        Camera _camera;
+        Vector3 _lastPos;
+        float _movingFor, _attackStart;
+        bool _wasAttacking, _moving;
+
+        public bool PhaseTwo
+        {
+            get { return _health != null && !_health.IsDead && _health.Current < _health.max * config.phase2Below; }
+        }
+
+        /// <summary>Gives the object the sprite called <paramref name="id"/> (Resources/Actors/id). Null if there is none.</summary>
+        public static ActorSpriteDriver Attach(GameObject go, string id, Mode mode)
+        {
+            if (go == null) return null;
+            var cfg = ActorSpriteConfig.Load(id);
+            if (cfg == null || cfg.set == null || cfg.material == null) return null;
+            var d = go.GetComponent<ActorSpriteDriver>();
+            if (d == null) d = go.AddComponent<ActorSpriteDriver>();
+            d.config = cfg;
+            d.mode = mode;
+            return d;
+        }
+
+        void Start()
+        {
+            if (config == null || config.set == null) { enabled = false; return; }
+            _brain = GetComponent<EnemyBrain>();
+            _health = GetComponent<Health>();
+            HideOldLook();
+
+            var go = new GameObject("Sprite");
+            go.transform.SetParent(transform, false);
+            _sprite = go.AddComponent<DioramaSprite>();
+            _sprite.set = config.set;
+            _sprite.material = config.material;
+            _sprite.shadowMaterial = config.shadowMaterial;
+            if (config.set.ClipsHaveSheets) _sprite.UseClipSheets();
+            else _sprite.SetLayers(config.set.layers);
+            _lastPos = transform.position;
+        }
+
+        // Only the primitives of the body go: auras, lights and particles stay.
+        void HideOldLook()
+        {
+            if (_brain != null && _brain.body != null)
+            {
+                Hide(_brain.body);
+                Hide(_brain.legL);
+                Hide(_brain.legR);
+                Hide(_brain.arms);
+                return;
+            }
+            Hide(transform);
+        }
+
+        static void Hide(Transform t)
+        {
+            if (t == null) return;
+            foreach (var r in t.GetComponentsInChildren<MeshRenderer>(true)) r.enabled = false;
+            foreach (var r in t.GetComponentsInChildren<SkinnedMeshRenderer>(true)) r.enabled = false;
+        }
+
+        void FindHero()
+        {
+            if (_hero != null) return;
+            var h = Object.FindFirstObjectByType<DioramaHero>();
+            if (h == null) return;
+            _hero = h.transform;
+            _camera = h.sceneCamera;
+        }
+
+        void LateUpdate()
+        {
+            if (_sprite == null) return;
+            FindHero();
+            // A falling enemy tips its root over; the picture stays upright and animates the fall itself.
+            _sprite.transform.rotation = Quaternion.identity;
+
+            float dt = Mathf.Max(Time.deltaTime, 0.0001f);
+            Vector3 v = transform.position - _lastPos;
+            v.y = 0f;
+            _lastPos = transform.position;
+            bool movingNow = v.magnitude / dt > config.moveThreshold;
+            _movingFor = movingNow ? 0.15f : Mathf.Max(0f, _movingFor - dt);
+            _moving = _movingFor > 0f;
+
+            if (mode == Mode.Boss) Boss();
+            else Npc();
+        }
+
+        float CameraYaw()
+        {
+            var cam = _camera != null ? _camera : Camera.main;
+            return cam != null ? cam.transform.eulerAngles.y : 45f;
+        }
+
+        void Face(float yaw)
+        {
+            _sprite.direction = CharacterLayerSet.ViewFor(yaw - CameraYaw(), _sprite.set.views);
+        }
+
+        void Npc()
+        {
+            float yaw = transform.eulerAngles.y;
+            if (_hero != null)
+            {
+                Vector3 d = _hero.position - transform.position;
+                d.y = 0f;
+                if (d.magnitude < config.lookAtHeroRange && d.sqrMagnitude > 0.01f)
+                    yaw = Mathf.Round(Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg / 45f) * 45f;
+            }
+            Face(yaw);
+            _sprite.Play(_moving && _sprite.HasClip("walk") ? "walk" : "idle", 1f, false);
+        }
+
+        void Boss()
+        {
+            bool dead = _health != null && _health.IsDead;
+            if (dead)
+            {
+                _sprite.Play("death", 1f, false);
+                return;
+            }
+            Face(transform.eulerAngles.y);
+            bool p2 = PhaseTwo;
+            bool attacking = _brain != null && _brain.Current == EnemyBrain.State.Attack && _brain.profile != null;
+            if (attacking)
+            {
+                if (!_wasAttacking) _attackStart = Time.time;
+                string clip = p2 && _sprite.HasClip("bite2") ? "bite2" : "bite";
+                _sprite.Hold(clip, BiteFrame(Time.time - _attackStart, _brain.profile));
+            }
+            else if (_moving) _sprite.Play(p2 && _sprite.HasClip("crawl2") ? "crawl2" : "crawl", 1f, false);
+            else _sprite.Play(p2 && _sprite.HasClip("p2idle") ? "p2idle" : "idle", 1f, false);
+            _wasAttacking = attacking;
+        }
+
+        // 8 frames: 0 rest, 1-3 rears up during the startup (3 held), 4-5 the lunge and the snap while the hit is
+        // active, 6-7 back during the recovery.
+        static int BiteFrame(float t, EnemyProfile p)
+        {
+            float s = Mathf.Max(0.01f, p.AttackStartup), a = Mathf.Max(0.01f, p.AttackActive), r = Mathf.Max(0.01f, p.AttackRecovery);
+            if (t < s)
+            {
+                float k = t / s;
+                return k < 0.2f ? 1 : (k < 0.45f ? 2 : 3);
+            }
+            if (t < s + a) return (t - s) / a < 0.5f ? 4 : 5;
+            return (t - s - a) / r < 0.5f ? 6 : 7;
+        }
+    }
+}
