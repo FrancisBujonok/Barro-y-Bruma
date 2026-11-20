@@ -336,6 +336,27 @@ namespace BrumaPx.Combat
             EnterStagger(profile.StaggerSeconds * 1.8f);
         }
 
+        /// <summary>Nothing going on: not chasing, searching, attacking, reeling or dead.</summary>
+        public bool IsCalm { get { return _state == State.Idle; } }
+
+        /// <summary>
+        /// Moves the place it guards (and wanders around). With <paramref name="teleport"/> it is put there at once,
+        /// facing <paramref name="yaw"/>; used by lairs that change between day and night.
+        /// </summary>
+        public void SetHome(Vector3 position, bool teleport, float yaw)
+        {
+            _home = position;
+            _homeYaw = yaw;
+            if (!teleport || _state == State.Dead) return;
+            _attack.Cancel();
+            _knock = Vector3.zero;
+            transform.position = position;
+            transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+            _targetYaw = yaw;
+            EnterState(State.Idle);
+            _hasWander = false;
+        }
+
         /// <summary>Back to the starting place and full health (the hero respawned).</summary>
         public void ResetToHome()
         {

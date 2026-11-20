@@ -96,6 +96,14 @@ namespace BrumaPx.World
 
             foreach (var e in prefabs) if (e != null && e.prefab != null) _prefabs[e.key] = e.prefab;
 
+            // Boss lairs inside mountains are carved before the ground texture is made.
+            CaveLair.CarveAll(MapGrid.File);
+            // keep the boulders of the mountain edge (and trees) away from the openings, so they can be seen
+            foreach (var lair in CaveLair.Lairs)
+            {
+                _clear.Add(new Vector3(lair.mouth.x, lair.mouth.y, 3.2f));
+                _clear.Add(new Vector3(lair.opening.x, lair.opening.y, 3.6f));
+            }
             _tex = MapGrid.BuildTexture();
             Shader.SetGlobalTexture("_PP_MapTex", _tex);
             Shader.SetGlobalVector("_PP_MapInfo", new Vector4(MapGrid.XMin, MapGrid.ZMin, MapGrid.Cols, MapGrid.Rows));
@@ -162,6 +170,14 @@ namespace BrumaPx.World
             float pz = pin != null ? pin.z : -18f;
             _hero.position = new Vector3(px, 0f, pz);
             _hero.rotation = Quaternion.Euler(0f, 90f, 0f);
+
+            foreach (var lair in CaveLair.Lairs) CaveLair.Create(this, lair);
+        }
+
+        /// <summary>Instantiates one of the map props by key (for CaveLair and other builders).</summary>
+        public GameObject SpawnProp(string key, Vector3 pos, float yaw, float scale, Transform parent)
+        {
+            return Spawn(key, pos, yaw, scale, parent);
         }
 
         // ------------------------------------------------------------------------------------------ streaming
@@ -213,7 +229,7 @@ namespace BrumaPx.World
 
         static string TerrainName(byte id)
         {
-            string[] n = { "llanura", "bosque", "bosque muerto", "pantano", "agua", "camino", "campo", "escarpado", "montana", "ruinas", "aldea" };
+            string[] n = { "llanura", "bosque", "bosque muerto", "pantano", "agua", "camino", "campo", "escarpado", "montana", "ruinas", "aldea", "cueva" };
             return id < n.Length ? n[id] : "?";
         }
 
@@ -315,6 +331,13 @@ namespace BrumaPx.World
                             Roll(parent, rng, "StoneA", 0.12f, x, zTop, 0.8f, 0.8f, 1.1f, false);
                             Roll(parent, rng, "RockMid", 0.08f, x, zTop, 0.8f, 0.7f, 1.1f, false);
                             Roll(parent, rng, "Cross", 0.05f, x, zTop, 1.4f, 1f, 1f, false);
+                            break;
+                        case MapGrid.CaveId:
+                            // stalagmites, puddles and what is left of those who came in before
+                            Roll(parent, rng, "RockSmall", 0.10f, x, zTop, 0.5f, 0.7f, 1.3f, false);
+                            Roll(parent, rng, "RockMid", 0.03f, x, zTop, 0.7f, 0.6f, 0.9f, false);
+                            Roll(parent, rng, "Charco", 0.04f, x, zTop, 1.4f, 1f, 1f, false);
+                            Roll(parent, rng, "Cadaver", 0.012f, x, zTop, 1.2f, 1f, 1f, false);
                             break;
                         case 10:
                             Roll(parent, rng, "RuinedHut", 0.06f, x, zTop, 3.6f, 1f, 1f, false);
@@ -518,6 +541,13 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             var b = g.GetComponent<BossMarker>();
             if (b != null && !string.IsNullOrEmpty(m.label)) b.title = m.label;
             ActorSpriteDriver.Attach(g, "ReySapo", ActorSpriteDriver.Mode.Boss);
+            var lair = CaveLair.For(m.id);
+            if (lair != null)
+            {
+                // A boss with a lair walks between the cave and the outside: it must not switch off with its chunk.
+                g.transform.SetParent(transform, true);
+                BossLair.Attach(g, lair);
+            }
         }
 
         void SpawnNpc(Transform parent, MapMarker m, Vector3 p)

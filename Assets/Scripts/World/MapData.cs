@@ -89,6 +89,16 @@ namespace BrumaPx.World
 
         public static bool IsBlockedId(byte id) { return id == 4 || id == 7 || id == 8; }
 
+        /// <summary>Cave floor: carved into the mountain by CaveLair, walkable. Not a letter of the map file.</summary>
+        public const byte CaveId = 11;
+
+        /// <summary>Changes the terrain of a cell (before the ground texture is built).</summary>
+        public static void SetId(int c, int r, byte id)
+        {
+            if (!Loaded || !InBounds(c, r)) return;
+            _ids[r * Cols + c] = id;
+        }
+
         public static int ColOf(float x) { return Mathf.FloorToInt((x - XMin) / Cell); }
         public static int RowOf(float z) { return Mathf.FloorToInt((ZMax - z) / Cell); }
         public static bool InBounds(int c, int r) { return c >= 0 && r >= 0 && c < Cols && r < Rows; }

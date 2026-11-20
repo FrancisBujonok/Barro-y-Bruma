@@ -601,8 +601,8 @@
   {
    "id": "k57",
    "type": "tomado",
-   "x": -205,
-   "z": 75,
+   "x": -245,
+   "z": 117,
    "label": "Tomado guardián de la cueva",
    "note": "Extra de Claude: se puede quitar.",
    "n": 1,
@@ -1051,8 +1051,8 @@
   {
    "id": "a1",
    "type": "jefe",
-   "x": -209,
-   "z": 71,
+   "x": -250.5,
+   "z": 122,
    "label": "Rey Sapo",
    "note": "Jefe oculto de la Marisma Muerta. Mordida pesada; al caer suelta una nube de Bruma.",
    "n": 1,

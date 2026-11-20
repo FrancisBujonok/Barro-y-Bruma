@@ -42,8 +42,8 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 return o;
             }
 
-            // Four tones per terrain id: l b d p a c k e m r v
-            static const uint PAL[44] =
+            // Four tones per terrain id: l b d p a c k e m r v, and 11 cave (carved by CaveLair)
+            static const uint PAL[48] =
             {
                 0x3A3A2Au, 0x4E4B34u, 0x666043u, 0x7E7752u,   // 0 llanura
                 0x1F2A1Fu, 0x2B3A2Au, 0x3B4A33u, 0x4F5C40u,   // 1 bosque
@@ -55,7 +55,8 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 0x35332Fu, 0x4A4741u, 0x5F5B54u, 0x77736Au,   // 7 escarpado
                 0x2B2A29u, 0x3D3B38u, 0x524F4Bu, 0x6A665Fu,   // 8 montana
                 0x3B3733u, 0x544F48u, 0x6E6A60u, 0x8A8578u,   // 9 ruinas
-                0x4A3B2Cu, 0x5E4A36u, 0x735C42u, 0x85694Au    // 10 aldea
+                0x4A3B2Cu, 0x5E4A36u, 0x735C42u, 0x85694Au,   // 10 aldea
+                0x141210u, 0x1F1C1Au, 0x2A2724u, 0x3A3631u    // 11 cueva
             };
 
             int CellId(float2 p)
@@ -105,8 +106,21 @@ Shader "BrumaPx/Diorama/PPMapGround"
                     v = v * 0.8 + 0.1 + strata * 0.18;
                 }
 
+                if (id == 11)
+                {
+                    // broken slabs with dark seams
+                    float2 slab = frac(p * 0.55 + PP_Noise(p * 0.3) * 0.6);
+                    float seam = (slab.x < 0.08 || slab.y < 0.08) ? -0.3 : 0.0;
+                    v = v * 0.7 + 0.12 + seam;
+                }
                 float q = clamp(floor(v * 4.0 + (bay - 0.5) * 0.6 + 0.5), 0.0, 3.0);
-                float3 col = PP_Hex(PAL[min(id, 10) * 4 + (int)q]);
+                float3 col = PP_Hex(PAL[min(id, 11) * 4 + (int)q]);
+                if (id == 11)
+                {
+                    // standing water that shines a little
+                    float pud = PP_Fbm(p * 0.4 + 17.0);
+                    if (pud > 0.63) col = pud > 0.66 && PP_Noise(float2(p.x * 3.0, p.y * 7.0)) > 0.8 ? PP_Hex(0x4F5A5Cu) : PP_Hex(0x161A1Bu);
+                }
 
                 if (id == 3)
                 {
@@ -120,7 +134,7 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 if (id != 4)
                 {
                     if (hr > 0.988) col = PP_Hex(0x6E6C66u);
-                    else if (PP_Hash(lat - 1.0) > 0.988) col = PP_Hex(PAL[min(id, 10) * 4]);
+                    else if (PP_Hash(lat - 1.0) > 0.988) col = PP_Hex(PAL[min(id, 11) * 4]);
                 }
 
                 col *= lerp(1.0, 0.82, _PP_Weather.w);

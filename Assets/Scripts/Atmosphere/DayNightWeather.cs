@@ -25,6 +25,13 @@ namespace BrumaPx.Atmosphere
         /// <summary>Ambient light of the current time and weather, 0 (deep night) to 1 (day).</summary>
         public float AmbientLight { get; private set; } = 1f;
 
+        /// <summary>1 while the hero is inside a cave (set by CaveLair): dark, short sight, lamps lit.</summary>
+        public static float CaveDarknessTarget;
+        float _cave;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetCave() { CaveDarknessTarget = 0f; }
+
         /// <summary>How strongly the lamps are on right now, 0 to 1.</summary>
         public float LampStrength { get; private set; }
 
@@ -174,6 +181,7 @@ void OnEnable()
             _inited = true;
 
             float flash = UpdateLightning(dt, p.lightning);
+            _cave = Mathf.MoveTowards(_cave, CaveDarknessTarget, dt * 1.5f);
 
             Apply(flash);
             if (hud != null) hud.text = FormatClock() + "   " + WeatherNames[(int)weather];
@@ -220,6 +228,8 @@ void OnEnable()
             s.shadowTint = key.shadow;
 
             Vector3 tone = new Vector3(key.tone.x * _tone.x, key.tone.y * _tone.y, key.tone.z * _tone.z);
+            // Inside a cave: much darker and a little cold, whatever the hour.
+            if (_cave > 0f) tone = Vector3.Lerp(tone, new Vector3(0.30f, 0.30f, 0.36f) * Mathf.Min(1f, (tone.x + tone.y + tone.z) / 3f + 0.25f), _cave);
             if (flash > 0f)
             {
                 tone += Vector3.one * (0.45f * flash);
@@ -229,11 +239,11 @@ void OnEnable()
             s.shadowLength = key.length;
             s.shadowAngle = key.angle;
             s.weather = new Vector4(_mist, _shift, _rain, _wet);
-            s.island = _island * BrumaPx.Player.HeroBody.VisionScale;
+            s.island = _island * BrumaPx.Player.HeroBody.VisionScale * Mathf.Lerp(1f, 0.8f, _cave);
 
             // Heavy weather turns the lamps on a little even by day.
             float avg = (tone.x + tone.y + tone.z) / 3f;
-            float lamp = Mathf.Clamp01(key.lamp + (1f - Mathf.Min(avg, 1f)) * 0.8f);
+            float lamp = Mathf.Max(Mathf.Clamp01(key.lamp + (1f - Mathf.Min(avg, 1f)) * 0.8f), _cave);
             AmbientLight = BrumaPx.Atmosphere.VisibilityMath.AmbientFromTone(avg);
             LampStrength = lamp;
 
