@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BrumaPx.Characters;
 using BrumaPx.Data;
 using BrumaPx.Dialogue;
 using BrumaPx.Player;
@@ -516,6 +517,7 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             g.name = "Jefe " + m.label;
             var b = g.GetComponent<BossMarker>();
             if (b != null && !string.IsNullOrEmpty(m.label)) b.title = m.label;
+            ActorSpriteDriver.Attach(g, "ReySapo", ActorSpriteDriver.Mode.Boss);
         }
 
         void SpawnNpc(Transform parent, MapMarker m, Vector3 p)
@@ -529,6 +531,17 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
                 t.displayName = m.label;
                 t.lines = new[] { string.IsNullOrEmpty(m.note) ? "..." : m.note };
             }
+            string id = NpcSpriteId(m.label);
+            if (id != null) ActorSpriteDriver.Attach(g, id, ActorSpriteDriver.Mode.Npc);
+        }
+
+        // NPCs with a sprite of their own, found by the label of the marker. The rest keep the hooded figure.
+        static string NpcSpriteId(string label)
+        {
+            if (string.IsNullOrEmpty(label)) return null;
+            string l = label.ToLowerInvariant();
+            if (l.Contains("médico") || l.Contains("medico") || l.Contains("peste")) return "MedicoPeste";
+            return null;
         }
 
         void SpawnEnemies(Transform parent, MapMarker m, Vector3 p, string key, System.Random rng)
