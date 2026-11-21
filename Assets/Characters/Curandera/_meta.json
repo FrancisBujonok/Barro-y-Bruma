@@ -1,0 +1,32 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 34,
+   "h": 51,
+   "feetX": 17,
+   "feetY": 8
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8,
+   "w": 36,
+   "h": 53,
+   "feetX": 18,
+   "feetY": 9
+  },
+  {
+   "name": "ofrecer",
+   "frames": 6,
+   "dirs": 8,
+   "w": 34,
+   "h": 51,
+   "feetX": 17,
+   "feetY": 8
+  }
+ ]
+}
