@@ -1,0 +1,32 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 74,
+   "h": 75,
+   "feetX": 37,
+   "feetY": 19
+  },
+  {
+   "name": "mirar",
+   "frames": 5,
+   "dirs": 8,
+   "w": 74,
+   "h": 75,
+   "feetX": 37,
+   "feetY": 19
+  },
+  {
+   "name": "brote",
+   "frames": 8,
+   "dirs": 8,
+   "w": 74,
+   "h": 75,
+   "feetX": 37,
+   "feetY": 19
+  }
+ ]
+}
