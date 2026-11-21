@@ -1,0 +1,362 @@
+{
+ "cell": 128,
+ "cols": 9,
+ "rows": 13,
+ "anims": [
+  {
+   "name": "idle",
+   "frames": 2,
+   "dirs": 4
+  },
+  {
+   "name": "walk",
+   "frames": 9,
+   "dirs": 4
+  },
+  {
+   "name": "slash",
+   "frames": 6,
+   "dirs": 4
+  },
+  {
+   "name": "hurt",
+   "frames": 6,
+   "dirs": 1
+  }
+ ],
+ "dir_order": [
+  "arriba",
+  "izquierda",
+  "abajo",
+  "derecha"
+ ],
+ "layers": [
+  {
+   "id": "capa_atras",
+   "z": 0,
+   "slot": "capa",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "arma_ligera_atras",
+   "z": 1,
+   "slot": "arma",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "arma_pesada_atras",
+   "z": 1,
+   "slot": "arma",
+   "anims": [
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "cuerpo",
+   "z": 10,
+   "slot": "cuerpo",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "cabeza",
+   "z": 11,
+   "slot": "cuerpo",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "zapatos",
+   "z": 20,
+   "slot": "base",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "calzas",
+   "z": 21,
+   "slot": "base",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "camisa",
+   "z": 22,
+   "slot": "base",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "pelo",
+   "z": 23,
+   "slot": "base",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "polainas_cuero",
+   "z": 30,
+   "slot": "piernas",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "polainas_cuero_botas",
+   "z": 31,
+   "slot": "piernas",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "jubon_cuero",
+   "z": 32,
+   "slot": "torso",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "mangas_cuero",
+   "z": 33,
+   "slot": "brazos",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "mangas_cuero_guantes",
+   "z": 34,
+   "slot": "brazos",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "capucha_cuero",
+   "z": 40,
+   "slot": "cabeza",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "grebas_malla",
+   "z": 30,
+   "slot": "piernas",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "grebas_malla_pies",
+   "z": 31,
+   "slot": "piernas",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "cota_malla",
+   "z": 32,
+   "slot": "torso",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "mangas_malla",
+   "z": 33,
+   "slot": "brazos",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "cofia_malla",
+   "z": 40,
+   "slot": "cabeza",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "capelina",
+   "z": 41,
+   "slot": "cabeza",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "bufanda",
+   "z": 45,
+   "slot": "cuello",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "capa_frente",
+   "z": 46,
+   "slot": "capa",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "escudo",
+   "z": 50,
+   "slot": "escudo",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "arma_ligera",
+   "z": 60,
+   "slot": "arma",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  },
+  {
+   "id": "arma_pesada",
+   "z": 60,
+   "slot": "arma",
+   "anims": [
+    "hurt",
+    "idle",
+    "slash",
+    "walk"
+   ]
+  }
+ ],
+ "zones": [
+  "cabeza",
+  "torso",
+  "hombro.d",
+  "hombro.i",
+  "brazo.d",
+  "brazo.i",
+  "antebrazo.d",
+  "antebrazo.i",
+  "muslo.d",
+  "muslo.i",
+  "rodilla.d",
+  "rodilla.i",
+  "pantorrilla.d",
+  "pantorrilla.i"
+ ],
+ "palette": {
+  "0": "#141210",
+  "1": "#2a2420",
+  "2": "#3d332b",
+  "3": "#594a3c",
+  "4": "#7a6650",
+  "5": "#9c8a70",
+  "6": "#3f3e3b",
+  "7": "#6e6c66",
+  "8": "#9a968c",
+  "9": "#c4bfb2",
+  "a": "#2f3436",
+  "b": "#4f5a5c",
+  "c": "#7d8584",
+  "d": "#3e1a18",
+  "e": "#6b2a24",
+  "f": "#8f4a36",
+  "g": "#b08a6a",
+  "h": "#d2ac88",
+  "i": "#e6e2d4",
+  "j": "#2c2738",
+  "k": "#5b5170",
+  "m": "#4e4b34",
+  "n": "#6f6a45",
+  "o": "#b24a36"
+ }
+}

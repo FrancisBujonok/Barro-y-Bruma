@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7913cb056d9084eb48f949f3528d9f, type: 3}
+  m_Name: HachaDeGuerra
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Data.WeaponDef
+  _id: arma_pesada
+  _displayName: Hacha de guerra
+  _description: A dos manos. Pega fuerte, tarda y cansa.
+  _class: 1
+  _damage: 1.6
+  _staminaCost: 1.5
+  _swingTime: 1.4
+  _range: 1.15
+  _guardLeak: 1

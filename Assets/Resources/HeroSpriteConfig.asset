@@ -24,4 +24,7 @@ MonoBehaviour:
   testWeapons:
   - {fileID: 11400000, guid: 4a905f8eff7b07a4a8f348a550b71bc6, type: 2}
   - {fileID: 11400000, guid: 88d651338d49f4143aca58833ad7aedc, type: 2}
-  testShield: {fileID: 11400000, guid: 8aa24
+  testShield: {fileID: 11400000, guid: 8aa24b190a9291c43a1e0b837f5986c6, type: 2}
+  lightAttackSpeed: 1.6
+  heavyAttackSpeed: 0.9
+  runSpeed: 1.5
