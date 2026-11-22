@@ -1,0 +1,32 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 22,
+   "h": 51,
+   "feetX": 11,
+   "feetY": 5
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8,
+   "w": 26,
+   "h": 52,
+   "feetX": 13,
+   "feetY": 6
+  },
+  {
+   "name": "llamar",
+   "frames": 6,
+   "dirs": 8,
+   "w": 36,
+   "h": 57,
+   "feetX": 18,
+   "feetY": 5
+  }
+ ]
+}
