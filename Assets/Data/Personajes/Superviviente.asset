@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: Superviviente
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  views: 8
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers: []
+  baseLayers: []
+  hiddenUnderHeadgear: []
+  zoneMap: {fileID: 0}
+  zoneIds: []
+  clips:
+  - name: idle
+    frames: 6
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: 9ecf56eb8383568479b7fd647806f50b, type: 3}
+    size: {x: 22, y: 51}
+    feet: {x: 11, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: f2a086112de0d55458036da45be1e797, type: 3}
+    size: {x: 26, y: 52}
+    feet: {x: 13, y: 6}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: llamar
+    frames: 6
+    directions: 8
+    fps: 7
+    loop: 0
+    sheet: {fileID: 2800000, guid: 07d9b12540f01c940a37e50f6e3be0f4, type: 3}
+    size: {x: 36, y: 57}
+    feet: {x: 18, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0

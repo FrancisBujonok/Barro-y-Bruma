@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: Curandera
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  views: 8
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers: []
+  baseLayers: []
+  hiddenUnderHeadgear: []
+  zoneMap: {fileID: 0}
+  zoneIds: []
+  clips:
+  - name: idle
+    frames: 6
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: 11e2586affecadf46b1429f7863573a3, type: 3}
+    size: {x: 34, y: 51}
+    feet: {x: 17, y: 8}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: cc36267de3f2b1540aeb4810e6a0f98c, type: 3}
+    size: {x: 36, y: 53}
+    feet: {x: 18, y: 9}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: ofrecer
+    frames: 6
+    directions: 8
+    fps: 7
+    loop: 0
+    sheet: {fileID: 2800000, guid: 367e10e6555fff747a5792d16926c1d3, type: 3}
+    size: {x: 34, y: 51}
+    feet: {x: 17, y: 8}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0

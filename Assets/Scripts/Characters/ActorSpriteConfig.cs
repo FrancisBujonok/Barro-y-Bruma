@@ -24,6 +24,33 @@ namespace BrumaPx.Characters
         [Header("NPC")]
         [Tooltip("An NPC turns towards the hero when he is this close.")]
         public float lookAtHeroRange = 7f;
+        [Tooltip("Off for an NPC that cannot turn (chained to a wall): it always faces fixedYaw.")]
+        public bool faceHero = true;
+        [Tooltip("World yaw (degrees) of an NPC that does not turn. 0 = north, 90 = east, 180 = south.")]
+        public float fixedYaw = 180f;
+
+        [Tooltip("Clip played when the hero comes within greetRange (and not closer than greetMin): looking up, holding out a remedy, waving, the guard's stop. Plays once and holds its last frame.")]
+        public string greetClip = "";
+        public float greetRange = 5f;
+        public float greetMin = 0f;
+        [Tooltip("When the greet clip ends, loop its frames from this one on (waving). -1 = hold the last frame.")]
+        public int greetLoopFrom = -1;
+
+        [Tooltip("Clip that plays on its own now and then while the hero is within ambientRange (the woodcutter's Bruma fit).")]
+        public string ambientClip = "";
+        public Vector2 ambientEvery = new Vector2(18f, 35f);
+        public float ambientRange = 12f;
+
+        [Tooltip("A warm lamp carried by the NPC (the healer's lantern).")]
+        public bool lamp;
+        public Vector3 lampOffset = new Vector3(0f, 1.4f, 0f);
+        public float lampRadius = 4f;
+        public Color lampColor = new Color(1f, 0.62f, 0.3f, 1f);
+        [Range(0f, 2f)] public float lampIntensity = 0.9f;
+
+        [Tooltip("Extra box obstacle (what is drawn in the sprite, like the woodcutter's wall): world offset x, z from the NPC and half size. Zero = none.")]
+        public Vector2 obstacleOffset;
+        public Vector2 obstacleHalf;
 
         public static ActorSpriteConfig Load(string id) { return Resources.Load<ActorSpriteConfig>(Folder + id); }
     }

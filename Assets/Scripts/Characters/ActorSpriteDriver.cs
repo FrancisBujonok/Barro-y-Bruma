@@ -1,5 +1,7 @@
+using BrumaPx.Atmosphere;
 using BrumaPx.Combat;
 using BrumaPx.Player;
+using BrumaPx.World;
 using UnityEngine;
 
 namespace BrumaPx.Characters
@@ -27,6 +29,8 @@ namespace BrumaPx.Characters
         Vector3 _lastPos;
         float _movingFor, _attackStart;
         bool _wasAttacking, _moving;
+        bool _greeting, _ambientPlaying;
+        float _greetTime, _ambientIn;
 
         public bool PhaseTwo
         {
@@ -62,6 +66,38 @@ namespace BrumaPx.Characters
             if (config.set.ClipsHaveSheets) _sprite.UseClipSheets();
             else _sprite.SetLayers(config.set.layers);
             _lastPos = transform.position;
+            if (mode == Mode.Npc) SetUpNpcExtras();
+        }
+
+        void SetUpNpcExtras()
+        {
+            ScheduleAmbient();
+            if (config.lamp)
+            {
+                var go = new GameObject("Farol");
+                go.transform.SetParent(transform, false);
+                var l = go.AddComponent<PixelLight>();
+                l.offset = config.lampOffset;
+                l.radius = config.lampRadius;
+                l.color = config.lampColor;
+                l.intensity = config.lampIntensity;
+                l.flicker = 0.3f;
+            }
+            if (config.obstacleHalf.x > 0f && config.obstacleHalf.y > 0f)
+            {
+                var go = new GameObject("Obstaculo");
+                go.transform.SetParent(transform, false);
+                go.transform.position = transform.position + new Vector3(config.obstacleOffset.x, 0f, config.obstacleOffset.y);
+                go.transform.rotation = Quaternion.identity;
+                var o = go.AddComponent<WorldObstacle>();
+                o.kind = WorldObstacle.Kind.Box;
+                o.halfSize = config.obstacleHalf;
+            }
+        }
+
+        void ScheduleAmbient()
+        {
+            _ambientIn = Random.Range(config.ambientEvery.x, Mathf.Max(config.ambientEvery.x, config.ambientEvery.y));
         }
 
         // Only the primitives of the body go: auras, lights and particles stay.
@@ -126,16 +162,67 @@ namespace BrumaPx.Characters
 
         void Npc()
         {
-            float yaw = transform.eulerAngles.y;
+            float yaw = config.faceHero ? transform.eulerAngles.y : config.fixedYaw;
+            float dist = float.MaxValue;
             if (_hero != null)
             {
                 Vector3 d = _hero.position - transform.position;
                 d.y = 0f;
-                if (d.magnitude < config.lookAtHeroRange && d.sqrMagnitude > 0.01f)
+                dist = d.magnitude;
+                if (config.faceHero && dist < config.lookAtHeroRange && d.sqrMagnitude > 0.01f)
                     yaw = Mathf.Round(Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg / 45f) * 45f;
             }
             Face(yaw);
+
+            // A clip that plays on its own (the woodcutter's Bruma fit) wins until it ends.
+            if (_ambientPlaying)
+            {
+                if (!_sprite.Finished) return;
+                _ambientPlaying = false;
+                _greeting = false;
+                ScheduleAmbient();
+            }
+            if (!_moving && !string.IsNullOrEmpty(config.ambientClip) && _sprite.HasClip(config.ambientClip)
+                && dist < config.ambientRange)
+            {
+                _ambientIn -= Time.deltaTime;
+                if (_ambientIn <= 0f)
+                {
+                    _sprite.Play(config.ambientClip, 1f, true);
+                    _ambientPlaying = true;
+                    return;
+                }
+            }
+
+            bool canGreet = !string.IsNullOrEmpty(config.greetClip) && _sprite.HasClip(config.greetClip);
+            if (_greeting && (!canGreet || dist > config.greetRange + 1.5f || dist < config.greetMin - 0.5f))
+                _greeting = false;
+            else if (!_greeting && canGreet && dist < config.greetRange && dist >= config.greetMin)
+            {
+                _greeting = true;
+                _greetTime = 0f;
+                _sprite.Play(config.greetClip, 1f, true);
+            }
+
+            if (_greeting && !_moving)
+            {
+                _greetTime += Time.deltaTime;
+                if (config.greetLoopFrom >= 0 && _sprite.Finished) LoopGreet();
+                else _sprite.Play(config.greetClip, 1f, false);
+                return;
+            }
             _sprite.Play(_moving && _sprite.HasClip("walk") ? "walk" : "idle", 1f, false);
+        }
+
+        // After the greet clip has played once, keep cycling its last frames (waving).
+        void LoopGreet()
+        {
+            var set = _sprite.set;
+            var c = set.clips[set.ClipIndex(config.greetClip)];
+            int from = Mathf.Clamp(config.greetLoopFrom, 0, c.frames - 1);
+            int span = Mathf.Max(1, c.frames - from);
+            float t = Mathf.Max(0f, _greetTime - (c.frames - 1) / Mathf.Max(0.1f, c.fps));
+            _sprite.Hold(config.greetClip, from + (int)(t * c.fps) % span);
         }
 
         void Boss()

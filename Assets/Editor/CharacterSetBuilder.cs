@@ -127,7 +127,7 @@ namespace BrumaPx.EditorTools
 
         // ---- Characters rendered in Blender ----------------------------------------------------------------
 
-        [MenuItem("BrumaPx/Characters/Rebuild Blender Sets (Hero, Medico, Rey Sapo)")]
+        [MenuItem("BrumaPx/Characters/Rebuild Blender Sets (Hero, NPCs, Rey Sapo)")]
         public static void RebuildBlender()
         {
             Debug.Log(RebuildBlenderAndReport());
@@ -169,6 +169,51 @@ namespace BrumaPx.EditorTools
             var sapo = ClipSheetSet("Assets/Characters/ReySapo", DataFolder + "/ReySapo.asset", log);
             if (sapo != null) Actor("ReySapo", sapo, mat, shadow);
 
+            // NPCs of chapter 1 made in Blender, one cropped sheet per clip, each with its own behaviour.
+            var lenador = ClipSheetSet("Assets/Characters/Lenador", DataFolder + "/Lenador.asset", log);
+            if (lenador != null)
+            {
+                var a = Actor("Lenador", lenador, mat, shadow);
+                // Chained to his wall: he never turns. Facing south, the wall behind him to the north.
+                a.faceHero = false;
+                a.fixedYaw = 180f;
+                a.greetClip = "mirar";
+                a.greetRange = 5f;
+                a.ambientClip = "brote";
+                a.ambientEvery = new Vector2(18f, 35f);
+                a.ambientRange = 12f;
+                a.obstacleOffset = new Vector2(0f, 0.55f);
+                a.obstacleHalf = new Vector2(0.95f, 0.14f);
+            }
+            var curandera = ClipSheetSet("Assets/Characters/Curandera", DataFolder + "/Curandera.asset", log);
+            if (curandera != null)
+            {
+                var a = Actor("Curandera", curandera, mat, shadow);
+                a.greetClip = "ofrecer";
+                a.greetRange = 3.5f;
+                a.lamp = true;
+                a.lampOffset = new Vector3(0f, 1.45f, 0f);
+                a.lampRadius = 4.5f;
+                a.lampIntensity = 0.9f;
+            }
+            var superviviente = ClipSheetSet("Assets/Characters/Superviviente", DataFolder + "/Superviviente.asset", log);
+            if (superviviente != null)
+            {
+                var a = Actor("Superviviente", superviviente, mat, shadow);
+                // Waves for help when he sees the hero, stops when the hero is next to him.
+                a.greetClip = "llamar";
+                a.greetRange = 11f;
+                a.greetMin = 3f;
+                a.greetLoopFrom = 2;
+            }
+            var guardia = ClipSheetSet("Assets/Characters/Guardia", DataFolder + "/Guardia.asset", log);
+            if (guardia != null)
+            {
+                var a = Actor("Guardia", guardia, mat, shadow);
+                a.greetClip = "alto";
+                a.greetRange = 6f;
+            }
+
             AssetDatabase.SaveAssets();
             return log.ToString();
         }
@@ -203,6 +248,11 @@ namespace BrumaPx.EditorTools
                 case "hop": case "tongue": fps = 10f; loop = false; break;
                 case "death": fps = 8f; loop = false; break;
                 case "hurt": loop = false; break;
+                case "mirar": fps = 6f; loop = false; break;
+                case "brote": fps = 8f; loop = false; break;
+                case "ofrecer": fps = 7f; loop = false; break;
+                case "llamar": fps = 7f; loop = false; break;
+                case "alto": fps = 8f; loop = false; break;
             }
         }
 
@@ -292,13 +342,14 @@ namespace BrumaPx.EditorTools
             EditorUtility.SetDirty(set);
         }
 
-        static void Actor(string id, CharacterLayerSet set, Material mat, Material shadow)
+        static ActorSpriteConfig Actor(string id, CharacterLayerSet set, Material mat, Material shadow)
         {
             var a = LoadOrCreate<ActorSpriteConfig>("Assets/Resources/" + ActorSpriteConfig.Folder + id + ".asset");
             a.set = set;
             a.material = mat;
             a.shadowMaterial = shadow;
             EditorUtility.SetDirty(a);
+            return a;
         }
 
         static WeaponDef Weapon(string file, string id, string label, string text, WeaponClass cls, float damage, float stamina, float swing, float range, float leak)

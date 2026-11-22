@@ -18,3 +18,19 @@ MonoBehaviour:
   phase2Below: 0.5
   moveThreshold: 0.25
   lookAtHeroRange: 7
+  faceHero: 1
+  fixedYaw: 180
+  greetClip: 
+  greetRange: 5
+  greetMin: 0
+  greetLoopFrom: -1
+  ambientClip: 
+  ambientEvery: {x: 18, y: 35}
+  ambientRange: 12
+  lamp: 0
+  lampOffset: {x: 0, y: 1.4, z: 0}
+  lampRadius: 4
+  lampColor: {r: 1, g: 0.62, b: 0.3, a: 1}
+  lampIntensity: 0.9
+  obstacleOffset: {x: 0, y: 0}
+  obstacleHalf: {x: 0, y: 0}

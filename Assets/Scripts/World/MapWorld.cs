@@ -571,6 +571,10 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             if (string.IsNullOrEmpty(label)) return null;
             string l = label.ToLowerInvariant();
             if (l.Contains("médico") || l.Contains("medico") || l.Contains("peste")) return "MedicoPeste";
+            if (l.Contains("leñador") || l.Contains("lenador")) return "Lenador";
+            if (l.Contains("curandera")) return "Curandera";
+            if (l.Contains("superviviente")) return "Superviviente";
+            if (l.Contains("guardia")) return "Guardia";
             return null;
         }
 
