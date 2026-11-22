@@ -20,6 +20,8 @@ namespace BrumaPx.Characters
         [Range(0f, 1f)] public float phase2Below = 0.5f;
         [Tooltip("Speed (units per second) above which it counts as moving.")]
         public float moveThreshold = 0.25f;
+        [Tooltip("Enemy: speed (units per second) at which the walk clip plays at its own pace; faster runs speed it up.")]
+        public float walkSpeedRef = 2.4f;
 
         [Header("NPC")]
         [Tooltip("An NPC turns towards the hero when he is this close.")]

@@ -1,0 +1,41 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 4,
+   "dirs": 8,
+   "w": 41,
+   "h": 67,
+   "feetX": 20,
+   "feetY": 5
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8,
+   "w": 41,
+   "h": 69,
+   "feetX": 20,
+   "feetY": 6
+  },
+  {
+   "name": "attack",
+   "frames": 8,
+   "dirs": 8,
+   "w": 70,
+   "h": 70,
+   "feetX": 35,
+   "feetY": 8
+  },
+  {
+   "name": "death",
+   "frames": 6,
+   "dirs": 8,
+   "w": 128,
+   "h": 97,
+   "feetX": 64,
+   "feetY": 36
+  }
+ ]
+}

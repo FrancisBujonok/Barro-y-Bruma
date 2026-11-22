@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: Hinchado
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  views: 8
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers: []
+  baseLayers: []
+  hiddenUnderHeadgear: []
+  zoneMap: {fileID: 0}
+  zoneIds: []
+  clips:
+  - name: idle
+    frames: 4
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: a2278a0455ae3e14889a3b9ddc4cfb1e, type: 3}
+    size: {x: 32, y: 52}
+    feet: {x: 16, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: eedcf55554e851a499c4a2fa0fff9a58, type: 3}
+    size: {x: 32, y: 53}
+    feet: {x: 16, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: attack
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 14e9c836842680441a9c313f2b146d94, type: 3}
+    size: {x: 44, y: 64}
+    feet: {x: 22, y: 8}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: death
+    frames: 6
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: b140cad41422f8b4592c9c101442d202, type: 3}
+    size: {x: 112, y: 79}
+    feet: {x: 56, y: 31}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0

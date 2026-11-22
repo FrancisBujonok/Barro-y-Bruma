@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7421804b5049392468adbd9ec12284ea, type: 3}
+  m_Name: Infectado2
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Characters.CharacterLayerSet
+  views: 8
+  cell: 128
+  columns: 9
+  rows: 13
+  feet: {x: 64, y: 36}
+  layers: []
+  baseLayers: []
+  hiddenUnderHeadgear: []
+  zoneMap: {fileID: 0}
+  zoneIds: []
+  clips:
+  - name: idle
+    frames: 4
+    directions: 8
+    fps: 5
+    loop: 1
+    sheet: {fileID: 2800000, guid: c9d608e0074004d499e79752300d95a1, type: 3}
+    size: {x: 36, y: 52}
+    feet: {x: 18, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: walk
+    frames: 8
+    directions: 8
+    fps: 9
+    loop: 1
+    sheet: {fileID: 2800000, guid: 8f29443e10ab7c042b8315f840d2db1c, type: 3}
+    size: {x: 38, y: 52}
+    feet: {x: 19, y: 5}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: attack
+    frames: 8
+    directions: 8
+    fps: 10
+    loop: 0
+    sheet: {fileID: 2800000, guid: 09833085aa4360f41a437bfba1fdd1ea, type: 3}
+    size: {x: 50, y: 59}
+    feet: {x: 25, y: 6}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0
+  - name: death
+    frames: 6
+    directions: 8
+    fps: 8
+    loop: 0
+    sheet: {fileID: 2800000, guid: 9b5fee8feb956d7449c96909fc2443f1, type: 3}
+    size: {x: 108, y: 79}
+    feet: {x: 54, y: 32}
+    zoneSheet: {fileID: 0}
+    reverse: 0
+    hitFrom: 0
+    hitTo: 0

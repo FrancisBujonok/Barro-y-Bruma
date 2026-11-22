@@ -17,6 +17,7 @@ MonoBehaviour:
   shadowMaterial: {fileID: 2100000, guid: cbed8d879681b444bad4358973afb526, type: 2}
   phase2Below: 0.5
   moveThreshold: 0.25
+  walkSpeedRef: 2.4
   lookAtHeroRange: 7
   faceHero: 0
   fixedYaw: 180

@@ -16,14 +16,18 @@ namespace BrumaPx.Characters
     [DisallowMultipleComponent]
     public sealed class ActorSpriteDriver : MonoBehaviour
     {
-        public enum Mode { Npc, Boss }
+        public enum Mode { Npc, Boss, Enemy }
 
         public ActorSpriteConfig config;
         public Mode mode;
 
         DioramaSprite _sprite;
+        MeshRenderer _spriteRenderer;
         EnemyBrain _brain;
+        EnemyTraits _traits;
         Health _health;
+        float _speedNow;
+        bool _wasHidden;
         Transform _hero;
         Camera _camera;
         Vector3 _lastPos;
@@ -54,6 +58,7 @@ namespace BrumaPx.Characters
         {
             if (config == null || config.set == null) { enabled = false; return; }
             _brain = GetComponent<EnemyBrain>();
+            _traits = GetComponent<EnemyTraits>();
             _health = GetComponent<Health>();
             HideOldLook();
 
@@ -66,10 +71,11 @@ namespace BrumaPx.Characters
             if (config.set.ClipsHaveSheets) _sprite.UseClipSheets();
             else _sprite.SetLayers(config.set.layers);
             _lastPos = transform.position;
-            if (mode == Mode.Npc) SetUpNpcExtras();
+            _spriteRenderer = go.GetComponent<MeshRenderer>();
+            SetUpExtras();
         }
 
-        void SetUpNpcExtras()
+        void SetUpExtras()
         {
             ScheduleAmbient();
             if (config.lamp)
@@ -141,11 +147,13 @@ namespace BrumaPx.Characters
             Vector3 v = transform.position - _lastPos;
             v.y = 0f;
             _lastPos = transform.position;
-            bool movingNow = v.magnitude / dt > config.moveThreshold;
+            _speedNow = v.magnitude / dt;
+            bool movingNow = _speedNow > config.moveThreshold;
             _movingFor = movingNow ? 0.15f : Mathf.Max(0f, _movingFor - dt);
             _moving = _movingFor > 0f;
 
             if (mode == Mode.Boss) Boss();
+            else if (mode == Mode.Enemy) Enemy();
             else Npc();
         }
 
@@ -244,6 +252,38 @@ namespace BrumaPx.Characters
             }
             else if (_moving) _sprite.Play(p2 && _sprite.HasClip("crawl2") ? "crawl2" : "crawl", 1f, false);
             else _sprite.Play(p2 && _sprite.HasClip("p2idle") ? "p2idle" : "idle", 1f, false);
+            _wasAttacking = attacking;
+        }
+
+        // Ordinary enemies: idle, walk (sped up with the actual speed), attack following the EnemyProfile timer, death.
+        // An ambusher in hiding is not drawn; when it springs, the old primitives that EnemyTraits switches back on
+        // are hidden again.
+        void Enemy()
+        {
+            if (_traits != null)
+            {
+                bool hidden = _traits.Hidden;
+                if (_spriteRenderer != null) _spriteRenderer.enabled = !hidden;
+                if (_wasHidden && !hidden) HideOldLook();
+                _wasHidden = hidden;
+                if (hidden) return;
+            }
+            bool dead = _health != null && _health.IsDead;
+            if (dead)
+            {
+                _sprite.Play("death", 1f, false);
+                return;
+            }
+            Face(transform.eulerAngles.y);
+            bool attacking = _brain != null && _brain.Current == EnemyBrain.State.Attack && _brain.profile != null;
+            if (attacking)
+            {
+                if (!_wasAttacking) _attackStart = Time.time;
+                _sprite.Hold("attack", BiteFrame(Time.time - _attackStart, _brain.profile));
+            }
+            else if (_moving)
+                _sprite.Play("walk", Mathf.Clamp(_speedNow / Mathf.Max(0.1f, config.walkSpeedRef), 0.6f, 2.2f), false);
+            else _sprite.Play("idle", 1f, false);
             _wasAttacking = attacking;
         }
 

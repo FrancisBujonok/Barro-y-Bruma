@@ -206,6 +206,32 @@ namespace BrumaPx.EditorTools
                 a.greetMin = 3f;
                 a.greetLoopFrom = 2;
             }
+            // Enemies made in Blender: idle, walk, attack (8 frames on the EnemyProfile timer) and death.
+            foreach (var id in new[] { "Infectado1", "Infectado2", "Infectado3", "Hinchado", "Saqueador", "Ballestero", "Emboscador", "Tomado", "Sabueso" })
+            {
+                var es = ClipSheetSet("Assets/Characters/" + id, DataFolder + "/" + id + ".asset", log);
+                if (es == null) continue;
+                var a = Actor(id, es, mat, shadow);
+                a.walkSpeedRef = id == "Sabueso" ? 3.6f : (id == "Hinchado" ? 1.4f : (id == "Emboscador" ? 2.6f : 2.2f));
+                a.lamp = id == "Hinchado" || id == "Tomado";
+                if (id == "Hinchado")
+                {
+                    // the sac on his back glows
+                    a.lampOffset = new Vector3(0f, 1.3f, 0f);
+                    a.lampRadius = 3.2f;
+                    a.lampColor = new Color(0.62f, 0.45f, 0.95f, 1f);
+                    a.lampIntensity = 0.8f;
+                }
+                else if (id == "Tomado")
+                {
+                    // faint glow from the threads in his eyes and his open mouth
+                    a.lampOffset = new Vector3(0f, 1.55f, -0.1f);
+                    a.lampRadius = 1.6f;
+                    a.lampColor = new Color(0.62f, 0.45f, 0.95f, 1f);
+                    a.lampIntensity = 0.45f;
+                }
+            }
+
             var guardia = ClipSheetSet("Assets/Characters/Guardia", DataFolder + "/Guardia.asset", log);
             if (guardia != null)
             {
@@ -253,6 +279,7 @@ namespace BrumaPx.EditorTools
                 case "ofrecer": fps = 7f; loop = false; break;
                 case "llamar": fps = 7f; loop = false; break;
                 case "alto": fps = 8f; loop = false; break;
+                case "attack": fps = 10f; loop = false; break;
             }
         }
 

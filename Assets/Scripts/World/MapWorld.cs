@@ -586,7 +586,11 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
                 Vector3 pos = n == 1 ? p : Ring(p, 1.8f, i, n, R(rng) * 6f);
                 if (MapGrid.BlockedAt(pos.x, pos.z)) pos = p;
                 var g = Spawn(key, pos, Mathf.Round(R(rng) * 8f) * 45f, 1f, parent);
-                if (g != null) g.name = key + " " + m.id + (n > 1 ? "." + (i + 1) : string.Empty);
+                if (g == null) continue;
+                g.name = key + " " + m.id + (n > 1 ? "." + (i + 1) : string.Empty);
+                // Blender sprite of the enemy; the infected come in three villagers, picked at random.
+                string sprite = key == "Infectado" ? "Infectado" + (1 + (int)(R(rng) * 2.999f)) : key;
+                ActorSpriteDriver.Attach(g, sprite, ActorSpriteDriver.Mode.Enemy);
             }
         }
 
