@@ -103,7 +103,12 @@ namespace BrumaPx.Rendering
         static void ResetNoIsland() { NoIsland = false; }
 
         Vector2 Island { get { return NoIsland ? new Vector2(1e6f, 1e6f) : (_atmo != null ? _atmo.island : islandRadius); } }
-        Color Fog { get { return _atmo != null ? _atmo.fog : fogColor; } }
+        /// <summary>When set, replaces the fog/background colour (a basement: everything around it is dark).</summary>
+        public static Color? FogOverride;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetFogOverride() { FogOverride = null; }
+
+        Color Fog { get { return FogOverride.HasValue ? FogOverride.Value : (_atmo != null ? _atmo.fog : fogColor); } }
 
         void OnEnable()
         {

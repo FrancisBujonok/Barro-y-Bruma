@@ -27,10 +27,12 @@ namespace BrumaPx.Atmosphere
 
         /// <summary>1 while the hero is inside a cave (set by CaveLair): dark, short sight, lamps lit.</summary>
         public static float CaveDarknessTarget;
+        /// <summary>Darkness asked for by something other than a cave (a basement). The darker of the two wins.</summary>
+        public static float ExtraDarknessTarget;
         float _cave;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetCave() { CaveDarknessTarget = 0f; }
+        static void ResetCave() { CaveDarknessTarget = 0f; ExtraDarknessTarget = 0f; }
 
         /// <summary>How strongly the lamps are on right now, 0 to 1.</summary>
         public float LampStrength { get; private set; }
@@ -181,7 +183,7 @@ void OnEnable()
             _inited = true;
 
             float flash = UpdateLightning(dt, p.lightning);
-            _cave = Mathf.MoveTowards(_cave, CaveDarknessTarget, dt * 1.5f);
+            _cave = Mathf.MoveTowards(_cave, Mathf.Max(CaveDarknessTarget, ExtraDarknessTarget), dt * 1.5f);
 
             Apply(flash);
             if (hud != null) hud.text = FormatClock() + "   " + WeatherNames[(int)weather];

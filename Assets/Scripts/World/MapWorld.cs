@@ -120,7 +120,9 @@ namespace BrumaPx.World
             _chunkMaxZ = Mathf.FloorToInt((MapGrid.ZMax - 8f) / ChunkSize);
 
             int prenda = 0;
-            foreach (var m in MapGrid.File.markers)
+            var markers = new List<MapMarker>(MapGrid.File.markers);
+            markers.AddRange(VillageHouses(MapGrid.File.markers));
+            foreach (var m in markers)
             {
                 var key = ChunkOf(m.x, m.z);
                 List<MapMarker> list;
@@ -135,10 +137,59 @@ namespace BrumaPx.World
             }
         }
 
+        // Cenizal's houses (Blender buildings), laid out around the square of the village marker. Encoded as
+        // markers of type "casa" with label "Prefab|yaw|locked" so they stream with the chunks like the rest.
+        static readonly string[] CenizalHouses =
+        {
+            "CasaEntramado|0|",          "1.3,9.4",
+            "CasaPiedra|0|",            "-8.2,1.9",
+            "CasaPiedra|90|",            "11.3,4.9",
+            "CasaEntramado|90|",         "10.8,-4.1",
+            "CasaPiedra|0|locked",      "-10.2,-5.1",
+            "CasaEntramado|0|",          "-19.7,4.9",
+            "CasaPiedra|0|locked",       "-21.2,-3.1",
+            "CasaEntramado|0|locked",    "-6.7,13.9",
+        };
+
+        static List<MapMarker> VillageHouses(IEnumerable<MapMarker> markers)
+        {
+            var list = new List<MapMarker>();
+            foreach (var m in markers)
+            {
+                if (m.type != "aldea" || m.label == null || !m.label.ToLowerInvariant().Contains("cenizal")) continue;
+                for (int i = 0; i < CenizalHouses.Length; i += 2)
+                {
+                    var o = CenizalHouses[i + 1].Split(',');
+                    list.Add(new MapMarker
+                    {
+                        id = m.id + "_casa" + (i / 2 + 1),
+                        type = "casa",
+                        x = m.x + float.Parse(o[0], System.Globalization.CultureInfo.InvariantCulture),
+                        z = m.z + float.Parse(o[1], System.Globalization.CultureInfo.InvariantCulture),
+                        label = CenizalHouses[i],
+                        note = string.Empty
+                    });
+                }
+            }
+            return list;
+        }
+
+        void SpawnHouse(Transform parent, MapMarker m, Vector3 p)
+        {
+            var bits = m.label.Split('|');
+            float yaw = bits.Length > 1 ? float.Parse(bits[1], System.Globalization.CultureInfo.InvariantCulture) : 0f;
+            var g = SpawnBuilding(bits[0], p, yaw, parent);
+            if (g == null) { Spawn("Hut", p, yaw, 1f, parent); return; }
+            g.name = bits[0] + " " + m.id;
+            var b = g.GetComponent<Building>();
+            if (b != null && b.door != null) b.door.SetLocked(bits.Length > 2 && bits[2] == "locked");
+        }
+
         static float ClearRadius(MapMarker m)
         {
             switch (m.type)
             {
+                case "casa": return 4.6f;
                 case "start": return 4f;
                 case "carruaje": return 3f;
                 case "aldea": return 7f;
@@ -275,12 +326,28 @@ namespace BrumaPx.World
 
             List<MapMarker> ms;
             if (_byChunk.TryGetValue(key, out ms))
-                for (int i = 0; i < ms.Count; i++) SpawnMarker(go.transform, ms[i], rng);
+            {
+                // buildings first, so the people who live inside them (the woodcutter in his basement) find them
+                for (int i = 0; i < ms.Count; i++) if (IsPlace(ms[i])) SpawnMarker(go.transform, ms[i], rng);
+                for (int i = 0; i < ms.Count; i++) if (!IsPlace(ms[i])) SpawnMarker(go.transform, ms[i], rng);
+            }
 
             Scatter(go.transform, cx, cz, rng);
         }
 
+        static bool IsPlace(MapMarker m) { return m.type == "poi" || m.type == "refugio" || m.type == "aldea" || m.type == "casa"; }
+
         float R(System.Random rng) { return (float)rng.NextDouble(); }
+
+        /// <summary>A building made in Blender (Assets/Resources/Buildings/&lt;id&gt;, built by BuildingImporter).</summary>
+        GameObject SpawnBuilding(string id, Vector3 pos, float yaw, Transform parent)
+        {
+            var prefab = Resources.Load<GameObject>("Buildings/" + id);
+            if (prefab == null) return null;
+            var go = Instantiate(prefab, pos, Quaternion.Euler(0f, yaw, 0f), parent);
+            go.name = id;
+            return go;
+        }
 
         void Scatter(Transform parent, int cx, int cz, System.Random rng)
         {
@@ -340,9 +407,9 @@ namespace BrumaPx.World
                             Roll(parent, rng, "Cadaver", 0.012f, x, zTop, 1.2f, 1f, 1f, false);
                             break;
                         case 10:
-                            Roll(parent, rng, "RuinedHut", 0.06f, x, zTop, 3.6f, 1f, 1f, false);
-                            Roll(parent, rng, "Hut", 0.02f, x, zTop, 3.8f, 1f, 1f, false);
-                            Roll(parent, rng, "Lantern", 0.02f, x, zTop, 0.8f, 1f, 1f, false);
+                            // the houses of a village are placed by hand (Cenizal); here only odds and ends
+                            Roll(parent, rng, "Fence", 0.02f, x, zTop, 2.0f, 1f, 1f, true);
+                            Roll(parent, rng, "Lantern", 0.01f, x, zTop, 0.8f, 1f, 1f, false);
                             Roll(parent, rng, "StoneA", 0.02f, x, zTop, 0.8f, 0.8f, 1f, false);
                             break;
                     }
@@ -464,7 +531,11 @@ namespace BrumaPx.World
                 case "aldea":
                     Spawn("Well", p + new Vector3(3f, 0f, -3f), 0f, 1f, parent);
                     Spawn("Lantern", p + new Vector3(-2f, 0f, 2f), 0f, 1f, parent);
-                    Spawn("Hut", p + new Vector3(-4f, 0f, -4f), 0f, 1f, parent);
+                    Spawn("Lantern", p + new Vector3(6f, 0f, 3f), 0f, 1f, parent);
+                    Spawn("Cart", p + new Vector3(-4f, 0f, -3f), 25f, 1f, parent);
+                    break;
+                case "casa":
+                    SpawnHouse(parent, m, p);
                     break;
                 case "salida":
                     Spawn("Lantern", p + new Vector3(-2.4f, 0f, 0f), 0f, 1f, parent);
@@ -563,6 +634,18 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             string id = NpcSpriteId(m.label);
             if (id != null) ActorSpriteDriver.Attach(g, id, ActorSpriteDriver.Mode.Npc);
+
+            // The woodcutter lives chained in the basement of his cabin: he only exists down there.
+            if (id == "Lenador")
+            {
+                var home = Building.WithBasementNear(p, 30f);
+                if (home != null)
+                {
+                    g.transform.SetParent(home.basementRoot.transform, true);
+                    g.transform.position = home.occupantAnchor.position;
+                    g.transform.rotation = home.occupantAnchor.rotation;
+                }
+            }
         }
 
         // NPCs with a sprite of their own, found by the label of the marker. The rest keep the hooded figure.
@@ -575,6 +658,7 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             if (l.Contains("curandera")) return "Curandera";
             if (l.Contains("superviviente")) return "Superviviente";
             if (l.Contains("guardia")) return "Guardia";
+            if (l.Contains("cochero")) return "Cochero";
             return null;
         }
 
@@ -714,6 +798,10 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             else if (l.Contains("fuego"))
             {
                 Spawn("Foco", p, 0f, 1f, parent);
+            }
+            else if (l.Contains("caba") && (l.Contains("leñador") || l.Contains("lenador")))
+            {
+                if (SpawnBuilding("CabanaLenador", p, 0f, parent) == null) Spawn("Hut", p, 0f, 1f, parent);
             }
             else if (l.Contains("caba"))
             {
