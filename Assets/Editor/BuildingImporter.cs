@@ -21,6 +21,9 @@ namespace BrumaPx.EditorTools
         const string Root = "Assets/Art/Buildings";
         const string PrefabDir = "Assets/Resources/Buildings";
         const string ShadowMat = "Assets/Art/Materials/Diorama/PP_Shadow.mat";
+        // the characters read about 1.4 times taller than a real person; buildings are scaled to match
+        const float DefaultScale = 1.4f;
+        static float S = 1f;
 
         [MenuItem("BrumaPx/Buildings/Import Blender Buildings")]
         public static void ImportAll() { Debug.Log(ImportAndReport()); }
@@ -46,6 +49,7 @@ namespace BrumaPx.EditorTools
         {
             var data = (Dictionary<string, object>)Json.Parse(File.ReadAllText(dir + "/building.json"));
             string name = (string)data["name"];
+            S = data.ContainsKey("scale") ? (float)(double)data["scale"] : DefaultScale;
 
             // texture: point-sampled, uncompressed, no mipmaps
             string texPath = dir + "/atlas.png";
@@ -86,16 +90,17 @@ namespace BrumaPx.EditorTools
             var building = root.AddComponent<Building>();
             building.id = name;
             var fp = Floats(data["footprint"]);
-            building.footprintCenter = new Vector2(fp[0], fp[1]);
-            building.footprintHalf = new Vector2(fp[2], fp[3]);
+            building.footprintCenter = new Vector2(fp[0], fp[1]) * S;
+            building.footprintHalf = new Vector2(fp[2], fp[3]) * S;
 
             var groups = new Dictionary<string, GameObject>();
-            System.Func<string, GameObject> Group = g =>
+            System.Func<string, GameObject> Group = null;
+            Group = g =>
             {
                 GameObject go;
                 if (groups.TryGetValue(g, out go)) return go;
-                go = new GameObject(g == "cabin" ? "Cabin" : (g == "basement" ? "Basement" : g));
-                go.transform.SetParent(root.transform, false);
+                go = new GameObject(g == "cabin" ? "Cabin" : (g == "basement" ? "Basement" : (g == "secret" ? "Secret" : g)));
+                go.transform.SetParent(g == "secret" ? Group("basement").transform : root.transform, false);
                 groups[g] = go;
                 return go;
             };
@@ -103,13 +108,14 @@ namespace BrumaPx.EditorTools
             var pieces = new List<Building.Piece>();
             var bars = new List<GameObject>();
             BuildingDoor door = null;
+            BuildingWardrobe wardrobe = null;
             GameObject doorBroken = null, hatchLid = null;
             foreach (var kv in parts)
             {
                 var p = (Dictionary<string, object>)kv.Value;
                 string role = Str(p, "role", "static");
                 string group = Str(p, "group", "cabin");
-                var pivot = V3(p["pivot"]);
+                var pivot = V3(p["pivot"]) * S;
                 bool isGlow = p.ContainsKey("glow") && (bool)p["glow"];
                 bool castShadow = !isGlow && (!p.ContainsKey("shadow") || (bool)p["shadow"]);
                 var parent = Group(group).transform;
@@ -121,6 +127,13 @@ namespace BrumaPx.EditorTools
                     holder.transform.SetParent(parent, false);
                     holder.transform.localPosition = pivot;
                     door = holder.AddComponent<BuildingDoor>();
+                }
+                if (role == "wardrobe")
+                {
+                    holder = new GameObject("Wardrobe");
+                    holder.transform.SetParent(parent, false);
+                    holder.transform.localPosition = pivot;
+                    wardrobe = holder.AddComponent<BuildingWardrobe>();
                 }
                 var go = new GameObject(kv.Key);
                 if (role == "door_bar") bars.Add(go);
@@ -135,12 +148,31 @@ namespace BrumaPx.EditorTools
                 if (role == "door") door.leaf = go.transform;
                 if (role == "door_broken") doorBroken = go;
                 if (role == "hatch") hatchLid = go;
+                if (role == "secret_cut" || role == "wardrobe")
+                    pieces.Add(new Building.Piece { renderer = mr, role = role, normal = Vector3.zero });
                 if (role == "roof" || role == "cut" || role == "door" || role == "door_bar")
                     pieces.Add(new Building.Piece { renderer = mr, role = role == "door_bar" ? "door" : role, normal = p.ContainsKey("normal") ? V3(p["normal"]) : Vector3.zero });
             }
             building.pieces = pieces.ToArray();
             building.cabinRoot = groups.ContainsKey("cabin") ? groups["cabin"] : null;
             building.basementRoot = groups.ContainsKey("basement") ? groups["basement"] : null;
+            building.secretRoot = groups.ContainsKey("secret") ? groups["secret"] : null;
+            if (data.ContainsKey("secret"))
+            {
+                var sf = Floats(((Dictionary<string, object>)data["secret"])["footprint"]);
+                building.secretCenter = new Vector2(sf[0], sf[1]) * S;
+                building.secretHalf = new Vector2(sf[2], sf[3]) * S;
+            }
+            if (wardrobe != null && data.ContainsKey("wardrobe"))
+            {
+                var w = (Dictionary<string, object>)data["wardrobe"];
+                wardrobe.building = building;
+                wardrobe.slide = V3(w["slide"]) * S;
+                wardrobe.promptPoint = V3(w["prompt"]) * S;
+                var wb = Floats(w["box"]);
+                Box(wardrobe.transform, new[] { 0f, 0f, wb[0] * S, wb[1] * S }, "Obstacle", true);
+                building.wardrobe = wardrobe;
+            }
 
             // obstacles
             if (data.ContainsKey("obstacles"))
@@ -157,10 +189,10 @@ namespace BrumaPx.EditorTools
                 var d = (Dictionary<string, object>)data["door"];
                 var c = Floats(d["closed"]);
                 Vector3 piv = door.transform.localPosition;
-                door.blocker = Box(door.transform, new[] { c[0] - piv.x, c[1] - piv.z, c[2], c[3] }, "Blocker");
+                door.blocker = Box(door.transform, new[] { c[0] * S - piv.x, c[1] * S - piv.z, c[2] * S, c[3] * S }, "Blocker", true);
                 door.locked = d.ContainsKey("locked") && (bool)d["locked"];
                 door.openYaw = Num(d, "openYaw", 100f);
-                door.promptPoint = V3(d["prompt"]) - piv;
+                door.promptPoint = V3(d["prompt"]) * S - piv;
                 door.broken = doorBroken;
                 // boards nailed across the door: they ride on the leaf and show only while it is locked
                 foreach (var b in bars)
@@ -171,7 +203,7 @@ namespace BrumaPx.EditorTools
                 }
                 var target = new GameObject("Target");
                 target.transform.SetParent(door.transform, false);
-                target.transform.localPosition = new Vector3(c[0] - piv.x, 0f, c[1] - piv.z);
+                target.transform.localPosition = new Vector3(c[0] * S - piv.x, 0f, c[1] * S - piv.z);
                 var h = target.AddComponent<Health>();
                 h.team = 1;
                 h.max = Num(d, "health", 60f);
@@ -189,10 +221,10 @@ namespace BrumaPx.EditorTools
                 hatch.building = building;
                 hatch.lid = hatchLid.transform;
                 hatch.openPitch = Num(d, "openPitch", 100f);
-                hatch.center = V3(d["center"]);
-                hatch.returnPoint = V3(d["return"]);
-                hatch.arrivePoint = V3(d["arrive"]);
-                hatch.upPoint = V3(d["up"]);
+                hatch.center = V3(d["center"]) * S;
+                hatch.returnPoint = V3(d["return"]) * S;
+                hatch.arrivePoint = V3(d["arrive"]) * S;
+                hatch.upPoint = V3(d["up"]) * S;
                 building.hatch = hatch;
             }
 
@@ -203,10 +235,10 @@ namespace BrumaPx.EditorTools
                     var d = (Dictionary<string, object>)o;
                     var go = new GameObject("Light");
                     go.transform.SetParent(Group(Str(d, "group", "cabin")).transform, false);
-                    go.transform.localPosition = V3(d["pos"]);
+                    go.transform.localPosition = V3(d["pos"]) * S;
                     var l = go.AddComponent<PixelLight>();
                     l.offset = Vector3.zero;
-                    l.radius = Num(d, "radius", 4f);
+                    l.radius = Num(d, "radius", 4f) * S;
                     var col = Floats(d["color"]);
                     l.color = new Color(col[0], col[1], col[2], 1f);
                     l.intensity = Num(d, "intensity", 1f);
@@ -220,8 +252,9 @@ namespace BrumaPx.EditorTools
                 if (a.ContainsKey("occupant") && building.basementRoot != null)
                 {
                     var go = new GameObject("Occupant");
-                    go.transform.SetParent(building.basementRoot.transform, false);
-                    go.transform.localPosition = V3(a["occupant"]);
+                    string og = a.ContainsKey("occupantGroup") ? (string)a["occupantGroup"] : "basement";
+                    go.transform.SetParent(Group(og).transform, false);
+                    go.transform.localPosition = V3(a["occupant"]) * S;
                     go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
                     building.occupantAnchor = go.transform;
                 }
@@ -234,7 +267,7 @@ namespace BrumaPx.EditorTools
 
             int tris = 0;
             foreach (var m in meshes.Values) tris += m.triangles.Length / 3;
-            return name + ": " + meshes.Count + " partes, " + tris + " triangulos, atlas " + tex.width + "x" + tex.height + " -> " + prefabPath;
+            return name + ": " + meshes.Count + " partes, " + tris + " triangulos, escala " + S + ", atlas " + tex.width + "x" + tex.height + " -> " + prefabPath;
         }
 
         static Material Mat(string path, Shader shader, Texture2D tex, bool emissive)
@@ -268,7 +301,7 @@ namespace BrumaPx.EditorTools
             var cols = new Color[count];
             for (int i = 0; i < count; i++)
             {
-                verts[i] = new Vector3(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]);
+                verts[i] = new Vector3(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]) * S;
                 norms[i] = new Vector3(n[i * 3], n[i * 3 + 1], n[i * 3 + 2]);
                 uvs[i] = new Vector2(uv[i * 2], uv[i * 2 + 1]);
                 cols[i] = new Color(c[i * 3], c[i * 3 + 1], c[i * 3 + 2], 1f);
@@ -286,14 +319,15 @@ namespace BrumaPx.EditorTools
             return m;
         }
 
-        static WorldObstacle Box(Transform parent, float[] b, string name)
+        static WorldObstacle Box(Transform parent, float[] b, string name, bool scaled = false)
         {
+            float k = scaled ? 1f : S;
             var go = new GameObject(name);
             go.transform.SetParent(parent, false);
-            go.transform.localPosition = new Vector3(b[0], 0f, b[1]);
+            go.transform.localPosition = new Vector3(b[0] * k, 0f, b[1] * k);
             var o = go.AddComponent<WorldObstacle>();
             o.kind = WorldObstacle.Kind.Box;
-            o.halfSize = new Vector2(b[2], b[3]);
+            o.halfSize = new Vector2(b[2] * k, b[3] * k);
             return o;
         }
 

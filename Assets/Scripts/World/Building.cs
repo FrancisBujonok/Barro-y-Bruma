@@ -34,6 +34,11 @@ namespace BrumaPx.World
         public Transform occupantAnchor;
         public BuildingDoor door;
         public BuildingHatch hatch;
+        [Tooltip("A room hidden off the basement (shown by a BuildingWardrobe). While the hero is in it, the pieces with role secret_cut (the wall between it and the basement) and the pushed-aside wardrobe dissolve.")]
+        public GameObject secretRoot;
+        public Vector2 secretCenter;
+        public Vector2 secretHalf;
+        public BuildingWardrobe wardrobe;
         [Tooltip("How far behind the building (along the camera view) the hero makes it see-through.")]
         public float behindReach = 3.2f;
         [Range(0f, 1f)] public float behindCut = 0.8f;
@@ -60,6 +65,7 @@ namespace BrumaPx.World
                 foreach (var o in GetComponentsInChildren<WorldObstacle>(true))
                     if (o.kind == WorldObstacle.Kind.Box) o.halfSize = new Vector2(o.halfSize.y, o.halfSize.x);
             if (basementRoot != null) basementRoot.SetActive(false);
+            if (secretRoot != null) secretRoot.SetActive(false);
         }
 
         /// <summary>Is a world point inside the walls of this building?</summary>
@@ -86,7 +92,15 @@ namespace BrumaPx.World
         {
             var hero = DioramaHeroCache.Hero;
             if (hero == null) return;
-            if (Underground.Current == this) return;
+            if (Underground.Current == this)
+            {
+                Vector3 l = transform.InverseTransformPoint(hero.position);
+                bool inSecret = secretRoot != null && secretRoot.activeInHierarchy
+                    && Mathf.Abs(l.x - secretCenter.x) < secretHalf.x && Mathf.Abs(l.z - secretCenter.y) < secretHalf.y;
+                _secretCut = Mathf.MoveTowards(_secretCut, inSecret ? 1f : 0f, Time.deltaTime * 3.5f);
+                ApplySecret();
+                return;
+            }
 
             Vector3 fwd = CameraForward();
             HeroInside = Contains(hero.position);
@@ -106,6 +120,20 @@ namespace BrumaPx.World
             }
             _cut = Mathf.MoveTowards(_cut, target, Time.deltaTime * 3.5f);
             Apply(fwd);
+        }
+
+        float _secretCut;
+
+        void ApplySecret()
+        {
+            for (int i = 0; i < pieces.Length; i++)
+            {
+                var p = pieces[i];
+                if (p.renderer == null || (p.role != "secret_cut" && p.role != "wardrobe")) continue;
+                p.renderer.GetPropertyBlock(_block);
+                _block.SetFloat(CutId, _secretCut);
+                p.renderer.SetPropertyBlock(_block);
+            }
         }
 
         void Apply(Vector3 fwd)
@@ -133,7 +161,7 @@ namespace BrumaPx.World
         {
             if (cabinRoot != null) cabinRoot.SetActive(!on);
             if (basementRoot != null) basementRoot.SetActive(on);
-            if (!on) { _cut = 1f; Apply(CameraForward()); }
+            if (!on) { _cut = 1f; _secretCut = 0f; Apply(CameraForward()); }
         }
 
         /// <summary>The building whose basement anchor is closest to a point (within a radius), or null.</summary>

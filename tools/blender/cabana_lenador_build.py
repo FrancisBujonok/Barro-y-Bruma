@@ -5,8 +5,9 @@
 # chimney on the east side, plank door with a padlock (the doctor locks it: break it or open it), three windows
 # with shutters. Inside: hearth, bed, table and stools, shelf, crossed axes, firewood, chest, rug and the trapdoor.
 # Basement: dirt floor, stone walls on the far sides (the near ones are low so the camera sees in), stairs up to
-# the trapdoor, the doctor's table with vials, shelves with jars of Bruma, barrels; the woodcutter sits against
-# the north wall (his sprite brings his own wall and straw).
+# the trapdoor; it looks like an ordinary cellar (crates, barrels, sacks, a pantry shelf). A wardrobe against the
+# north wall hides an opening: pushed aside, it shows the hidden room where the doctor keeps the woodcutter
+# chained, with his table of vials and the shelves of Bruma jars (the sprite brings his own wall and straw).
 import math, random
 from mathutils import Vector
 
@@ -329,13 +330,18 @@ def basement():
         rock('b_straw_%d' % k, (x, y, 0.04), (r, r * 0.6, 0.03), 'straw', 'b_floor', seed=20 + k, squash=0.6)
     # far walls: north and east, full height, with posts and a top beam
     H = 2.5
-    box('b_wall_n', (BX0 - 0.1, BY1, 0), (BX1 + 0.1, BY1 + 0.3, H), 'stone', 'b_back')
+    # north wall: an opening behind the wardrobe leads to the hidden room; the wall is its own part so it can
+    # dissolve when the hero stands in that room
+    o0, o1 = SECRET_DOOR
+    box('b_wall_n_a', (BX0 - 0.1, BY1, 0), (o0, BY1 + 0.3, H), 'stone', 'b_north')
+    box('b_wall_n_b', (o1, BY1, 0), (BX1 + 0.1, BY1 + 0.3, H), 'stone', 'b_north')
+    box('b_wall_n_lintel', (o0, BY1, 2.0), (o1, BY1 + 0.3, H), 'stone', 'b_north')
     box('b_wall_e', (BX1, BY0 - 0.1, 0), (BX1 + 0.3, BY1 + 0.3, H), 'stone', 'b_back')
-    for k, x in enumerate((-1.9, -0.2, 1.6)):
-        box('b_post_n_%d' % k, (x - 0.09, BY1 - 0.16, 0), (x + 0.09, BY1, H), 'wood', 'b_back')
+    for k, x in enumerate((-2.35, -1.55, 1.75)):
+        box('b_post_n_%d' % k, (x - 0.09, BY1 - 0.16, 0), (x + 0.09, BY1, H), 'wood', 'b_north')
     for k, y in enumerate((-1.3, 0.6)):
         box('b_post_e_%d' % k, (BX1 - 0.16, y - 0.09, 0), (BX1, y + 0.09, H), 'wood', 'b_back')
-    box('b_beam_n', (BX0, BY1 - 0.18, H - 0.22), (BX1, BY1, H - 0.04), 'wood', 'b_back')
+    box('b_beam_n', (BX0, BY1 - 0.18, H - 0.22), (BX1, BY1, H - 0.04), 'wood', 'b_north')
     box('b_beam_e', (BX1 - 0.18, BY0, H - 0.22), (BX1, BY1, H - 0.04), 'wood', 'b_back')
     # near walls: south and west stay low so the camera sees in
     box('b_wall_s', (BX0 - 0.3, BY0 - 0.3, 0), (BX1 + 0.3, BY0, 0.45), 'stone', 'b_front')
@@ -353,45 +359,99 @@ def basement():
         prism('b_stringer_%d' % k, [(B - 0.05, 0), (B + 0.25, 0), (ytop, H - 0.3), (ytop, H), (B - 0.05, 0.3)],
               'x', x, x + 0.05, 'wood', 'b_stairs')
     box('b_stair_post', (xb - 0.06, B - 0.04, 0), (xb, B + 0.02, 1.1), 'wood', 'b_stairs')
-    # the doctor's table
-    tx0, tx1, ty0, ty1 = 1.2, 2.5, -0.6, 0.3
-    box('b_table', (tx0, ty0, 0.76), (tx1, ty1, 0.83), 'wood', 'b_props')
-    for k, (x, y) in enumerate(((tx0 + 0.06, ty0 + 0.06), (tx1 - 0.06, ty0 + 0.06), (tx0 + 0.06, ty1 - 0.06), (tx1 - 0.06, ty1 - 0.06))):
-        box('b_table_leg_%d' % k, (x - 0.04, y - 0.04, 0), (x + 0.04, y + 0.04, 0.76), 'wood', 'b_props')
-    box('b_book_a', (1.35, -0.4, 0.83), (1.62, -0.05, 0.86), 'paper', 'b_props', rot=(0, 0.12, 0.1))
-    box('b_book_b', (1.62, -0.4, 0.83), (1.89, -0.05, 0.86), 'paper', 'b_props', rot=(0, -0.12, 0.1))
-    cyl('b_mortar', (2.2, -0.35, 0.83), (2.2, -0.35, 0.95), 0.08, 'stone_dark', 'b_props', sides=8, r1=0.1)
-    cyl('b_pestle', (2.18, -0.35, 0.92), (2.3, -0.3, 1.08), 0.018, 'stone_dark', 'b_props', sides=4)
-    for k, (x, y, h) in enumerate(((1.95, 0.05, 0.16), (2.08, 0.12, 0.12), (2.3, 0.08, 0.2), (1.4, 0.15, 0.1))):
-        cyl('b_vial_%d' % k, (x, y, 0.83), (x, y, 0.83 + h), 0.03, 'glass_v', 'b_props', sides=6)
-        cyl('b_vial_glow_%d' % k, (x, y, 0.85), (x, y, 0.83 + h * 0.6), 0.025, 'bruma_glow', 'glowv_b', sides=6)
-    cyl('b_candle', (1.3, -0.5, 0.83), (1.3, -0.5, 0.98), 0.025, 'linen', 'b_props', sides=6)
-    box('b_candle_flame', (1.285, -0.515, 0.98), (1.315, -0.485, 1.03), 'flame', 'glow_b')
-    cyl('b_stool', (1.0, -0.15, 0.4), (1.0, -0.15, 0.47), 0.17, 'wood', 'b_props', sides=8)
-    for j in range(3):
-        a = j * 2.094
-        cyl('b_stool_leg_%d' % j, (1.0 + 0.1 * math.cos(a), -0.15 + 0.1 * math.sin(a), 0.4),
-            (1.0 + 0.15 * math.cos(a), -0.15 + 0.15 * math.sin(a), 0.0), 0.025, 'wood', 'b_props', sides=4)
-    rock('b_bag', (0.6, -0.55, 0.12), (0.22, 0.14, 0.14), 'leather', 'b_props', seed=11, squash=1.0)
-    # shelves with jars of Bruma on the east wall
-    for k, z in enumerate((1.05, 1.6)):
-        box('b_shelf_%d' % k, (BX1 - 0.3, 0.7, z), (BX1, 2.0, z + 0.05), 'wood', 'b_props')
-        for j in range(4):
-            y = 0.85 + j * 0.32
-            cyl('b_jar_%d_%d' % (k, j), (BX1 - 0.15, y, z + 0.05), (BX1 - 0.15, y, z + 0.27 - 0.04 * (j % 2)),
-                0.07, 'glass_v', 'b_props', sides=6)
-            if (k + j) % 2 == 0:
-                cyl('b_jar_glow_%d_%d' % (k, j), (BX1 - 0.15, y, z + 0.07), (BX1 - 0.15, y, z + 0.17), 0.055,
-                    'bruma_glow', 'glowv_b', sides=6)
-    # barrels and sacks in the south-east corner, a bucket by the woodcutter, a hanging lantern
-    for k, (x, y) in enumerate(((2.4, -1.85), (2.4, -1.25))):
+    # an ordinary cellar: crates, barrels, sacks, a pantry shelf, a lantern
+    for k, (x, y, z) in enumerate(((1.9, -1.85, 0), (2.45, -1.85, 0), (2.15, -1.85, 0.5))):
+        box('b_crate_%d' % k, (x - 0.25, y - 0.25, z), (x + 0.25, y + 0.25, z + 0.5), 'boards', 'b_props', rot=(0, 0, 0.08 * k))
+    for k, (x, y) in enumerate(((2.45, -1.0), (2.45, -0.42))):
         cyl('b_barrel_%d' % k, (x, y, 0), (x, y, 0.75), 0.26, 'boards', 'b_props', sides=10)
         cyl('b_barrel_hoop_%d' % k, (x, y, 0.6), (x, y, 0.64), 0.275, 'iron', 'b_props', sides=10)
-    rock('b_sack', (1.75, -1.95, 0.2), (0.28, 0.22, 0.3), 'linen', 'b_props', seed=14, squash=1.0)
-    cyl('b_bucket', (-0.4, 1.5, 0), (-0.4, 1.5, 0.28), 0.14, 'wood', 'b_props', sides=8, r1=0.17)
-    cyl('b_lantern_rope', (1.8, -0.1, 2.3), (1.8, -0.1, 1.95), 0.01, 'iron', 'b_props', sides=4)
-    cyl('b_lantern', (1.8, -0.1, 1.72), (1.8, -0.1, 1.95), 0.08, 'iron', 'b_props', sides=6)
-    box('b_lantern_flame', (1.77, -0.13, 1.76), (1.83, -0.07, 1.88), 'flame', 'glow_b')
+    for k, (x, y) in enumerate(((1.3, -1.95), (0.85, -2.0))):
+        rock('b_sack_%d' % k, (x, y, 0.2), (0.26, 0.22, 0.3), 'linen', 'b_props', seed=14 + k, squash=1.0)
+    for k, z in enumerate((0.95, 1.55)):
+        box('b_shelf_%d' % k, (BX1 - 0.3, 0.15, z), (BX1, 1.95, z + 0.05), 'wood', 'b_props')
+        for j in range(5):
+            y = 0.3 + j * 0.35
+            if (k + j) % 3 == 0:
+                cyl('b_cheese_%d_%d' % (k, j), (BX1 - 0.15, y, z + 0.05), (BX1 - 0.15, y, z + 0.17), 0.13, 'bread', 'b_props', sides=8)
+            else:
+                cyl('b_jar_%d_%d' % (k, j), (BX1 - 0.15, y, z + 0.05), (BX1 - 0.15, y, z + 0.27 - 0.05 * (j % 2)), 0.07,
+                    'clay', 'b_props', sides=6)
+    for k in range(4):
+        ox = (1.35, 1.55, 1.98, 2.2)[k]
+        cyl('b_onions_%d' % k, (ox, BY1 - 0.12, 2.2), (ox, BY1 - 0.12, 1.75), 0.06, 'bread',
+            'b_props', sides=5, r1=0.09)
+    cyl('b_lantern_rope', (0.3, -0.3, 2.3), (0.3, -0.3, 1.95), 0.01, 'iron', 'b_props', sides=4)
+    cyl('b_lantern', (0.3, -0.3, 1.72), (0.3, -0.3, 1.95), 0.08, 'iron', 'b_props', sides=6)
+    box('b_lantern_flame', (0.27, -0.33, 1.76), (0.33, -0.27, 1.88), 'flame', 'glow_b')
+    wardrobe()
+    secret_room()
+
+
+SECRET_DOOR = (0.15, 1.15)                    # opening in the basement's north wall, hidden by the wardrobe
+WARDROBE = (0.65, BY1 - 0.29)                 # centre of the wardrobe (pivot), against the north wall
+WARDROBE_SLIDE = -1.35                        # how far it slides along x when it is pushed aside
+SX0, SX1, SY0, SY1 = -1.2, BX1, BY1 + 0.3, BY1 + 3.3
+
+
+def wardrobe():
+    cx, cy = WARDROBE
+    x0, x1, y0, y1 = cx - 0.65, cx + 0.65, cy - 0.27, cy + 0.27
+    box('wardrobe_body', (x0, y0, 0), (x1, y1, 2.1), 'wood', 'b_wardrobe')
+    box('wardrobe_crown', (x0 - 0.05, y0 - 0.05, 2.1), (x1 + 0.05, y1 + 0.02, 2.2), 'wood_light', 'b_wardrobe')
+    box('wardrobe_foot', (x0 - 0.03, y0 - 0.03, 0), (x1 + 0.03, y1, 0.1), 'wood_light', 'b_wardrobe')
+    for k, (a, b) in enumerate(((x0 + 0.06, cx - 0.01), (cx + 0.01, x1 - 0.06))):
+        box('wardrobe_door_%d' % k, (a, y0 - 0.03, 0.18), (b, y0, 2.0), 'boards', 'b_wardrobe')
+        hx = b - 0.08 if k == 0 else a + 0.04
+        box('wardrobe_handle_%d' % k, (hx, y0 - 0.06, 1.0), (hx + 0.04, y0 - 0.03, 1.2), 'iron', 'b_wardrobe')
+    # scratches on the floor where it has been dragged before: the only hint
+    for k in range(3):
+        box('scrape_%d' % k, (x0 - 1.2, y0 + 0.05 + k * 0.18, 0.041), (x0 + 0.1, y0 + 0.08 + k * 0.18, 0.045), 'soot', 'b_floor')
+
+
+def secret_room():
+    """The hidden room behind the wardrobe: the woodcutter in chains and the doctor's work."""
+    H = 2.5
+    box('s_floor', (SX0, SY0, -0.02), (SX1, SY1, 0.04), 'dirt', 's_floor')
+    rock('s_straw', (0.6, SY1 - 0.9, 0.04), (0.9, 0.5, 0.03), 'straw', 's_floor', seed=40, squash=0.6)
+    box('s_wall_n', (SX0 - 0.3, SY1, 0), (SX1 + 0.3, SY1 + 0.3, H), 'stone_dark', 's_back')
+    box('s_wall_e', (SX1, SY0, 0), (SX1 + 0.3, SY1 + 0.3, H), 'stone_dark', 's_back')
+    box('s_beam', (SX0, SY1 - 0.18, H - 0.22), (SX1, SY1, H - 0.04), 'wood', 's_back')
+    box('s_wall_w', (SX0 - 0.3, SY0, 0), (SX0, SY1 + 0.3, 0.45), 'stone_dark', 's_front')
+    # the doctor's table along the east wall
+    tx0, tx1, ty0, ty1 = SX1 - 0.95, SX1 - 0.1, SY0 + 0.25, SY0 + 1.45
+    box('s_table', (tx0, ty0, 0.76), (tx1, ty1, 0.83), 'wood', 's_props')
+    for k, (x, y) in enumerate(((tx0 + 0.06, ty0 + 0.06), (tx1 - 0.06, ty0 + 0.06), (tx0 + 0.06, ty1 - 0.06), (tx1 - 0.06, ty1 - 0.06))):
+        box('s_table_leg_%d' % k, (x - 0.04, y - 0.04, 0), (x + 0.04, y + 0.04, 0.76), 'wood', 's_props')
+    box('s_book_a', (tx0 + 0.1, ty0 + 0.2, 0.83), (tx0 + 0.45, ty0 + 0.47, 0.86), 'paper', 's_props', rot=(0.12, 0, 0.1))
+    box('s_book_b', (tx0 + 0.1, ty0 + 0.47, 0.83), (tx0 + 0.45, ty0 + 0.74, 0.86), 'paper', 's_props', rot=(-0.12, 0, 0.1))
+    cyl('s_mortar', (tx1 - 0.2, ty0 + 0.25, 0.83), (tx1 - 0.2, ty0 + 0.25, 0.95), 0.08, 'stone_dark', 's_props', sides=8, r1=0.1)
+    for k, (x, y, h) in enumerate(((tx1 - 0.2, ty1 - 0.4, 0.16), (tx1 - 0.35, ty1 - 0.25, 0.12), (tx1 - 0.15, ty1 - 0.15, 0.2),
+                                   (tx0 + 0.25, ty1 - 0.2, 0.1))):
+        cyl('s_vial_%d' % k, (x, y, 0.83), (x, y, 0.83 + h), 0.03, 'glass_v', 's_props', sides=6)
+        cyl('s_vial_glow_%d' % k, (x, y, 0.85), (x, y, 0.83 + h * 0.6), 0.025, 'bruma_glow', 'glowv_s', sides=6)
+    cyl('s_candle', (tx0 + 0.15, ty0 + 0.1, 0.83), (tx0 + 0.15, ty0 + 0.1, 0.98), 0.025, 'linen', 's_props', sides=6)
+    box('s_candle_flame', (tx0 + 0.135, ty0 + 0.085, 0.98), (tx0 + 0.165, ty0 + 0.115, 1.03), 'flame', 'glow_s')
+    cyl('s_stool', (tx0 - 0.35, ty0 + 0.6, 0.4), (tx0 - 0.35, ty0 + 0.6, 0.47), 0.17, 'wood', 's_props', sides=8)
+    for j in range(3):
+        a = j * 2.094
+        cyl('s_stool_leg_%d' % j, (tx0 - 0.35 + 0.1 * math.cos(a), ty0 + 0.6 + 0.1 * math.sin(a), 0.4),
+            (tx0 - 0.35 + 0.15 * math.cos(a), ty0 + 0.6 + 0.15 * math.sin(a), 0.0), 0.025, 'wood', 's_props', sides=4)
+    # jars of Bruma on a shelf further along the east wall
+    for k, z in enumerate((1.0, 1.55)):
+        box('s_shelf_%d' % k, (SX1 - 0.3, ty1 + 0.15, z), (SX1, SY1 - 0.1, z + 0.05), 'wood', 's_props')
+        for j in range(4):
+            y = ty1 + 0.3 + j * 0.3
+            if y > SY1 - 0.15:
+                continue
+            cyl('s_jar_%d_%d' % (k, j), (SX1 - 0.15, y, z + 0.05), (SX1 - 0.15, y, z + 0.27), 0.07, 'glass_v', 's_props', sides=6)
+            if (k + j) % 2 == 0:
+                cyl('s_jar_glow_%d_%d' % (k, j), (SX1 - 0.15, y, z + 0.07), (SX1 - 0.15, y, z + 0.18), 0.055,
+                    'bruma_glow', 'glowv_s', sides=6)
+    rock('s_bag', (SX0 + 0.45, SY0 + 0.4, 0.12), (0.22, 0.14, 0.14), 'leather', 's_props', seed=11, squash=1.0)
+    cyl('s_bucket', (SX0 + 0.5, SY1 - 0.6, 0), (SX0 + 0.5, SY1 - 0.6, 0.28), 0.14, 'wood', 's_props', sides=8, r1=0.17)
+    cyl('s_lantern_rope', (0.3, SY0 + 0.9, 2.3), (0.3, SY0 + 0.9, 1.95), 0.01, 'iron', 's_props', sides=4)
+    cyl('s_lantern', (0.3, SY0 + 0.9, 1.72), (0.3, SY0 + 0.9, 1.95), 0.08, 'iron', 's_props', sides=6)
+    box('s_lantern_flame', (0.27, SY0 + 0.87, 1.76), (0.33, SY0 + 0.93, 1.88), 'flame', 'glow_s')
 
 
 # ------------------------------------------------------------------------------------------------ assembly
@@ -419,6 +479,14 @@ PARTS = {
     'b_front': {'group': 'basement', 'role': 'static', 'shadow': False},
     'b_stairs': {'group': 'basement', 'role': 'static', 'shadow': False},
     'b_props': {'group': 'basement', 'role': 'static', 'shadow': False},
+    'b_north': {'group': 'basement', 'role': 'secret_cut', 'normal': (0, -1, 0), 'shadow': False},
+    'b_wardrobe': {'group': 'basement', 'role': 'wardrobe', 'pivot': (WARDROBE[0], WARDROBE[1], 0), 'shadow': False},
+    's_floor': {'group': 'secret', 'role': 'static', 'shadow': False},
+    's_back': {'group': 'secret', 'role': 'static', 'shadow': False},
+    's_front': {'group': 'secret', 'role': 'static', 'shadow': False},
+    's_props': {'group': 'secret', 'role': 'static', 'shadow': False},
+    'glow_s': {'group': 'secret', 'role': 'static'},
+    'glowv_s': {'group': 'secret', 'role': 'static'},
     'glow_b': {'group': 'basement', 'role': 'static', 'glowColor': 'd2ac88'},
     'glowv_b': {'group': 'basement', 'role': 'static', 'glowColor': '9a968c', 'glowTint': '5b5170'},
 }
@@ -479,10 +547,15 @@ def meta():
                       UB(X1 - 0.7, 0.28, X1 - 0.1, 1.42), UB(X0 + 0.15, Y0 + 0.2, X0 + 1.1, -0.05),
                       UB(1.85, Y0 + 0.15, 2.75, Y0 + 0.78), UB(X1 - 1.05, -0.7, X1 - 0.15, 0.2),
                       UB(-0.45, 0.25, 0.85, 1.05), UB(1.72, -3.58, 2.28, -3.02), UB(0.14, -3.05, 0.7, -2.5)],
-            'basement': [UB(BX0 - 0.2, BY1 - 0.05, BX1 + 0.2, BY1 + 0.3), UB(BX1 - 0.05, BY0 - 0.2, BX1 + 0.3, BY1 + 0.2),
+            'basement': [UB(BX0 - 0.2, BY1 - 0.05, SECRET_DOOR[0], BY1 + 0.3), UB(SECRET_DOOR[1], BY1 - 0.05, BX1 + 0.2, BY1 + 0.3),
+                         UB(BX1 - 0.05, BY0 - 0.2, BX1 + 0.3, BY1 + 0.2),
                          UB(BX0 - 0.3, BY0 - 0.3, BX1 + 0.3, BY0 + 0.05), UB(BX0 - 0.3, BY0 - 0.3, BX0 + 0.05, BY1 + 0.3),
                          UB(STAIR_X[0] - 0.05, STAIR_BOTTOM_Y - 0.02, STAIR_X[1] + 0.05, STAIR_BOTTOM_Y + STEPS * STEP_RUN + 0.1),
-                         UB(1.15, -0.65, 2.55, 0.35), UB(2.1, -2.15, 2.75, -0.95), UB(BX1 - 0.32, 0.65, BX1, 2.05)],
+                         UB(1.6, -2.15, 2.75, -1.55), UB(2.15, -1.3, 2.75, -0.12), UB(BX1 - 0.32, 0.1, BX1, 2.0),
+                         UB(0.55, -2.25, 1.6, -1.7)],
+            'secret': [UB(SX0 - 0.3, SY1 - 0.05, SX1 + 0.3, SY1 + 0.3), UB(SX1 - 0.05, SY0, SX1 + 0.3, SY1 + 0.3),
+                       UB(SX0 - 0.3, SY0, SX0 + 0.05, SY1 + 0.3), UB(SX1 - 1.0, SY0 + 0.2, SX1, SY0 + 1.5),
+                       UB(SX1 - 0.32, SY0 + 1.55, SX1, SY1 - 0.05)],
         },
         'door': {'closed': UB(DOOR[0], Y0 - 0.12, DOOR[1], Y0 + 0.12), 'openYaw': 100, 'locked': True, 'health': 70,
                  'prompt': U(-0.8, Y0 - 0.5, 0), 'inside': U(-0.8, Y0 + 0.6, 0)},
@@ -491,8 +564,11 @@ def meta():
                   'up': U((STAIR_X[0] + STAIR_X[1]) / 2, STAIR_BOTTOM_Y - 0.35, 0)},
         'lights': [
             {'group': 'cabin', 'pos': U(X1 - 0.45, 0.85, 0.7), 'radius': 3.6, 'color': [1.0, 0.6, 0.3], 'intensity': 0.9, 'flicker': 0.45},
-            {'group': 'basement', 'pos': U(1.8, -0.1, 1.8), 'radius': 4.6, 'color': [1.0, 0.64, 0.34], 'intensity': 0.95, 'flicker': 0.3},
-            {'group': 'basement', 'pos': U(BX1 - 0.3, 1.3, 1.3), 'radius': 2.2, 'color': [0.62, 0.45, 0.95], 'intensity': 0.55, 'flicker': 0.0},
+            {'group': 'basement', 'pos': U(0.3, -0.3, 1.8), 'radius': 4.8, 'color': [1.0, 0.64, 0.34], 'intensity': 0.95, 'flicker': 0.3},
+            {'group': 'secret', 'pos': U(0.3, SY0 + 0.9, 1.8), 'radius': 3.6, 'color': [1.0, 0.62, 0.32], 'intensity': 0.8, 'flicker': 0.35},
+            {'group': 'secret', 'pos': U(SX1 - 0.3, SY0 + 2.2, 1.3), 'radius': 2.4, 'color': [0.62, 0.45, 0.95], 'intensity': 0.6, 'flicker': 0.0},
         ],
-        'anchors': {'occupant': U(0.6, 1.5, 0)},
+        'anchors': {'occupant': U(0.6, SY1 - 0.62, 0), 'occupantGroup': 'secret'},
+        'secret': {'footprint': UB(SX0, SY0 - 0.15, SX1, SY1)},
+        'wardrobe': {'slide': U(WARDROBE_SLIDE, 0, 0), 'box': [0.68, 0.3], 'prompt': U(WARDROBE[0], WARDROBE[1] - 0.9, 0)},
     }

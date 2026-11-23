@@ -141,14 +141,14 @@ namespace BrumaPx.World
         // markers of type "casa" with label "Prefab|yaw|locked" so they stream with the chunks like the rest.
         static readonly string[] CenizalHouses =
         {
-            "CasaEntramado|0|",          "1.3,9.4",
-            "CasaPiedra|0|",            "-8.2,1.9",
-            "CasaPiedra|90|",            "11.3,4.9",
-            "CasaEntramado|90|",         "10.8,-4.1",
-            "CasaPiedra|0|locked",      "-10.2,-5.1",
-            "CasaEntramado|0|",          "-19.7,4.9",
-            "CasaPiedra|0|locked",       "-21.2,-3.1",
-            "CasaEntramado|0|locked",    "-6.7,13.9",
+            "CasaEntramado|0|",          "1.3,11.9",
+            "CasaPiedra|0|",             "-11.7,0.9",
+            "CasaPiedra|90|",            "14.3,6.9",
+            "CasaEntramado|90|",         "14.3,-6.1",
+            "CasaPiedra|0|locked",       "-22.7,-8.1",
+            "CasaEntramado|0|",          "-25.7,2.9",
+            "CasaPiedra|0|locked",       "-24.7,13.9",
+            "CasaEntramado|0|locked",    "-12.7,11.9",
         };
 
         static List<MapMarker> VillageHouses(IEnumerable<MapMarker> markers)
@@ -189,14 +189,20 @@ namespace BrumaPx.World
         {
             switch (m.type)
             {
-                case "casa": return 4.6f;
+                case "casa": return 6f;
                 case "start": return 4f;
                 case "carruaje": return 3f;
                 case "aldea": return 7f;
                 case "salida": return 4.5f;
                 case "jefe": return 4f;
                 case "refugio": return 6f;
-                case "poi": return 5.5f;
+                case "poi":
+                {
+                    string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
+                    // the woodcutter's cabin is a big building: clear the trees in front of its door too
+                    if (l.Contains("caba") && (l.Contains("leñador") || l.Contains("lenador"))) return 8f;
+                    return 5.5f;
+                }
                 case "npc": return 2.5f;
                 case "cofre": case "hierbas": case "venda": case "prenda": return 1.6f;
                 case "zona": return 0f;
@@ -641,7 +647,7 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
                 var home = Building.WithBasementNear(p, 30f);
                 if (home != null)
                 {
-                    g.transform.SetParent(home.basementRoot.transform, true);
+                    g.transform.SetParent(home.occupantAnchor.parent, true);
                     g.transform.position = home.occupantAnchor.position;
                     g.transform.rotation = home.occupantAnchor.rotation;
                 }

@@ -771,8 +771,8 @@
   {
    "id": "k74",
    "type": "poi",
-   "x": -5,
-   "z": 131,
+   "x": -7,
+   "z": 130,
    "label": "Cabaña del leñador",
    "note": "Extra de Claude: se puede quitar.",
    "n": 1,
@@ -781,10 +781,10 @@
   {
    "id": "k75",
    "type": "npc",
-   "x": -5,
-   "z": 131,
+   "x": -7,
+   "z": 130,
    "label": "Leñador encerrado",
-   "note": "Encadenado en el sótano de su cabaña, con grilletes en manos y pies. El médico de la peste experimenta con él: aunque lo cures, la Bruma le vuelve a subir. Lore por detallar.",
+   "note": "Encadenado en una sala oculta tras el armario del sótano de su cabaña, con grilletes en manos y pies. El médico de la peste experimenta con él: aunque lo cures, la Bruma le vuelve a subir. Lore por detallar.",
    "n": 1,
    "phase": 0
   },
