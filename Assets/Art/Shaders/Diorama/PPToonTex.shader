@@ -15,6 +15,8 @@ Shader "BrumaPx/Diorama/PPToonTex"
         _OutlineColor ("Outline colour", Color) = (0.08, 0.07, 0.06, 1)
         _OutlineTexels ("Outline width (render texels)", Range(0, 3)) = 1
         _Cut ("Cut-away (0 = solid, 1 = gone)", Range(0, 1)) = 0
+        _WarmMix ("How much the lit side turns to the warm light colour", Range(0, 1)) = 0.3
+        _CoolMix ("How much the shaded side turns to the cool shadow colour", Range(0, 1)) = 0.4
     }
 
     SubShader
@@ -37,6 +39,8 @@ Shader "BrumaPx/Diorama/PPToonTex"
             float4 _OutlineColor;
             float _OutlineTexels;
             float _Cut;
+            float _WarmMix;
+            float _CoolMix;
         CBUFFER_END
 
         struct Attributes
@@ -96,6 +100,15 @@ Shader "BrumaPx/Diorama/PPToonTex"
             return float4(_OutlineColor.rgb * _PP_Tone.rgb, 1.0);
         }
 
+        // PP_Ramp with the warm and cool amounts per material: dark greens washed 30 % towards the warm light
+        // colour turn tan, so leaves use less.
+        float3 RampMix(float3 c, float t)
+        {
+            float3 dark = lerp(c * 0.55, _PP_Cool.rgb, _CoolMix);
+            float3 light = lerp(c * 1.10, _PP_Warm.rgb, _WarmMix);
+            return t < 0.5 ? lerp(dark, c, t * 2.0) : lerp(c, light, (t - 0.5) * 2.0);
+        }
+
         float4 FragToon(Varyings i) : SV_Target
         {
             float2 lat = PP_Lattice(i.positionWS);
@@ -112,7 +125,7 @@ Shader "BrumaPx/Diorama/PPToonTex"
             float steps = max(_Levels - 1.0, 1.0);
             float bay = PP_Bayer(lat);
             float q = clamp(floor(v * steps + (bay - 0.5) * _Dither + 0.5), 0.0, steps);
-            return float4(PP_Atmos(PP_Ramp(baseCol, q / steps), i.positionWS, lat), 1.0);
+            return float4(PP_Atmos(RampMix(baseCol, q / steps), i.positionWS, lat), 1.0);
         }
         ENDHLSL
 

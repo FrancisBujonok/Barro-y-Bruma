@@ -146,6 +146,9 @@ MonoBehaviour:
   halfWidth: 0.54
   axisYaw: 31.4
   height: 3.34
+  canopyRadius: 0
+  canopyLow: 0
+  canopyHigh: 0
   behindCut: 0.75
 --- !u!1 &7526572991275475453
 GameObject:

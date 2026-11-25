@@ -96,6 +96,7 @@ namespace BrumaPx.World
 
             foreach (var e in prefabs) if (e != null && e.prefab != null) _prefabs[e.key] = e.prefab;
             LoadRocks();
+            LoadPlants();
 
             // Boss lairs inside mountains are carved before the ground texture is made.
             CaveLair.CarveAll(MapGrid.File);
@@ -379,19 +380,24 @@ namespace BrumaPx.World
                         case 0:
                             Roll(parent, rng, "Tree", 0.025f, x, zTop, 0.9f, 0.9f, 1.3f, true);
                             Roll(parent, rng, "RockMid", 0.035f, x, zTop, 0.7f, 0.7f, 1.2f, true);
+                            Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.09f : 0.03f, x, zTop, 0.6f, 0.8f, 1.25f, true);
+                            Roll(parent, rng, "Matorral", 0.012f, x, zTop, 0.7f, 0.8f, 1.2f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
                             break;
                         case 1:
-                            Roll(parent, rng, "Tree", 0.30f, x, zTop, 0.9f, 0.9f, 1.5f, true);
+                            Roll(parent, rng, "Tree", 0.21f, x, zTop, 0.9f, 0.9f, 1.5f, true);
+                            Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.14f : 0.09f, x, zTop, 0.6f, 0.8f, 1.3f, true);
                             Roll(parent, rng, "RockSmall", 0.02f, x, zTop, 0.5f, 0.8f, 1.2f, false);
                             break;
                         case 2:
                             Roll(parent, rng, "Tree", 0.16f, x, zTop, 0.9f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "Matorral", 0.05f, x, zTop, 0.7f, 0.8f, 1.3f, true);
                             Roll(parent, rng, "RockMid", 0.03f, x, zTop, 0.7f, 0.7f, 1.1f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
                             break;
                         case 3:
                             Roll(parent, rng, "Tree", 0.07f, x, zTop, 0.9f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "Matorral", 0.02f, x, zTop, 0.7f, 0.7f, 1.1f, true);
                             Roll(parent, rng, "RockSmall", 0.02f, x, zTop, 0.5f, 0.8f, 1.1f, false);
                             Roll(parent, rng, "Charco", 0.012f, x, zTop, 1.4f, 1f, 1f, false);
                             Roll(parent, rng, "Foco", 0.004f, x, zTop, 3.5f, 1f, 1f, false);
@@ -399,6 +405,7 @@ namespace BrumaPx.World
                         case 6:
                             Roll(parent, rng, "Fence", 0.04f, x, zTop, 2.0f, 1f, 1f, true);
                             Roll(parent, rng, "Tree", 0.008f, x, zTop, 0.9f, 0.8f, 1.1f, true);
+                            Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.05f : 0.015f, x, zTop, 0.6f, 0.8f, 1.2f, true);
                             break;
                         case 9:
                             Roll(parent, rng, "RuinedHut", 0.05f, x, zTop, 3.6f, 1f, 1f, false);
@@ -417,6 +424,7 @@ namespace BrumaPx.World
                             // the houses of a village are placed by hand (Cenizal); here only odds and ends
                             Roll(parent, rng, "Fence", 0.02f, x, zTop, 2.0f, 1f, 1f, true);
                             Roll(parent, rng, "Lantern", 0.01f, x, zTop, 0.8f, 1f, 1f, false);
+                            Roll(parent, rng, "Arbusto", 0.02f, x, zTop, 0.6f, 0.8f, 1.1f, true);
                             Roll(parent, rng, "StoneA", 0.02f, x, zTop, 0.8f, 0.8f, 1f, false);
                             break;
                     }
@@ -447,10 +455,15 @@ namespace BrumaPx.World
             }
         }
 
-        string PickRock(float x, float z, float salt)
+        static float Hash01(float x, float z, float salt)
         {
             float h = Mathf.Abs(Mathf.Sin(x * 12.9898f + z * 78.233f + salt * 37.719f)) * 43758.5453f;
-            int roll = (int)((h - Mathf.Floor(h)) * _rockWeightSum);
+            return h - Mathf.Floor(h);
+        }
+
+        string PickRock(float x, float z, float salt)
+        {
+            int roll = (int)(Hash01(x, z, salt) * _rockWeightSum);
             for (int i = 0; i < RockNames.Length; i++)
             {
                 if (!_prefabs.ContainsKey(RockNames[i])) continue;
@@ -458,6 +471,49 @@ namespace BrumaPx.World
                 if (roll < 0) return RockNames[i];
             }
             return _rocks[0];
+        }
+
+        // ------------------------------------------------------------------------------------------ trees and bushes
+
+        // Leafy trees and bushes made in Blender (Resources/Props). The old bare tree (prefab Tree) stays in the
+        // swamp and the dead forest; anywhere else a "Tree" becomes one of these, picked by terrain and position.
+        static readonly string[] TreeNames = { "Roble", "Pino", "Abedul", "ArbolOtono", "Arbolito" };
+        static readonly int[] TreesForest = { 30, 30, 10, 15, 15 };
+        static readonly int[] TreesPlain = { 35, 0, 25, 15, 25 };
+        static readonly int[] TreesFarm = { 30, 0, 10, 25, 35 };
+        bool _plants;
+
+        void LoadPlants()
+        {
+            string[] names = { "Roble", "Pino", "Abedul", "ArbolOtono", "Arbolito", "Arbusto", "ArbustoBayas", "Matorral" };
+            int found = 0;
+            foreach (var n in names)
+            {
+                var g = Resources.Load<GameObject>("Props/" + n);
+                if (g == null) continue;
+                _prefabs[n] = g;
+                found++;
+            }
+            _plants = found == names.Length;
+        }
+
+        string PickTree(byte terrain, float x, float z)
+        {
+            int[] w = terrain == 1 ? TreesForest : (terrain == 0 ? TreesPlain : TreesFarm);
+            int sum = 0;
+            for (int i = 0; i < w.Length; i++) sum += w[i];
+            int roll = (int)(Hash01(x, z, 3f) * sum);
+            for (int i = 0; i < w.Length; i++)
+            {
+                roll -= w[i];
+                if (roll < 0) return TreeNames[i];
+            }
+            return TreeNames[0];
+        }
+
+        static bool NearRoad(int c, int r)
+        {
+            return MapGrid.IdAt(c + 1, r) == 5 || MapGrid.IdAt(c - 1, r) == 5 || MapGrid.IdAt(c, r + 1) == 5 || MapGrid.IdAt(c, r - 1) == 5;
         }
 
         // Cliffs and mountains block the hero by whole cells (MapGrid.Resolve: the invisible wall sits Inset inside
@@ -586,6 +642,17 @@ namespace BrumaPx.World
                 scale *= key == "RockBig" ? 0.62f : 0.33f;
                 key = PickRock(pos.x, pos.z, 2f);
             }
+            // leafy trees outside the swamp and the dead forest (a few bare ones stay in the forest, for the mood)
+            if (_plants && key == "Tree")
+            {
+                byte id = MapGrid.IdAtWorld(pos.x, pos.z);
+                if (id != 2 && id != 3 && !(id == 1 && Hash01(pos.x, pos.z, 5f) < 0.08f))
+                {
+                    key = PickTree(id, pos.x, pos.z);
+                    scale = Mathf.Lerp(0.85f, 1.12f, Mathf.InverseLerp(0.8f, 1.5f, scale));
+                }
+            }
+            if (_plants && key == "Arbusto" && Hash01(pos.x, pos.z, 7f) < 0.25f) key = "ArbustoBayas";
             GameObject prefab;
             if (!_prefabs.TryGetValue(key, out prefab)) return null;
 

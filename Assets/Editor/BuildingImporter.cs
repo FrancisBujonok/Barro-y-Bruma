@@ -69,6 +69,9 @@ namespace BrumaPx.EditorTools
 
             var shader = Shader.Find("BrumaPx/Diorama/PPToonTex");
             var mat = Mat(dir + "/" + name + ".mat", shader, tex, false);
+            // how much the lit side turns to the warm light (leaves keep their green with less)
+            mat.SetFloat("_WarmMix", data.ContainsKey("warm") ? (float)(double)data["warm"] : 0.3f);
+            mat.SetFloat("_CoolMix", data.ContainsKey("cool") ? (float)(double)data["cool"] : 0.4f);
             var glow = Mat(dir + "/" + name + "_glow.mat", shader, tex, true);
             var shadow = AssetDatabase.LoadAssetAtPath<Material>(ShadowMat);
 
@@ -306,6 +309,13 @@ namespace BrumaPx.EditorTools
                     prop.halfWidth = half[1] * S;
                     prop.axisYaw = -Num(p, "axis", 0f);          // Blender's angle is counter-clockwise from +x
                     prop.height = Num(p, "height", 1f) * S;
+                    if (p.ContainsKey("canopy"))
+                    {
+                        var cn = Floats(p["canopy"]);
+                        prop.canopyRadius = cn[0] * S;
+                        prop.canopyLow = cn[1] * S;
+                        prop.canopyHigh = cn[2] * S;
+                    }
                     foreach (var o in (List<object>)p["obstacles"])
                     {
                         var c = Floats(o);
