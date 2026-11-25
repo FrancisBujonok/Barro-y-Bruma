@@ -206,6 +206,18 @@ namespace BrumaPx.EditorTools
                 a.greetMin = 3f;
                 a.greetLoopFrom = 2;
             }
+            var cochero = ClipSheetSet("Assets/Characters/Cochero", DataFolder + "/Cochero.asset", log);
+            if (cochero != null)
+            {
+                var a = Actor("Cochero", cochero, mat, shadow);
+                // Dazed by the crash: tips his hat when the hero comes close, coughs now and then.
+                a.greetClip = "saludo";
+                a.greetRange = 4f;
+                a.greetLoopFrom = -2;
+                a.ambientClip = "tos";
+                a.ambientEvery = new Vector2(12f, 24f);
+                a.ambientRange = 10f;
+            }
             // Enemies made in Blender: idle, walk, attack (8 frames on the EnemyProfile timer) and death.
             foreach (var id in new[] { "Infectado1", "Infectado2", "Infectado3", "Hinchado", "Saqueador", "Ballestero", "Emboscador", "Tomado", "Sabueso" })
             {
@@ -279,6 +291,8 @@ namespace BrumaPx.EditorTools
                 case "ofrecer": fps = 7f; loop = false; break;
                 case "llamar": fps = 7f; loop = false; break;
                 case "alto": fps = 8f; loop = false; break;
+                case "saludo": fps = 7f; loop = false; break;
+                case "tos": fps = 8f; loop = false; break;
                 case "attack": fps = 10f; loop = false; break;
             }
         }

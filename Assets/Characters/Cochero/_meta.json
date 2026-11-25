@@ -1,0 +1,41 @@
+{
+ "views": 8,
+ "clips": [
+  {
+   "name": "idle",
+   "frames": 6,
+   "dirs": 8,
+   "w": 32,
+   "h": 59,
+   "feetX": 16,
+   "feetY": 5
+  },
+  {
+   "name": "walk",
+   "frames": 8,
+   "dirs": 8,
+   "w": 37,
+   "h": 60,
+   "feetX": 18,
+   "feetY": 6
+  },
+  {
+   "name": "saludo",
+   "frames": 6,
+   "dirs": 8,
+   "w": 36,
+   "h": 61,
+   "feetX": 18,
+   "feetY": 5
+  },
+  {
+   "name": "tos",
+   "frames": 6,
+   "dirs": 8,
+   "w": 48,
+   "h": 60,
+   "feetX": 24,
+   "feetY": 5
+  }
+ ]
+}

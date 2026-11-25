@@ -33,7 +33,7 @@ namespace BrumaPx.Characters
         Vector3 _lastPos;
         float _movingFor, _attackStart;
         bool _wasAttacking, _moving;
-        bool _greeting, _ambientPlaying;
+        bool _greeting, _ambientPlaying, _greetDone;
         float _greetTime, _ambientIn;
 
         public bool PhaseTwo
@@ -187,7 +187,7 @@ namespace BrumaPx.Characters
             {
                 if (!_sprite.Finished) return;
                 _ambientPlaying = false;
-                _greeting = false;
+                if (config.greetLoopFrom != -2) _greeting = false;
                 ScheduleAmbient();
             }
             if (!_moving && !string.IsNullOrEmpty(config.ambientClip) && _sprite.HasClip(config.ambientClip)
@@ -208,6 +208,7 @@ namespace BrumaPx.Characters
             else if (!_greeting && canGreet && dist < config.greetRange && dist >= config.greetMin)
             {
                 _greeting = true;
+                _greetDone = false;
                 _greetTime = 0f;
                 _sprite.Play(config.greetClip, 1f, true);
             }
@@ -216,6 +217,11 @@ namespace BrumaPx.Characters
             {
                 _greetTime += Time.deltaTime;
                 if (config.greetLoopFrom >= 0 && _sprite.Finished) LoopGreet();
+                else if (config.greetLoopFrom == -2 && (_greetDone || _sprite.Finished))
+                {
+                    _greetDone = true;              // greeted once: back to idle until the hero leaves
+                    _sprite.Play("idle", 1f, false);
+                }
                 else _sprite.Play(config.greetClip, 1f, false);
                 return;
             }
