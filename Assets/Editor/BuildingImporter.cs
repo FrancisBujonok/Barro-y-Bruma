@@ -50,6 +50,7 @@ namespace BrumaPx.EditorTools
             var data = (Dictionary<string, object>)Json.Parse(File.ReadAllText(dir + "/building.json"));
             string name = (string)data["name"];
             S = data.ContainsKey("scale") ? (float)(double)data["scale"] : DefaultScale;
+            bool props = data.ContainsKey("kind") && (string)data["kind"] == "props";
 
             // texture: point-sampled, uncompressed, no mipmaps
             string texPath = dir + "/atlas.png";
@@ -84,6 +85,8 @@ namespace BrumaPx.EditorTools
                 else AssetDatabase.AddObjectToAsset(m, meshPath);
                 meshes[kv.Key] = m;
             }
+
+            if (props) return ImportProps(name, data, parts, meshes, mat, shadow, tex);
 
             // the prefab
             var root = new GameObject(name);
@@ -268,6 +271,58 @@ namespace BrumaPx.EditorTools
             int tris = 0;
             foreach (var m in meshes.Values) tris += m.triangles.Length / 3;
             return name + ": " + meshes.Count + " partes, " + tris + " triangulos, escala " + S + ", atlas " + tex.width + "x" + tex.height + " -> " + prefabPath;
+        }
+
+        // ------------------------------------------------------------------------------------------ props
+
+        /// <summary>
+        /// A set of loose props (the rocks): every part becomes its own prefab in Resources/Props, with its pivot at
+        /// the centre of its foot and a hitbox of one to three circles fitted to that foot (from the JSON).
+        /// </summary>
+        static string ImportProps(string set, Dictionary<string, object> data, Dictionary<string, object> parts,
+                                  Dictionary<string, Mesh> meshes, Material mat, Material shadow, Texture2D tex)
+        {
+            const string dir = "Assets/Resources/Props";
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            var info = data.ContainsKey("props") ? (Dictionary<string, object>)data["props"] : new Dictionary<string, object>();
+            var log = new StringBuilder(set + ":");
+            foreach (var kv in parts)
+            {
+                var root = new GameObject(kv.Key);
+                var body = new GameObject("Mesh");
+                body.transform.SetParent(root.transform, false);
+                body.AddComponent<MeshFilter>().sharedMesh = meshes[kv.Key];
+                var mr = body.AddComponent<MeshRenderer>();
+                mr.sharedMaterials = shadow != null ? new[] { mat, shadow } : new[] { mat };
+                mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                mr.receiveShadows = false;
+                var prop = root.AddComponent<WorldProp>();
+                int circles = 0;
+                if (info.ContainsKey(kv.Key))
+                {
+                    var p = (Dictionary<string, object>)info[kv.Key];
+                    var half = Floats(p["half"]);
+                    prop.halfLength = half[0] * S;
+                    prop.halfWidth = half[1] * S;
+                    prop.axisYaw = -Num(p, "axis", 0f);          // Blender's angle is counter-clockwise from +x
+                    prop.height = Num(p, "height", 1f) * S;
+                    foreach (var o in (List<object>)p["obstacles"])
+                    {
+                        var c = Floats(o);
+                        var go = new GameObject("Hit " + circles++);
+                        go.transform.SetParent(root.transform, false);
+                        go.transform.localPosition = new Vector3(c[0] * S, 0f, c[1] * S);
+                        var ob = go.AddComponent<WorldObstacle>();
+                        ob.kind = WorldObstacle.Kind.Circle;
+                        ob.radius = c[2] * S;
+                    }
+                }
+                string path = dir + "/" + kv.Key + ".prefab";
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                Object.DestroyImmediate(root);
+                log.Append(" " + kv.Key + " (" + meshes[kv.Key].triangles.Length / 3 + " tri, " + circles + " circulos)");
+            }
+            return log.ToString() + ", atlas " + tex.width + "x" + tex.height + " -> " + dir;
         }
 
         static Material Mat(string path, Shader shader, Texture2D tex, bool emissive)

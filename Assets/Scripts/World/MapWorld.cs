@@ -95,6 +95,7 @@ namespace BrumaPx.World
             }
 
             foreach (var e in prefabs) if (e != null && e.prefab != null) _prefabs[e.key] = e.prefab;
+            LoadRocks();
 
             // Boss lairs inside mountains are carved before the ground texture is made.
             CaveLair.CarveAll(MapGrid.File);
@@ -423,14 +424,109 @@ namespace BrumaPx.World
             }
         }
 
-        // Cliffs and mountains block the hero; big rocks along the edge make the wall readable.
+        // ------------------------------------------------------------------------------------------ rocks
+
+        // The big rocks made in Blender (Resources/Props/Roca*). The old sphere rocks RockBig and RockMid are swapped
+        // for one of them wherever they are asked for; the choice depends on the position, so it is the same rock
+        // every time the chunk is built.
+        static readonly string[] RockNames = { "RocaPena", "RocaPartida", "RocaLosa", "RocaMonton", "RocaAguja" };
+        static readonly int[] RockWeights = { 30, 20, 20, 15, 15 };
+        readonly List<string> _rocks = new List<string>();
+        int _rockWeightSum;
+
+        void LoadRocks()
+        {
+            _rockWeightSum = 0;
+            for (int i = 0; i < RockNames.Length; i++)
+            {
+                var g = Resources.Load<GameObject>("Props/" + RockNames[i]);
+                if (g == null) continue;
+                _prefabs[RockNames[i]] = g;
+                _rocks.Add(RockNames[i]);
+                _rockWeightSum += RockWeights[i];
+            }
+        }
+
+        string PickRock(float x, float z, float salt)
+        {
+            float h = Mathf.Abs(Mathf.Sin(x * 12.9898f + z * 78.233f + salt * 37.719f)) * 43758.5453f;
+            int roll = (int)((h - Mathf.Floor(h)) * _rockWeightSum);
+            for (int i = 0; i < RockNames.Length; i++)
+            {
+                if (!_prefabs.ContainsKey(RockNames[i])) continue;
+                roll -= RockWeights[i];
+                if (roll < 0) return RockNames[i];
+            }
+            return _rocks[0];
+        }
+
+        // Cliffs and mountains block the hero by whole cells (MapGrid.Resolve: the invisible wall sits Inset inside
+        // the blocked cell). Each edge cell gets one rock laid along that wall, its near face on the wall, so what
+        // stops the hero is the stone he sees. Further in, an odd rock now and then.
         void Barrier(Transform parent, System.Random rng, int c, int r, float x, float zTop)
         {
-            bool edge = !MapMath.IsBlocked(c + 1, r) || !MapMath.IsBlocked(c - 1, r) || !MapMath.IsBlocked(c, r + 1) || !MapMath.IsBlocked(c, r - 1);
-            float px = x + R(rng) * MapGrid.Cell, pz = zTop - R(rng) * MapGrid.Cell;
-            if (edge && R(rng) < 0.95f) PlaceBarrier(parent, "RockBig", px, pz, 1.4f + R(rng) * 0.9f, rng);
-            else if (!edge && R(rng) < 0.05f) PlaceBarrier(parent, "RockMid", px, pz, 1.6f + R(rng) * 1.0f, rng);
+            bool e = !MapMath.IsBlocked(c + 1, r), w = !MapMath.IsBlocked(c - 1, r);
+            bool n = !MapMath.IsBlocked(c, r - 1), so = !MapMath.IsBlocked(c, r + 1);   // row - 1 is north
+            bool edge = e || w || n || so;
+            float cell = MapGrid.Cell;
+            Vector3 centre = new Vector3(x + cell * 0.5f, 0f, zTop - cell * 0.5f);
+            if (_rocks.Count == 0)
+            {
+                float px = x + R(rng) * cell, pz = zTop - R(rng) * cell;
+                if (edge && R(rng) < 0.95f) PlaceBarrier(parent, "RockBig", px, pz, 1.4f + R(rng) * 0.9f, rng);
+                else if (!edge && R(rng) < 0.05f) PlaceBarrier(parent, "RockMid", px, pz, 1.6f + R(rng) * 1.0f, rng);
+                return;
+            }
+            if (!edge)
+            {
+                if (R(rng) < 0.04f)
+                {
+                    var p = new Vector3(x + R(rng) * cell, 0f, zTop - R(rng) * cell);
+                    PlaceBarrier(parent, PickRock(p.x, p.z, 1f), p.x, p.z, 0.9f + R(rng) * 0.5f, rng);
+                }
+                return;
+            }
+            if (InClear(centre.x, centre.z, 1f)) return;
+
+            Vector3 open = new Vector3((e ? 1f : 0f) - (w ? 1f : 0f), 0f, (n ? 1f : 0f) - (so ? 1f : 0f));
+            string key = PickRock(centre.x, centre.z, 0f);
+            GameObject prefab;
+            if (!_prefabs.TryGetValue(key, out prefab)) return;
+            var info = prefab.GetComponent<WorldProp>();
+            float halfLength = info != null ? info.halfLength : 1.5f;
+
+            // long enough to cover the side of the cell, with some overlap with the neighbours
+            float s = Mathf.Clamp(cell * (1.15f + R(rng) * 0.4f) / (2f * halfLength), 0.6f, 1.25f);
+            float yaw;
+            Vector3 d = Vector3.zero;
+            if (open.sqrMagnitude < 0.01f)
+            {
+                // a wall one cell thick, open on both sides: the rock fills the cell
+                yaw = R(rng) * 360f;
+                s = Mathf.Min(s, cell * 0.5f / Mathf.Max(info != null ? info.halfWidth : 1f, 0.1f));
+            }
+            else
+            {
+                d = open.normalized;
+                Vector3 t = new Vector3(-d.z, 0f, d.x);                 // along the wall
+                float wallYaw = Mathf.Atan2(-t.z, t.x) * Mathf.Rad2Deg;  // yaw that turns local +x onto t
+                yaw = wallYaw - (info != null ? info.axisYaw : 0f) + (R(rng) - 0.5f) * 36f + (R(rng) < 0.5f ? 180f : 0f);
+            }
+            var rock = Spawn(key, centre, yaw, s, parent);
+            if (rock == null) return;
+            foreach (var o in rock.GetComponentsInChildren<WorldObstacle>(true)) Destroy(o);
+            if (d != Vector3.zero)
+            {
+                var prop = rock.GetComponent<WorldProp>();
+                float reach = prop != null ? prop.Reach(d) : halfLength * s * 0.7f;
+                Vector3 t = new Vector3(-d.z, 0f, d.x);
+                float wall = cell * 0.5f - WallInset;                   // the invisible wall, from the cell centre
+                rock.transform.position = centre + d * (wall - reach * 0.92f) + t * ((R(rng) - 0.5f) * 0.5f);
+            }
         }
+
+        // Same as MapGrid's Inset: how far inside a blocked cell the invisible wall stands.
+        const float WallInset = 0.5f;
 
         void PlaceBarrier(Transform parent, string key, float x, float z, float scale, System.Random rng)
         {
@@ -484,6 +580,12 @@ namespace BrumaPx.World
 
         GameObject Spawn(string key, Vector3 pos, float yaw, float scale, Transform parent)
         {
+            // the old sphere rocks become one of the Blender rocks, at about the same size
+            if (_rocks.Count > 0 && (key == "RockBig" || key == "RockMid"))
+            {
+                scale *= key == "RockBig" ? 0.62f : 0.33f;
+                key = PickRock(pos.x, pos.z, 2f);
+            }
             GameObject prefab;
             if (!_prefabs.TryGetValue(key, out prefab)) return null;
 
