@@ -35,7 +35,7 @@ namespace BrumaPx.Characters
         public string greetClip = "";
         public float greetRange = 5f;
         public float greetMin = 0f;
-        [Tooltip("When the greet clip ends, loop its frames from this one on (waving). -1 = hold the last frame.")]
+        [Tooltip("When the greet clip ends, loop its frames from this one on (waving). -1 = hold the last frame, -2 = go back to idle (the greeting is not repeated until the hero leaves).")]
         public int greetLoopFrom = -1;
 
         [Tooltip("Clip that plays on its own now and then while the hero is within ambientRange (the woodcutter's Bruma fit).")]
