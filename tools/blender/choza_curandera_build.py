@@ -262,11 +262,11 @@ def roof():
 def chimney():
     box('chim_base', (X1 + 0.1, 0.25, 0.0), (X1 + 0.8, 1.15, 2.2), 'stone', 'chimney')
     ob = box('chim_stack', (-0.27, -0.3, 0.0), (0.27, 0.3, 2.0), 'stone', 'chimney', rot=(0.05, -0.07, 0))
-    ob.location = (X1 + 0.44, 0.7, 2.15)
+    ob.location = (X1 + 0.44, 0.7, 3.15)          # box() places the object at the centre of the box
     ob = box('chim_cap', (-0.32, -0.35, 0.0), (0.32, 0.35, 0.1), 'stone_dark', 'chimney', rot=(0.05, -0.07, 0))
-    ob.location = (X1 + 0.3, 0.6, 4.12)
+    ob.location = (X1 + 0.3, 0.6, 4.17)
     ob = box('chim_hole', (-0.18, -0.2, 0.0), (0.18, 0.2, 0.01), 'soot', 'chimney', rot=(0.05, -0.07, 0))
-    ob.location = (X1 + 0.3, 0.6, 4.23)
+    ob.location = (X1 + 0.3, 0.6, 4.225)
     # the log propping the east wall
     cyl('prop_log', (X1 + 1.1, -1.0, 0.0), (X1 + 0.1, -1.0, 1.65), 0.09, 'timber', 'ext', sides=6)
     rock('prop_stone', (X1 + 1.12, -1.0, 0.05), (0.22, 0.2, 0.12), 'stone', 'ext', seed=31, squash=0.6)
@@ -495,7 +495,7 @@ def garden():
         mid = (p0 + p1) / 2
         ang = math.atan2(d.y, d.x)
         ob = box('%s_wattle' % name, (-L / 2, -0.02, 0.12), (L / 2, 0.02, 0.62), 'wattle', 'garden', rot=(0, 0, ang))
-        ob.location = (mid.x, mid.y, 0.0)
+        ob.location = (mid.x, mid.y, 0.37)
         for j, z in enumerate((0.3, 0.6)):
             cyl('%s_rail_%d' % (name, j), (p0.x, p0.y, z), (p1.x, p1.y, z + rnd.uniform(-0.04, 0.04)), 0.02, 'twig', 'garden', sides=4)
 

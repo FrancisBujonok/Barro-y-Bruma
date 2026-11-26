@@ -106,6 +106,7 @@ namespace BrumaPx.World
                 _clear.Add(new Vector3(lair.mouth.x, lair.mouth.y, 3.2f));
                 _clear.Add(new Vector3(lair.opening.x, lair.opening.y, 3.6f));
             }
+            MarkWaterDecks();
             _tex = MapGrid.BuildTexture();
             Shader.SetGlobalTexture("_PP_MapTex", _tex);
             Shader.SetGlobalVector("_PP_MapInfo", new Vector4(MapGrid.XMin, MapGrid.ZMin, MapGrid.Cols, MapGrid.Rows));
@@ -292,7 +293,7 @@ namespace BrumaPx.World
 
         static string TerrainName(byte id)
         {
-            string[] n = { "llanura", "bosque", "bosque muerto", "pantano", "agua", "camino", "campo", "escarpado", "montana", "ruinas", "aldea", "cueva" };
+            string[] n = { "llanura", "bosque", "bosque muerto", "pantano", "agua", "camino", "campo", "escarpado", "montana", "ruinas", "aldea", "cueva", "sobre el agua" };
             return id < n.Length ? n[id] : "?";
         }
 
@@ -377,7 +378,8 @@ namespace BrumaPx.World
                     float zTop = MapGrid.ZMax - r * MapGrid.Cell;
 
                     if (id == 7 || id == 8) { Barrier(parent, rng, c, r, x, zTop); continue; }
-                    if (id == 4 || id == 5) continue;
+                    if (id == 4) { WaterDecor(parent, rng, c, r, x, zTop); continue; }
+                    if (id == 5 || id == MapGrid.WaterDeckId) continue;
 
                     switch (id)
                     {
@@ -477,6 +479,129 @@ namespace BrumaPx.World
             return _rocks[0];
         }
 
+        // ------------------------------------------------------------------------------------------ decks over water
+
+        // The bridge over the Rio Ceniza and the pier on the Lago Hondo stand over water. Their cells become
+        // MapGrid.WaterDeckId: walkable, with water drawn under them; the prefab is placed over those cells.
+        sealed class Deck
+        {
+            public string markerId, prefab;
+            public Vector3 pos;
+            public float yaw;
+        }
+        readonly List<Deck> _decks = new List<Deck>();
+
+        void MarkWaterDecks()
+        {
+            foreach (var m in MapGrid.File.markers)
+            {
+                if (m.type != "poi" || string.IsNullOrEmpty(m.label)) continue;
+                string l = m.label.ToLowerInvariant();
+                if (l.Contains("puente")) MarkBridge(m);
+                else if (l.Contains("embarcadero")) MarkPier(m);
+            }
+        }
+
+        static bool WaterCell(int c, int r) { byte id = MapGrid.IdAt(c, r); return id == 4 || id == MapGrid.WaterDeckId; }
+
+        // A road crossing the river: road cells with water a few cells away on both sides of one axis.
+        void MarkBridge(MapMarker m)
+        {
+            int mc = MapGrid.ColOf(m.x), mr = MapGrid.RowOf(m.z);
+            const int reach = 7, gap = 5;
+            var cells = new List<Vector2Int>();
+            bool riverNS = true;
+            for (int r = mr - reach; r <= mr + reach; r++)
+                for (int c = mc - reach; c <= mc + reach; c++)
+                {
+                    if (MapGrid.IdAt(c, r) != 5) continue;
+                    bool n = false, so = false, e = false, w = false;
+                    for (int k = 1; k <= gap; k++)
+                    {
+                        n |= MapGrid.IdAt(c, r - k) == 4;
+                        so |= MapGrid.IdAt(c, r + k) == 4;
+                        e |= MapGrid.IdAt(c + k, r) == 4;
+                        w |= MapGrid.IdAt(c - k, r) == 4;
+                    }
+                    if (n && so) { cells.Add(new Vector2Int(c, r)); riverNS = true; }
+                    else if (e && w) { cells.Add(new Vector2Int(c, r)); riverNS = false; }
+                }
+            if (cells.Count == 0) return;
+            float x0 = float.MaxValue, x1 = float.MinValue, z0 = float.MaxValue, z1 = float.MinValue;
+            foreach (var v in cells)
+            {
+                MapGrid.SetId(v.x, v.y, MapGrid.WaterDeckId);
+                x0 = Mathf.Min(x0, MapGrid.CellX(v.x) - 1f); x1 = Mathf.Max(x1, MapGrid.CellX(v.x) + 1f);
+                z0 = Mathf.Min(z0, MapGrid.CellZ(v.y) - 1f); z1 = Mathf.Max(z1, MapGrid.CellZ(v.y) + 1f);
+            }
+            var centre = new Vector3((x0 + x1) * 0.5f, 0f, (z0 + z1) * 0.5f);
+            // the bridge runs across the river: east-west over a river that flows north-south
+            _decks.Add(new Deck { markerId = m.id, prefab = "PuentePiedra", pos = centre, yaw = riverNS ? 0f : 90f });
+            _clear.Add(new Vector3(centre.x - 6.5f, centre.z, 3.5f));
+            _clear.Add(new Vector3(centre.x + 6.5f, centre.z, 3.5f));
+        }
+
+        // A pier from the shore into the water nearest to the marker: a walkway of five cells and a landing of two.
+        void MarkPier(MapMarker m)
+        {
+            int mc = MapGrid.ColOf(m.x), mr = MapGrid.RowOf(m.z);
+            Vector2Int[] dirs = { new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(0, 1) };
+            int best = -1, bestK = 99;
+            for (int i = 0; i < 4; i++)
+                for (int k = 0; k <= 4; k++)
+                    if (MapGrid.IdAt(mc + dirs[i].x * k, mr + dirs[i].y * k) == 4) { if (k < bestK) { bestK = k; best = i; } break; }
+            if (best < 0) return;
+            var d = dirs[best];                                   // in cells: x = column, y = row (row - 1 is north)
+            var side = new Vector2Int(d.y, -d.x);                 // to the left of the walkway, seen walking out
+            int sc = mc + d.x * bestK, sr = mr + d.y * bestK;
+            for (int a = 0; a < 5; a++)
+                for (int b = 0; b < 2; b++)
+                {
+                    if (b == 1 && a < 3) continue;
+                    int c = sc + d.x * a + side.x * b, r = sr + d.y * a + side.y * b;
+                    if (MapGrid.IdAt(c, r) == 4) MapGrid.SetId(c, r, MapGrid.WaterDeckId);
+                }
+            var dirW = new Vector3(d.x, 0f, -d.y);
+            var start = new Vector3(MapGrid.CellX(sc), 0f, MapGrid.CellZ(sr)) - dirW * (MapGrid.Cell * 0.5f);
+            float yaw = Mathf.Atan2(-dirW.z, dirW.x) * Mathf.Rad2Deg;     // turns the model's +x onto the walkway
+            _decks.Add(new Deck { markerId = m.id, prefab = "Embarcadero", pos = start, yaw = yaw });
+            _clear.Add(new Vector3(start.x - dirW.x * 3.5f, start.z - dirW.z * 3.5f, 4.5f));
+        }
+
+        GameObject SpawnDeck(MapMarker m, Transform parent)
+        {
+            foreach (var d in _decks)
+                if (d.markerId == m.id) return SpawnBuilding(d.prefab, d.pos, d.yaw, parent);
+            return null;
+        }
+
+        // Reeds along the banks (standing in the water, at the foot of the bank) and lily pads on open water.
+        void WaterDecor(Transform parent, System.Random rng, int c, int r, float x, float zTop)
+        {
+            if (!_plants) return;
+            float cell = MapGrid.Cell;
+            Vector3 centre = new Vector3(x + cell * 0.5f, -MapGrid.WaterDepth, zTop - cell * 0.5f);
+            bool e = !WaterCell(c + 1, r), w = !WaterCell(c - 1, r), n = !WaterCell(c, r - 1), so = !WaterCell(c, r + 1);
+            if (e || w || n || so)
+            {
+                if (R(rng) > 0.4f) return;
+                Vector3 land = new Vector3((e ? 1f : 0f) - (w ? 1f : 0f), 0f, (n ? 1f : 0f) - (so ? 1f : 0f));
+                if (land.sqrMagnitude > 0.01f) land.Normalize();
+                Vector3 pos = centre + land * (0.45f + R(rng) * 0.35f) + new Vector3((R(rng) - 0.5f) * 0.8f, 0f, (R(rng) - 0.5f) * 0.8f);
+                if (InClear(pos.x, pos.z, 0.5f)) return;
+                Spawn(R(rng) < 0.35f ? "Totoras" : "Juncos", pos, R(rng) * 360f, 0.8f + R(rng) * 0.45f, parent);
+                return;
+            }
+            // open water: all around is water for a few cells
+            for (int k = 2; k <= 3; k++)
+                if (!WaterCell(c + k, r) || !WaterCell(c - k, r) || !WaterCell(c, r + k) || !WaterCell(c, r - k)) return;
+            if (R(rng) < 0.05f)
+            {
+                Vector3 pos = centre + new Vector3((R(rng) - 0.5f) * 1.2f, 0.01f, (R(rng) - 0.5f) * 1.2f);
+                Spawn("Nenufares", pos, R(rng) * 360f, 0.8f + R(rng) * 0.4f, parent);
+            }
+        }
+
         // ------------------------------------------------------------------------------------------ trees and bushes
 
         // Leafy trees and bushes made in Blender (Resources/Props). The old bare tree (prefab Tree) stays in the
@@ -490,6 +615,11 @@ namespace BrumaPx.World
         void LoadPlants()
         {
             string[] names = { "Roble", "Pino", "Abedul", "ArbolOtono", "Arbolito", "Arbusto", "ArbustoBayas", "Matorral" };
+            foreach (var n in new[] { "Juncos", "Totoras", "Nenufares" })
+            {
+                var g = Resources.Load<GameObject>("Props/" + n);
+                if (g != null) _prefabs[n] = g;
+            }
             int found = 0;
             foreach (var n in names)
             {
@@ -967,7 +1097,8 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             string l = (m.label ?? string.Empty).ToLowerInvariant();
             if (l.Contains("puente"))
             {
-                for (int i = 0; i < 4; i++) Spawn("RockSmall", Ring(p, 2.6f, i, 4, 0.8f), 0f, 1f, parent);
+                if (SpawnDeck(m, parent) == null)
+                    for (int i = 0; i < 4; i++) Spawn("RockSmall", Ring(p, 2.6f, i, 4, 0.8f), 0f, 1f, parent);
             }
             else if (l.Contains("torre"))
             {
@@ -1036,7 +1167,8 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             else if (l.Contains("embarcadero"))
             {
-                for (int i = 0; i < 3; i++) Spawn("Fence", p + new Vector3(0f, 0f, (i - 1) * 2.2f), 90f, 1f, parent);
+                if (SpawnDeck(m, parent) == null)
+                    for (int i = 0; i < 3; i++) Spawn("Fence", p + new Vector3(0f, 0f, (i - 1) * 2.2f), 90f, 1f, parent);
             }
             else if (l.Contains("altar"))
             {

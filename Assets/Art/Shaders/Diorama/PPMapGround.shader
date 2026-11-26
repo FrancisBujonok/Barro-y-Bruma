@@ -2,6 +2,7 @@ Shader "BrumaPx/Diorama/PPMapGround"
 {
     // Ground for the chapter map: the terrain type of every 2 m cell comes from a texture (_PP_MapTex, set by MapWorld),
     // each type gets its own four-tone dithered palette, and the borders between types are warped so they are not square.
+    // Water is drawn below the ground, with banks, current, foam and ash floating on it (see "water below the ground").
     SubShader
     {
         Tags { "RenderType" = "Opaque" "Queue" = "Geometry" "RenderPipeline" = "UniversalPipeline" }
@@ -66,13 +67,124 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 return (int)round(LOAD_TEXTURE2D(_PP_MapTex, int2(ix, iy)).r * 255.0);
             }
 
-            float4 Frag(Varyings i) : SV_Target
+            // ---------------------------------------------------------------- water below the ground
+            // Water (4) and the decks over it (12: bridges, piers) are a hole in the ground. Through the hole the
+            // shader looks down along the camera ray: it meets either the water surface WATER_DEPTH below, or first
+            // the earth bank of the far shore. Depth is written for that point, so bridge piers and posts that go down
+            // into the water show, and the near shore hides the water under its lip as a real bank would.
+            static const float WATER_DEPTH = 0.8;
+
+            float2 BorderWarp(float2 p)
+            {
+                return (float2(PP_Noise(p * 0.7 + 11.0), PP_Noise(p * 0.7 + 53.0)) - 0.5) * 0.8;
+            }
+
+            bool IsWaterId(int id) { return id == 4 || id == 12; }
+            bool IsWater(float2 p) { return IsWaterId(CellId(p + BorderWarp(p))); }
+
+            float3 WaterPal(int k)
+            {
+                // deep to light: the four water tones of the map, then foam
+                if (k <= 0) return PP_Hex(0x1D2A2Fu);
+                if (k == 1) return PP_Hex(0x2C3A40u);
+                if (k == 2) return PP_Hex(0x3A4C54u);
+                if (k == 3) return PP_Hex(0x4F6068u);
+                if (k == 4) return PP_Hex(0x6A7C80u);
+                return PP_Hex(0x9A968Cu);
+            }
+
+            float3 BankPal(int k)
+            {
+                if (k <= 0) return PP_Hex(0x1F1C1Au);
+                if (k == 1) return PP_Hex(0x2A2420u);
+                if (k == 2) return PP_Hex(0x3D332Bu);
+                return PP_Hex(0x594A3Cu);
+            }
+
+            // Flow along the river: water on both sides along one axis and land across it. Open water stays still.
+            float2 FlowDir(float2 w, out float still)
+            {
+                bool n = IsWaterId(CellId(w + float2(0.0, 5.0))), s = IsWaterId(CellId(w - float2(0.0, 5.0)));
+                bool e = IsWaterId(CellId(w + float2(5.0, 0.0))), o = IsWaterId(CellId(w - float2(5.0, 0.0)));
+                bool alongZ = n && s, alongX = e && o;
+                still = (alongZ && alongX) ? 1.0 : 0.0;
+                if (alongX && !alongZ) return float2(1.0, 0.0);
+                return float2(0.0, -1.0);   // the Rio Ceniza runs south, towards the lake
+            }
+
+            // Colour of the water surface at w (world xz). Returns the colour; lat is the screen lattice for dither.
+            float3 WaterColour(float2 w, float2 lat, float2 fwdXZ)
+            {
+                float t = _Time.y;
+                float bay = PP_Bayer(lat);
+                float still;
+                float2 f = FlowDir(w, still);
+                float2 side = float2(-f.y, f.x);
+                float u = dot(w, f), s = dot(w, side);
+                float speed = lerp(0.9, 0.0, still);
+                float um = u - t * speed;                    // coordinate that travels with the current
+
+                // slow large patches drifting with the current, and long ripples stretched along it
+                float v = PP_Fbm(float2(s * 0.35, um * 0.22) + 5.0) * 0.6 + 0.12;
+                float rip = PP_Noise(float2(s * 2.4, um * 0.55));
+                float rip2 = PP_Noise(float2(s * 1.3 + 9.0, (u - t * speed * 1.6) * 0.8));
+                if (still > 0.5)
+                {
+                    // open water: lazy cross ripples that come and go
+                    rip = PP_Noise(w * 1.1 + float2(t * 0.12, -t * 0.07));
+                    rip2 = PP_Noise(w * 0.7 - float2(t * 0.05, t * 0.1) + 31.0);
+                }
+                v += step(0.76, rip) * 0.24 + step(0.82, rip2) * 0.14;
+
+                // the far bank throws a strip of shadow on the water; foam where the water meets it
+                bool wallAhead = !IsWater(w + fwdXZ * 0.55);
+                if (wallAhead) v -= 0.22;
+                float edge = 0.0;
+                if (!IsWater(w + float2(0.32, 0.0)) || !IsWater(w - float2(0.32, 0.0)) ||
+                    !IsWater(w + float2(0.0, 0.32)) || !IsWater(w - float2(0.0, 0.32))) edge = 1.0;
+
+                float q = clamp(floor(v * 4.0 + (bay - 0.5) * 0.7 + 0.5), 0.0, 3.0) + 1.0;
+                float3 col = WaterPal((int)q);
+                if (edge > 0.5 && PP_Noise(float2(s * 3.0, um * 2.0) + t * 0.3) > 0.45) col = WaterPal(bay > 0.5 ? 5 : 4);
+
+                // glints that blink, and flakes of ash riding the current
+                if (PP_Hash(lat + floor(t * 3.0) * 7.0) > 0.992 && v > 0.35) col = WaterPal(5);
+                float2 fl = floor(float2(s * 2.5, um * 2.5));
+                if (PP_Hash(fl + 3.7) > 0.985) col = PP_Hex(0x2A2724u);
+                else if (PP_Hash(fl + 9.1) > 0.993) col = PP_Hex(0x645C50u);
+                return col;
+            }
+
+            float3 BankColour(float2 q, float d, float2 lat)
+            {
+                float bay = PP_Bayer(lat);
+                float along = q.x + q.y;
+                float v = 0.55 + (PP_Noise(float2(along * 1.6, d * 9.0)) - 0.5) * 0.5;
+                v -= step(0.6, frac(d * 7.0 + PP_Noise(float2(along * 0.8, 3.0)) * 1.5)) * 0.18;   // layers of earth
+                v -= step(0.82, PP_Noise(float2(along * 5.0, 1.0))) * 0.3;                          // roots and cracks
+                if (d < 0.08) v += 0.25;                                                            // the lip
+                if (d > WATER_DEPTH - 0.14) v -= 0.35;                                              // wet foot
+                float k = clamp(floor(v * 3.0 + (bay - 0.5) * 0.7 + 0.5), 0.0, 3.0);
+                float3 col = BankPal((int)k);
+                if (d > WATER_DEPTH - 0.05 && PP_Noise(float2(along * 3.0, _Time.y * 0.8)) > 0.5) col = WaterPal(4);   // lapping foam
+                return col;
+            }
+
+            float3 Finish(float3 col, float3 wp, float2 lat, float rough)
+            {
+                col *= lerp(1.0, 0.82, _PP_Weather.w);
+                col = PP_Atmos(col, wp, lat);
+                return lerp(col, _PP_Fog.rgb, smoothstep(0.72, 1.0, rough) * 0.45);
+            }
+
+            float4 Frag(Varyings i, out float depthOut : SV_Depth) : SV_Target
             {
                 float3 wp = i.positionWS;
                 float2 p = wp.xz;
                 float2 lat = PP_Lattice(wp);
                 float hr = PP_Hash(lat);
                 float bay = PP_Bayer(lat);
+                depthOut = i.positionCS.z;
 
                 float rough = PP_IslandRough(wp);
                 if (rough > 1.04) discard;
@@ -81,6 +193,43 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 // Ragged borders: look the terrain up at a slightly warped position.
                 float2 warp = float2(PP_Noise(p * 0.7 + 11.0), PP_Noise(p * 0.7 + 53.0)) - 0.5;
                 int id = CellId(p + warp * 0.8);
+
+                if (IsWaterId(id))
+                {
+                    // follow the camera ray down: bank of the far shore, or the water surface
+                    float3 fwd = normalize(cross(_PP_CamRight.xyz, _PP_CamUp.xyz));
+                    float2 off = fwd.xz * (WATER_DEPTH / max(-fwd.y, 0.2));
+                    float2 fwdXZ = normalize(fwd.xz);
+                    float tHit = 1.0;
+                    float tPrev = 0.0;
+                    [loop] for (int k = 1; k <= 10; k++)
+                    {
+                        float tk = k / 10.0;
+                        if (!IsWater(p + off * tk)) { tHit = tk; break; }
+                        tPrev = tk;
+                    }
+                    float3 hit;
+                    float3 col;
+                    if (tHit < 1.0)
+                    {
+                        float tm = (tPrev + tHit) * 0.5;
+                        if (!IsWater(p + off * tm)) tHit = tm; else tPrev = tm;
+                        float tw = (tPrev + tHit) * 0.5;
+                        float d = WATER_DEPTH * tw;
+                        float2 q = p + off * tw;
+                        hit = float3(q.x, -d, q.y);
+                        col = BankColour(q, d, lat);
+                    }
+                    else
+                    {
+                        float2 w = p + off;
+                        hit = float3(w.x, -WATER_DEPTH, w.y);
+                        col = WaterColour(w, lat, fwdXZ);
+                    }
+                    float4 hc = TransformWorldToHClip(hit);
+                    depthOut = hc.z / hc.w;
+                    return float4(Finish(col, hit, lat, rough), 1.0);
+                }
 
                 float large = PP_Fbm(p * 0.45);
                 float fine = PP_Noise(p * 2.4);
@@ -137,10 +286,7 @@ Shader "BrumaPx/Diorama/PPMapGround"
                     else if (PP_Hash(lat - 1.0) > 0.988) col = PP_Hex(PAL[min(id, 11) * 4]);
                 }
 
-                col *= lerp(1.0, 0.82, _PP_Weather.w);
-                col = PP_Atmos(col, wp, lat);
-                col = lerp(col, _PP_Fog.rgb, smoothstep(0.72, 1.0, rough) * 0.45);
-                return float4(col, 1.0);
+                return float4(Finish(col, wp, lat, rough), 1.0);
             }
             ENDHLSL
         }

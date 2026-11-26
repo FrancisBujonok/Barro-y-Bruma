@@ -92,6 +92,12 @@ namespace BrumaPx.World
         /// <summary>Cave floor: carved into the mountain by CaveLair, walkable. Not a letter of the map file.</summary>
         public const byte CaveId = 11;
 
+        /// <summary>Deck over water (a bridge, a pier): walkable, but the ground shader draws water under it. Not a letter.</summary>
+        public const byte WaterDeckId = 12;
+
+        /// <summary>How far below the ground the water surface is drawn (the ground shader uses the same value).</summary>
+        public const float WaterDepth = 0.8f;
+
         /// <summary>Changes the terrain of a cell (before the ground texture is built).</summary>
         public static void SetId(int c, int r, byte id)
         {
