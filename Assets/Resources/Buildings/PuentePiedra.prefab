@@ -157,6 +157,54 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.4, y: 0.3}
+--- !u!1 &1514982165549224854
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4469996320091374462}
+  - component: {fileID: 8150004292213345711}
+  m_Layer: 0
+  m_Name: Search 1 Barril
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4469996320091374462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514982165549224854}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.6, y: 0, z: 2.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4820747661865292233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8150004292213345711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1514982165549224854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965b0810b6c6a1478ff317945ff9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.Searchable
+  displayName: Barril
+  what: el barril
+  table: barril
+  radius: 1.3125
 --- !u!1 &1922980370375929871
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +339,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4255983632644061413}
-  m_Mesh: {fileID: -1665239263005494667, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
+  m_Mesh: {fileID: 6720724534367669073, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
 --- !u!23 &1220900185166708874
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -382,7 +430,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4591116672021958692}
-  m_Mesh: {fileID: 5021196699388174391, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
+  m_Mesh: {fileID: 974657979497406897, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
 --- !u!23 &2685995350565548575
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -477,6 +525,8 @@ Transform:
   - {fileID: 4660018204015637045}
   - {fileID: 2839208835393681927}
   - {fileID: 7244352383144262961}
+  - {fileID: 2802754208187322655}
+  - {fileID: 4469996320091374462}
   m_Father: {fileID: 8892873267832928502}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5000925464848843727
@@ -519,7 +569,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5000925464848843727}
-  m_Mesh: {fileID: -6558168285313072812, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
+  m_Mesh: {fileID: -5133887912944045159, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
 --- !u!23 &3192662094514718432
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -707,7 +757,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5690501241277422036}
-  m_Mesh: {fileID: -4794387505425755040, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
+  m_Mesh: {fileID: -7502647965081748053, guid: 92599ccd1898b6948bbaf0ac24c39aec, type: 2}
 --- !u!23 &194200408981053583
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -733,7 +783,8 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d8f7b7afcdeb025459bdc9cf98d64894, type: 2}
+  - {fileID: 2100000, guid: f154a668d945a304682d7f83b662f34a, type: 2}
+  - {fileID: 2100000, guid: d0f276c626778b64cb02dac46e555bee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -895,6 +946,54 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.8, y: 0.65}
+--- !u!1 &6688626665969072063
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2802754208187322655}
+  - component: {fileID: 112766140597274871}
+  m_Layer: 0
+  m_Name: Search 0 Cajones
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2802754208187322655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688626665969072063}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.8, y: 0, z: 3.05}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4820747661865292233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &112766140597274871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6688626665969072063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965b0810b6c6a1478ff317945ff9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.Searchable
+  displayName: Cajones
+  what: los cajones de los bandidos
+  table: cajon
+  radius: 1.3125
 --- !u!1 &6799043015751076740
 GameObject:
   m_ObjectHideFlags: 0

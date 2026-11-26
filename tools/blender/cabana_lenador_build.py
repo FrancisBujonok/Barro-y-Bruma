@@ -458,7 +458,7 @@ def secret_room():
 
 PARTS = {
     'roof': {'group': 'cabin', 'role': 'roof'},
-    'chimney': {'group': 'cabin', 'role': 'static'},
+    'chimney': {'group': 'cabin', 'role': 'chimney'},
     'wall_S_up': {'group': 'cabin', 'role': 'cut', 'normal': (0, -1, 0)},
     'wall_W_up': {'group': 'cabin', 'role': 'cut', 'normal': (-1, 0, 0)},
     'wall_N_up': {'group': 'cabin', 'role': 'cut', 'normal': (0, 1, 0)},
@@ -571,4 +571,15 @@ def meta():
         'anchors': {'occupant': U(0.6, SY1 - 0.62, 0), 'occupantGroup': 'secret'},
         'secret': {'footprint': UB(SX0, SY0 - 0.15, SX1, SY1)},
         'wardrobe': {'slide': U(WARDROBE_SLIDE, 0, 0), 'box': [0.68, 0.3], 'prompt': U(WARDROBE[0], WARDROBE[1] - 0.9, 0)},
+        'smoke': [U(X1 + 0.4, 0.85, 4.9)],
+        # things that can be searched (name for the loot window, what the prompt says, loot table, where, group)
+        'searchables': [
+            {'name': 'Arcón', 'what': 'el arcón', 'table': 'cofre', 'at': U(2.3, Y0 + 0.46, 0), 'group': 'cabin'},
+            {'name': 'Estante', 'what': 'el estante', 'table': 'estante', 'at': U(0.95, Y1 - 0.27, 0), 'group': 'cabin'},
+            {'name': 'Cajones', 'what': 'los cajones', 'table': 'cajon', 'at': U(2.15, -1.85, 0), 'group': 'basement'},
+            {'name': 'Barriles', 'what': 'los barriles', 'table': 'barril', 'at': U(2.45, -0.7, 0), 'group': 'basement'},
+            {'name': 'Despensa', 'what': 'la despensa', 'table': 'despensa', 'at': U(BX1 - 0.15, 1.05, 0), 'group': 'basement'},
+            {'name': 'Mesa del médico', 'what': 'la mesa del médico', 'table': 'medico', 'at': U(SX1 - 0.52, SY0 + 0.85, 0), 'group': 'secret'},
+            {'name': 'Frascos', 'what': 'los frascos', 'table': 'botica', 'at': U(SX1 - 0.15, SY0 + 2.25, 0), 'group': 'secret'},
+        ],
     }

@@ -40,6 +40,9 @@ Transform:
   - {fileID: 2775552302104170276}
   - {fileID: 3843570915953486379}
   - {fileID: 5050659803433172629}
+  - {fileID: 5781843188909064095}
+  - {fileID: 3550756155454364516}
+  - {fileID: 8589805841585508824}
   m_Father: {fileID: 6189425845396896624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &558900290108577045
@@ -223,7 +226,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1803645683654106146}
-  m_Mesh: {fileID: 8370012212090261777, guid: 38cef7ccbb2086c49905ee7cf8125739, type: 2}
+  m_Mesh: {fileID: 46823370932410529, guid: 38cef7ccbb2086c49905ee7cf8125739, type: 2}
 --- !u!23 &6957171018133658041
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -321,6 +324,54 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.5, y: 0.3}
+--- !u!1 &2953745011490074804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5781843188909064095}
+  - component: {fileID: 7759547252589922764}
+  m_Layer: 0
+  m_Name: Search 0 Barriles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5781843188909064095
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2953745011490074804}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.5, y: 0, z: -2.15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5115148424865891135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7759547252589922764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2953745011490074804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965b0810b6c6a1478ff317945ff9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.Searchable
+  displayName: Barriles
+  what: los barriles
+  table: barril
+  radius: 1.3125
 --- !u!1 &2991305425320219825
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +412,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2991305425320219825}
-  m_Mesh: {fileID: -5079076001570523989, guid: 38cef7ccbb2086c49905ee7cf8125739, type: 2}
+  m_Mesh: {fileID: -1147849757437969727, guid: 38cef7ccbb2086c49905ee7cf8125739, type: 2}
 --- !u!23 &3974173726683497767
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -566,6 +617,54 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.35, y: 0.65}
+--- !u!1 &7814700549138741999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8589805841585508824}
+  - component: {fileID: 172910688478527099}
+  m_Layer: 0
+  m_Name: Search 2 Canasto de pesca
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8589805841585508824
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7814700549138741999}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.5, y: 0, z: 2.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5115148424865891135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &172910688478527099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7814700549138741999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965b0810b6c6a1478ff317945ff9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.Searchable
+  displayName: Canasto de pesca
+  what: el canasto de pesca
+  table: canasto
+  radius: 1.3125
 --- !u!1 &7843374764617730158
 GameObject:
   m_ObjectHideFlags: 0
@@ -704,6 +803,54 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.25, y: 0.25}
+--- !u!1 &8188146376327133523
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3550756155454364516}
+  - component: {fileID: 4700908347983739305}
+  m_Layer: 0
+  m_Name: Search 1 Cajones
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3550756155454364516
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8188146376327133523}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.1, y: 0, z: -1.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5115148424865891135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4700908347983739305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8188146376327133523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9965b0810b6c6a1478ff317945ff9463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.Searchable
+  displayName: Cajones
+  what: los cajones
+  table: cajon
+  radius: 1.3125
 --- !u!1 &8292379424865247352
 GameObject:
   m_ObjectHideFlags: 0

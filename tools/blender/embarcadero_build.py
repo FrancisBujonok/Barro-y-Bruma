@@ -223,4 +223,9 @@ def meta():
                       UB(-3.15, 1.0, -2.9, 3.5), UB(-2.05, 1.55, -1.05, 2.15), UB(9.65, -1.1, 9.95, -0.8),
                       UB(9.6, 2.7, 9.95, 3.0), UB(8.25, 2.05, 8.75, 2.55)],
         },
+        'searchables': [
+            {'name': 'Barriles', 'what': 'los barriles', 'table': 'barril', 'at': U(-1.5, -2.15, 0), 'group': 'cabin'},
+            {'name': 'Cajones', 'what': 'los cajones', 'table': 'cajon', 'at': U(-6.1, -1.9, 0), 'group': 'cabin'},
+            {'name': 'Canasto de pesca', 'what': 'el canasto de pesca', 'table': 'canasto', 'at': U(8.5, 2.3, 0), 'group': 'cabin'},
+        ],
     }

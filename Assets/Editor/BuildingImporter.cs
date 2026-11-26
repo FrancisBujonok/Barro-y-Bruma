@@ -156,7 +156,7 @@ namespace BrumaPx.EditorTools
                 if (role == "hatch") hatchLid = go;
                 if (role == "secret_cut" || role == "wardrobe")
                     pieces.Add(new Building.Piece { renderer = mr, role = role, normal = Vector3.zero });
-                if (role == "roof" || role == "cut" || role == "door" || role == "door_bar")
+                if (role == "roof" || role == "cut" || role == "door" || role == "door_bar" || role == "chimney")
                     pieces.Add(new Building.Piece { renderer = mr, role = role == "door_bar" ? "door" : role, normal = p.ContainsKey("normal") ? V3(p["normal"]) : Vector3.zero });
             }
             building.pieces = pieces.ToArray();
@@ -273,6 +273,52 @@ namespace BrumaPx.EditorTools
                 }
             }
 
+            // furniture that can be searched
+            if (data.ContainsKey("searchables"))
+            {
+                int si = 0;
+                foreach (var o in (List<object>)data["searchables"])
+                {
+                    var d = (Dictionary<string, object>)o;
+                    string grp = d.ContainsKey("group") ? (string)d["group"] : "cabin";
+                    var go = new GameObject("Search " + (si++) + " " + (string)d["name"]);
+                    go.transform.SetParent(Group(grp).transform, false);
+                    go.transform.localPosition = V3(d["at"]) * S;
+                    var sr = go.AddComponent<Searchable>();
+                    sr.displayName = (string)d["name"];
+                    sr.what = (string)d["what"];
+                    sr.table = (string)d["table"];
+                    sr.radius = 1.05f * Mathf.Max(S, 1.25f);
+                }
+            }
+            // smoke out of the chimneys, bubbles over a cauldron
+            if (data.ContainsKey("smoke"))
+            {
+                foreach (var o in (List<object>)data["smoke"])
+                {
+                    var go = new GameObject("Smoke");
+                    go.transform.SetParent(Group("cabin").transform, false);
+                    go.transform.localPosition = V3(o) * S;
+                    var pe = go.AddComponent<PuffEmitter>();
+                    pe.kind = PuffEmitter.Kind.Smoke;
+                    pe.material = PuffMaterial();
+                }
+            }
+            if (data.ContainsKey("bubbles"))
+            {
+                foreach (var o in (List<object>)data["bubbles"])
+                {
+                    var d = (Dictionary<string, object>)o;
+                    var go = new GameObject("Bubbles");
+                    go.transform.SetParent(Group("cabin").transform, false);
+                    go.transform.localPosition = V3(d["pos"]) * S;
+                    var pe = go.AddComponent<PuffEmitter>();
+                    pe.kind = PuffEmitter.Kind.Bubbles;
+                    pe.radius = Num(d, "radius", 0.2f) * S;
+                    pe.material = PuffMaterial();
+                }
+            }
+
             if (!Directory.Exists(PrefabDir)) Directory.CreateDirectory(PrefabDir);
             string prefabPath = PrefabDir + "/" + name + ".prefab";
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
@@ -340,6 +386,17 @@ namespace BrumaPx.EditorTools
                 log.Append(" " + kv.Key + " (" + meshes[kv.Key].triangles.Length / 3 + " tri, " + circles + " circulos)");
             }
             return log.ToString() + ", atlas " + tex.width + "x" + tex.height + " -> " + dir;
+        }
+
+        const string PuffMatPath = "Assets/Art/Materials/Diorama/PP_Puff.mat";
+
+        static Material PuffMaterial()
+        {
+            var m = AssetDatabase.LoadAssetAtPath<Material>(PuffMatPath);
+            if (m != null) return m;
+            m = new Material(Shader.Find("BrumaPx/Diorama/PPPuff")) { name = "PP_Puff" };
+            AssetDatabase.CreateAsset(m, PuffMatPath);
+            return m;
         }
 
         static Material Mat(string path, Shader shader, Texture2D tex, bool emissive)

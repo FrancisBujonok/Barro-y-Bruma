@@ -105,24 +105,74 @@ namespace BrumaPx.World
             Vector3 fwd = CameraForward();
             HeroInside = Contains(hero.position);
             float target = 0f;
+            bool behind = !HeroInside && CoversHero(hero.position, fwd);
             if (HeroInside) target = 1f;
-            else
-            {
-                // behind the building, seen from the camera: half see-through so the hero is not lost
-                Vector3 c = transform.TransformPoint(new Vector3(footprintCenter.x, 0f, footprintCenter.y));
-                Vector3 d = hero.position - c;
-                d.y = 0f;
-                float along = Vector3.Dot(d, fwd);
-                Vector3 side = d - fwd * along;
-                float width = Mathf.Max(footprintHalf.x, footprintHalf.y) + 0.8f;
-                if (along > 0f && along < Mathf.Max(footprintHalf.x, footprintHalf.y) + behindReach && side.magnitude < width)
-                    target = behindCut;
-            }
+            else if (behind) target = behindCut;     // behind the building, seen from the camera: see-through
             _cut = Mathf.MoveTowards(_cut, target, Time.deltaTime * 3.5f);
+            // a chimney stands outside the walls: it only fades when it would hide the hero
+            _chimneyCut = Mathf.MoveTowards(_chimneyCut, behind ? behindCut : 0f, Time.deltaTime * 3.5f);
             Apply(fwd);
         }
 
         float _secretCut;
+        float _chimneyCut;
+
+        // Box around the walls and the roof (world space), measured once from their renderers.
+        Bounds _shell;
+        bool _hasShell;
+
+        void MeasureShell()
+        {
+            _hasShell = false;
+            for (int i = 0; i < pieces.Length; i++)
+            {
+                var p = pieces[i];
+                if (p.renderer == null || (p.role != "roof" && p.role != "cut" && p.role != "chimney")) continue;
+                if (!_hasShell) { _shell = p.renderer.bounds; _hasShell = true; }
+                else _shell.Encapsulate(p.renderer.bounds);
+            }
+        }
+
+        // Does the building hide the hero from the camera? Works on the screen of the orthographic camera, with the
+        // whole height of the walls and roof: a point `along` metres further away and `h` up shows at
+        // v = along * sin(pitch) + h * cos(pitch). The hero has to be past the front corner of the building.
+        bool CoversHero(Vector3 heroPos, Vector3 fwd)
+        {
+            if (!_hasShell) MeasureShell();
+            if (!_hasShell) return false;
+            float sinP = 0.5f, cosP = 0.866f;
+            if (_camera != null) { sinP = Mathf.Clamp(-_camera.forward.y, 0.05f, 1f); cosP = Mathf.Sqrt(1f - sinP * sinP); }
+            Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+            float u0 = float.MaxValue, u1 = float.MinValue, v0 = float.MaxValue, v1 = float.MinValue;
+            Vector3 mn = _shell.min, mx = _shell.max;
+            float baseY = transform.position.y;
+            for (int k = 0; k < 4; k++)
+            {
+                var c = new Vector3((k & 1) == 0 ? mn.x : mx.x, 0f, (k & 2) == 0 ? mn.z : mx.z);
+                float along = Vector3.Dot(c, fwd), u = Vector3.Dot(c, right);
+                u0 = Mathf.Min(u0, u); u1 = Mathf.Max(u1, u);
+                v0 = Mathf.Min(v0, along * sinP);
+                v1 = Mathf.Max(v1, along * sinP + (mx.y - baseY) * cosP);
+            }
+            var h = new Vector3(heroPos.x, 0f, heroPos.z);
+            float ha = Vector3.Dot(h, fwd), hu = Vector3.Dot(h, right);
+            if (hu + 0.45f < u0 || hu - 0.45f > u1) return false;
+            // the front edge of the building in the hero's screen column: the hero has to be behind it
+            float front = float.MaxValue;
+            var q = new Vector3[] { new Vector3(mn.x, 0f, mn.z), new Vector3(mx.x, 0f, mn.z), new Vector3(mx.x, 0f, mx.z), new Vector3(mn.x, 0f, mx.z) };
+            float hc = Mathf.Clamp(hu, u0 + 0.01f, u1 - 0.01f);
+            for (int k = 0; k < 4; k++)
+            {
+                Vector3 p0 = q[k], p1 = q[(k + 1) & 3];
+                float pu0 = Vector3.Dot(p0, right), pu1 = Vector3.Dot(p1, right);
+                if ((hc - pu0) * (hc - pu1) > 0f || Mathf.Abs(pu1 - pu0) < 1e-4f) continue;
+                float tt = (hc - pu0) / (pu1 - pu0);
+                front = Mathf.Min(front, Vector3.Dot(Vector3.Lerp(p0, p1, tt), fwd));
+            }
+            if (front == float.MaxValue || ha < front + 0.3f) return false;    // in front of the building
+            float hv0 = ha * sinP, hv1 = hv0 + 2.7f * cosP;
+            return hv1 > v0 && hv0 < v1;
+        }
 
         void ApplySecret()
         {
@@ -144,6 +194,7 @@ namespace BrumaPx.World
                 if (p.renderer == null) continue;
                 float c = 0f;
                 if (p.role == "roof") c = _cut;
+                else if (p.role == "chimney") c = _chimneyCut;
                 else if (p.role == "cut" || p.role == "door")
                 {
                     Vector3 n = transform.TransformDirection(p.normal);

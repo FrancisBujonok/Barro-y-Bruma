@@ -22,6 +22,8 @@ namespace BrumaPx.World
             var hero = DioramaHeroCache.Hero;
             if (hero == null || _refuge == null) return;
             if (Refuge.At(hero.position) != _refuge) return;
+            // furniture to search right next to the hero (inside the healer's hut) comes first
+            if (Searchable.HasTarget) return;
 
             var health = hero.GetComponent<Health>();
             if (health == null || health.IsDead) return;

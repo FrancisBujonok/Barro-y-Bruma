@@ -560,7 +560,7 @@ def garden():
 
 PARTS = {
     'roof': {'group': 'cabin', 'role': 'roof'},
-    'chimney': {'group': 'cabin', 'role': 'static'},
+    'chimney': {'group': 'cabin', 'role': 'chimney'},
     'wall_S_up': {'group': 'cabin', 'role': 'cut', 'normal': (0, -1, 0)},
     'wall_W_up': {'group': 'cabin', 'role': 'cut', 'normal': (-1, 0, 0)},
     'wall_N_up': {'group': 'cabin', 'role': 'cut', 'normal': (0, 1, 0)},
@@ -653,4 +653,11 @@ def meta():
         ],
         # she stands behind her counter, facing the door; the rest point is by the fire
         'anchors': {'occupant': U((cx0 + cx1) / 2, cy1 + 0.45, 0), 'occupantGroup': 'cabin', 'rest': U(FIRE[0] + 0.1, FIRE[1] - 0.9, 0)},
+        'smoke': [U(X1 + 0.3, 0.6, 4.3)],
+        'bubbles': [{'pos': U(FIRE[0], FIRE[1], 0.74), 'radius': 0.17}],
+        'searchables': [
+            {'name': 'Estantes', 'what': 'los estantes', 'table': 'botica', 'at': U(0.6, Y1 - 0.2, 0), 'group': 'cabin'},
+            {'name': 'Canasto', 'what': 'el canasto', 'table': 'canasto', 'at': U(-1.6, -1.25, 0), 'group': 'cabin'},
+            {'name': 'Barril', 'what': 'el barril', 'table': 'barril', 'at': U(X1 - 0.35, -0.25, 0), 'group': 'cabin'},
+        ],
     }

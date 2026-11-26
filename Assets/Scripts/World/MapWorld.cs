@@ -77,6 +77,62 @@ namespace BrumaPx.World
         static string _banner = string.Empty;
         static float _bannerUntil;
 
+        /// <summary>The world being played (for loot rolls from furniture).</summary>
+        public static MapWorld Current { get; private set; }
+
+        /// <summary>
+        /// What a piece of furniture holds, by loot table; the seed comes from where it stands, so it is always the
+        /// same. Tables: cofre, armario, estante, despensa, botica, medico, and barril / cajon / canasto (the rest).
+        /// </summary>
+        public static void RollLoot(string table, int seed, List<KeyValuePair<ItemDef, int>> items, out ArmorDef armor)
+        {
+            armor = null;
+            var w = Current;
+            if (w == null || w.items == null) return;
+            var rng = new System.Random(seed);
+            double r = rng.NextDouble();
+            System.Action<string, int> add = (n, c) => { var it = w.Item(n); if (it != null && c > 0) items.Add(new KeyValuePair<ItemDef, int>(it, c)); };
+            string[] healing = { "Venda", "Unguento", "Tonico", "Tintura", "HierbaSeca" };
+            switch (table)
+            {
+                case "cofre":
+                    add(healing[rng.Next(healing.Length)], 1);
+                    add(healing[rng.Next(healing.Length)], 1 + rng.Next(2));
+                    if (r < 0.12 && w.armors != null && w.armors.Length > 0) armor = w.armors[rng.Next(w.armors.Length)];
+                    break;
+                case "armario":
+                    if (r < 0.35 && w.armors != null && w.armors.Length > 0) armor = w.armors[rng.Next(w.armors.Length)];
+                    else if (r < 0.7) add("Venda", 1);
+                    break;
+                case "estante":
+                    if (r < 0.55) { int k = rng.Next(3); add(k == 0 ? "Tintura" : (k == 1 ? "HierbaSeca" : "Unguento"), k == 1 ? 2 : 1); }
+                    break;
+                case "despensa":
+                    if (r < 0.6) add("HierbaSeca", 1 + rng.Next(2));
+                    break;
+                case "botica":
+                    if (r < 0.8) { int k = rng.Next(3); add(k == 0 ? "Tintura" : (k == 1 ? "Unguento" : "HierbaSeca"), k == 2 ? 2 : 1); }
+                    if (r < 0.3) add("Tonico", 1);
+                    break;
+                case "medico":
+                    add("Tintura", 1);
+                    add("Tonico", 1);
+                    break;
+                default:
+                    if (r < 0.4) { if (rng.Next(2) == 0) add("HierbaSeca", 1 + rng.Next(2)); else add("Venda", 1); }
+                    break;
+            }
+            // the same item twice (a chest) becomes one stack
+            for (int i = items.Count - 1; i > 0; i--)
+                for (int j = 0; j < i; j++)
+                    if (items[j].Key == items[i].Key)
+                    {
+                        items[j] = new KeyValuePair<ItemDef, int>(items[j].Key, items[j].Value + items[i].Value);
+                        items.RemoveAt(i);
+                        break;
+                    }
+        }
+
         public static void Banner(string text, float seconds)
         {
             _banner = text;
@@ -87,6 +143,7 @@ namespace BrumaPx.World
 
         void Awake()
         {
+            Current = this;
             if (mapJson == null || !MapGrid.Load(mapJson.text))
             {
                 Debug.LogError("MapWorld: no se pudo leer el mapa.");
@@ -144,14 +201,15 @@ namespace BrumaPx.World
         // markers of type "casa" with label "Prefab|yaw|locked" so they stream with the chunks like the rest.
         static readonly string[] CenizalHouses =
         {
-            "CasaEntramado|0|",          "1.3,11.9",
-            "CasaPiedra|0|",             "-11.7,0.9",
-            "CasaPiedra|90|",            "14.3,6.9",
-            "CasaEntramado|90|",         "14.3,-6.1",
-            "CasaPiedra|0|locked",       "-22.7,-8.1",
-            "CasaEntramado|0|",          "-25.7,2.9",
-            "CasaPiedra|0|locked",       "-24.7,13.9",
-            "CasaEntramado|0|locked",    "-12.7,11.9",
+            // 2026-11-26: re-spaced for the bigger houses (stone ~10 x 7.6 m, half-timbered ~12.3 x 8.1 m)
+            "CasaEntramado|0|",          "1,12.5",
+            "CasaPiedra|0|",             "-13,-1",
+            "CasaPiedra|90|",            "16,6",
+            "CasaEntramado|90|",         "16,-8",
+            "CasaPiedra|0|locked",       "-19,-12",
+            "CasaEntramado|0|",          "-29,-1",
+            "CasaPiedra|0|locked",       "-28.8,12.5",
+            "CasaEntramado|0|locked",    "-14.5,12.5",
         };
 
         static List<MapMarker> VillageHouses(IEnumerable<MapMarker> markers)
@@ -185,14 +243,18 @@ namespace BrumaPx.World
             if (g == null) { Spawn("Hut", p, yaw, 1f, parent); return; }
             g.name = bits[0] + " " + m.id;
             var b = g.GetComponent<Building>();
-            if (b != null && b.door != null) b.door.SetLocked(bits.Length > 2 && bits[2] == "locked");
+            bool locked = bits.Length > 2 && bits[2] == "locked";
+            if (b != null && b.door != null) b.door.SetLocked(locked);
+            // nobody lives in the boarded-up houses: no smoke out of their chimneys
+            if (locked)
+                foreach (var pe in g.GetComponentsInChildren<PuffEmitter>(true)) pe.gameObject.SetActive(false);
         }
 
         static float ClearRadius(MapMarker m)
         {
             switch (m.type)
             {
-                case "casa": return 6f;
+                case "casa": return 8f;
                 case "start": return 4f;
                 case "carruaje": return 3f;
                 case "aldea": return 7f;

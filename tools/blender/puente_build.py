@@ -236,4 +236,8 @@ def meta():
         'lights': [
             {'group': 'cabin', 'pos': U(-7.6, -4.15, 0.85), 'radius': 1.6, 'color': [1.0, 0.65, 0.35], 'intensity': 0.55, 'flicker': 0.35},
         ],
+        'searchables': [
+            {'name': 'Cajones', 'what': 'los cajones de los bandidos', 'table': 'cajon', 'at': U(6.8, 3.05, 0), 'group': 'cabin'},
+            {'name': 'Barril', 'what': 'el barril', 'table': 'barril', 'at': U(7.6, 2.6, 0), 'group': 'cabin'},
+        ],
     }

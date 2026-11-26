@@ -3,7 +3,8 @@
 #   build_all('entramado')  CasaEntramado: longer half-timbered house (dark beams, plaster panels), shingle roof,
 #                           chimney stack through the roof.
 # Both: walls a little taller than the hero, a plank door (Unity decides per house whether it is locked), windows
-# with shutters, and a furnished room (hearth, bed, table and bench, shelves, barrels, sacks, hanging herbs).
+# with shutters, and a furnished room (hearth, bed, table and bench, shelves, barrels, sacks, hanging herbs), with
+# a wardrobe, a chest and crates. Chest, wardrobe, shelves, barrels and crates can be searched (meta 'searchables').
 import math, random
 from mathutils import Vector
 
@@ -14,13 +15,15 @@ FLOOR = 0.08
 def setup(style):
     S.clear()
     if style == 'piedra':
-        S.update(name='CasaPiedra', X=2.6, Y=2.0, H=2.5, ridge=4.3, t=0.32, door=(-0.45, 0.55), door_h=2.0,
-                 wins={'S': [(1.35, 2.0, 1.1, 1.6)], 'W': [(-0.35, 0.35, 1.15, 1.6)], 'N': [(-1.4, -0.8, 1.2, 1.6)]},
+        # 2026-11-26: bigger rooms (were X 2.6, Y 2.0) so the furniture and the things to search are not cramped
+        S.update(name='CasaPiedra', X=3.5, Y=2.7, H=2.6, ridge=4.9, t=0.32, door=(-0.5, 0.5), door_h=2.0,
+                 wins={'S': [(1.7, 2.4, 1.1, 1.6), (-2.6, -1.9, 1.1, 1.6)], 'W': [(-0.4, 0.4, 1.15, 1.6)],
+                       'N': [(-1.6, -1.0, 1.2, 1.6)]},
                  wall='stone', roof='thatch', chimney='gable')
     else:
-        S.update(name='CasaEntramado', X=3.4, Y=2.2, H=2.8, ridge=4.7, t=0.22, door=(0.8, 1.8), door_h=2.05,
-                 wins={'S': [(-2.5, -1.7, 1.1, 1.75), (-0.7, 0.1, 1.1, 1.75)], 'E': [(-0.5, 0.4, 1.15, 1.7)],
-                       'W': [(-0.4, 0.4, 1.15, 1.7)]},
+        S.update(name='CasaEntramado', X=4.4, Y=2.9, H=2.9, ridge=5.4, t=0.22, door=(1.0, 2.0), door_h=2.05,
+                 wins={'S': [(-3.2, -2.4, 1.1, 1.75), (-1.0, -0.2, 1.1, 1.75), (3.0, 3.7, 1.1, 1.75)],
+                       'E': [(-0.6, 0.3, 1.15, 1.7)], 'W': [(-0.4, 0.4, 1.15, 1.7)]},
                  wall='plaster', roof='shingle', chimney='stack')
     S['style'] = style
 
@@ -297,34 +300,87 @@ def herbs(x0, x1, y, z):
         cyl('herb%d' % k, (x, y, z - 0.05), (x, y, z - 0.38), 0.05, 'herbs', 'interior', sides=5, r1=0.09)
 
 
+def wardrobe(x0, x1, y_wall, seed):
+    """A tall wardrobe against a north wall (y_wall = inside face), doors facing south."""
+    y1 = y_wall
+    y0 = y_wall - 0.55
+    box('wardrobe_%d' % seed, (x0, y0, FLOOR), (x1, y1, 2.0), 'wood', 'interior')
+    box('wardrobe_top_%d' % seed, (x0 - 0.04, y0 - 0.04, 2.0), (x1 + 0.04, y1, 2.08), 'wood_light', 'interior')
+    xm = (x0 + x1) / 2
+    for k, (a0, a1) in enumerate(((x0 + 0.05, xm - 0.01), (xm + 0.01, x1 - 0.05))):
+        box('wardrobe_door_%d_%d' % (seed, k), (a0, y0 - 0.025, 0.15), (a1, y0, 1.92), 'boards_x', 'interior')
+        hx = a1 - 0.08 if k == 0 else a0 + 0.04
+        box('wardrobe_knob_%d_%d' % (seed, k), (hx, y0 - 0.05, 1.0), (hx + 0.04, y0 - 0.025, 1.12), 'iron', 'interior')
+
+
+def chest(name, x0, y0, x1, y1):
+    box(name, (x0, y0, FLOOR), (x1, y1, 0.55), 'wood', 'interior')
+    box(name + '_lid', (x0 - 0.02, y0 - 0.02, 0.55), (x1 + 0.02, y1 + 0.02, 0.63), 'wood_light', 'interior')
+    w = x1 - x0
+    for k in range(2):
+        box(name + '_band%d' % k, (x0 + w * (0.25 + 0.5 * k) - 0.03, y0 - 0.03, FLOOR), (x0 + w * (0.25 + 0.5 * k) + 0.03, y1 + 0.03, 0.65), 'iron', 'interior')
+
+
+def crates(name, x, y):
+    for k, (dx, dy, z) in enumerate(((0.0, 0.0, 0.0), (0.55, 0.05, 0.0), (0.25, 0.02, 0.5))):
+        ob = box('%s_%d' % (name, k), (-0.25, -0.25, -0.25), (0.25, 0.25, 0.25), 'boards', 'interior', rot=(0, 0, 0.12 * k - 0.1))
+        ob.location = (x + dx, y + dy, FLOOR + z + 0.25)
+
+
+def rug(x0, y0, x1, y1):
+    box('rug', (x0, y0, FLOOR), (x1, y1, FLOOR + 0.015), 'wool_r', 'interior')
+
+
 def interior():
+    """Furniture, and the things that can be searched (their positions also go to meta()['searchables'])."""
     X, Y, t = S['X'], S['Y'], S['t']
     ix0, ix1, iy0, iy1 = -X + t / 2, X - t / 2, -Y + t / 2, Y - t / 2
     if S['style'] == 'piedra':
-        hearth(ix1, -0.45, 0.45)
+        hearth(ix1, -0.5, 0.5)
         bed(ix0 + 0.1, iy1 - 0.95, ix0 + 1.95, iy1 - 0.08, 'wool')
-        table(-0.5, -0.2, 0.7, 0.5, 31)
-        shelf('y', iy1, 0.0, 1.6, 1.4, 32)
-        barrel('barrel_a', ix1 - 0.35, iy0 + 0.35)
-        rock('sack_a', (ix1 - 0.95, iy0 + 0.3, FLOOR + 0.18), (0.25, 0.2, 0.28), 'linen', 'interior', seed=33, squash=1.0)
-        herbs(ix0 + 0.2, ix0 + 1.6, iy0 + 0.6, 2.15)
-        box('chest', (ix0 + 0.1, iy0 + 0.1, FLOOR), (ix0 + 0.75, iy0 + 0.55, 0.55), 'wood', 'interior')
-    else:
-        hearth(ix1, 0.2, 1.2)
-        bed(ix0 + 0.1, iy1 - 0.95, ix0 + 1.95, iy1 - 0.08, 'wool_r')
-        bed(ix0 + 0.1, iy0 + 0.1, ix0 + 1.0, iy0 + 1.9, 'wool')
-        table(-0.6, 0.0, 1.2, 0.75, 41)
-        shelf('y', iy1, 0.0, 2.2, 1.45, 42)
-        shelf('x', ix1, -1.9, -0.7, 1.3, 43)
+        table(-0.7, -0.15, 0.6, 0.55, 31)
+        shelf('y', iy1, 0.1, 1.8, 1.4, 32)
+        wardrobe(2.05, 3.05, iy1, 1)
+        chest('chest', ix0 + 0.1, iy0 + 0.1, ix0 + 0.85, iy0 + 0.6)
         barrel('barrel_a', ix1 - 0.35, iy0 + 0.35)
         barrel('barrel_b', ix1 - 0.95, iy0 + 0.33, 0.65)
-        rock('sack_a', (2.0, -1.55, FLOOR + 0.18), (0.25, 0.2, 0.28), 'linen', 'interior', seed=44, squash=1.0)
-        herbs(-1.2, 0.8, iy1 - 0.5, 2.4)
+        crates('crates', ix0 + 0.35, -0.4)
+        rock('sack_a', (ix1 - 1.6, iy0 + 0.3, FLOOR + 0.18), (0.25, 0.2, 0.28), 'linen', 'interior', seed=33, squash=1.0)
+        herbs(ix0 + 0.3, ix0 + 1.9, iy0 + 0.9, 2.2)
+        rug(-1.0, -1.5, 1.0, -0.55)
+    else:
+        hearth(ix1, 0.3, 1.3)
+        bed(ix0 + 0.1, iy1 - 0.95, ix0 + 1.95, iy1 - 0.08, 'wool_r')
+        bed(ix0 + 0.1, iy0 + 0.1, ix0 + 1.0, iy0 + 1.9, 'wool')
+        table(-0.8, -0.1, 1.2, 0.7, 41)
+        shelf('y', iy1, 0.1, 2.5, 1.45, 42)
+        shelf('x', ix1, -2.4, -1.2, 1.3, 43)
+        wardrobe(-2.15, -1.05, iy1, 2)
+        chest('chest', ix1 - 1.15, iy1 - 0.62, ix1 - 0.35, iy1 - 0.1)
+        barrel('barrel_a', ix1 - 0.35, iy0 + 0.35)
+        barrel('barrel_b', ix1 - 0.95, iy0 + 0.33, 0.65)
+        crates('crates', -2.0, iy0 + 0.35)
+        rock('sack_a', (0.0, iy0 + 0.3, FLOOR + 0.18), (0.25, 0.2, 0.28), 'linen', 'interior', seed=44, squash=1.0)
+        herbs(-1.2, 1.0, iy1 - 0.5, 2.45)
+        rug(-0.9, -1.6, 1.3, -0.7)
         # a loom-like frame: this family wove for a living
-        for k, x in enumerate((-2.6, -1.6)):
+        for k, x in enumerate((-3.4, -2.4)):
             box('loom_post%d' % k, (x - 0.05, 0.6, FLOOR), (x + 0.05, 0.7, 1.6), 'wood', 'interior')
-        box('loom_beam', (-2.65, 0.58, 1.5), (-1.55, 0.72, 1.6), 'wood', 'interior')
-        box('loom_cloth', (-2.5, 0.63, 0.7), (-1.7, 0.67, 1.45), 'wool', 'interior')
+        box('loom_beam', (-3.45, 0.58, 1.5), (-2.35, 0.72, 1.6), 'wood', 'interior')
+        box('loom_cloth', (-3.3, 0.63, 0.7), (-2.5, 0.67, 1.45), 'wool', 'interior')
+
+
+def searchables():
+    """Things that can be searched, for meta(): name for the window, what the prompt says, loot table, where."""
+    X, Y, t = S['X'], S['Y'], S['t']
+    ix0, ix1, iy0, iy1 = -X + t / 2, X - t / 2, -Y + t / 2, Y - t / 2
+    if S['style'] == 'piedra':
+        return [('Arcón', 'el arcón', 'cofre', (ix0 + 0.47, iy0 + 0.35)), ('Armario', 'el armario', 'armario', (2.55, iy1 - 0.3)),
+                ('Estante', 'el estante', 'estante', (0.95, iy1 - 0.12)), ('Barriles', 'los barriles', 'barril', (ix1 - 0.65, iy0 + 0.35)),
+                ('Cajones', 'los cajones', 'cajon', (ix0 + 0.6, -0.4))]
+    return [('Arcón', 'el arcón', 'cofre', (ix1 - 0.75, iy1 - 0.36)), ('Armario', 'el armario', 'armario', (-1.6, iy1 - 0.3)),
+            ('Estante', 'el estante', 'estante', (1.3, iy1 - 0.12)), ('Alacena', 'la alacena', 'estante', (ix1 - 0.12, -1.8)),
+            ('Barriles', 'los barriles', 'barril', (ix1 - 0.65, iy0 + 0.35)), ('Cajones', 'los cajones', 'cajon', (-1.72, iy0 + 0.37))]
 
 
 def door():
@@ -362,7 +418,7 @@ def outside():
 
 PARTS = {
     'roof': {'group': 'cabin', 'role': 'roof'},
-    'chimney': {'group': 'cabin', 'role': 'static'},
+    'chimney': {'group': 'cabin', 'role': 'chimney'},
     'floor': {'group': 'cabin', 'role': 'static', 'shadow': False},
     'interior': {'group': 'cabin', 'role': 'static', 'shadow': False},
     'ext': {'group': 'cabin', 'role': 'static'},
@@ -424,19 +480,25 @@ def meta():
            UB(-X - t / 2, -Y - t / 2, -X + t / 2, Y + t / 2), UB(-X - t / 2, -Y - t / 2, d0 - 0.03, -Y + t / 2),
            UB(d1 + 0.03, -Y - t / 2, X + t / 2, -Y + t / 2), UB(d1 + 0.22, -Y - 0.72, d1 + 0.78, -Y - 0.18)]
     if S['style'] == 'piedra':
-        obs += [UB(ix1 - 0.6, -0.5, ix1, 0.5), UB(ix0, iy1 - 1.0, ix0 + 2.0, iy1), UB(-0.55, -0.25, 0.75, 0.55),
-                UB(ix1 - 0.65, iy0, ix1, iy0 + 0.65), UB(ix0, iy0, ix0 + 0.8, iy0 + 0.6), UB(X + 0.15, -0.5, X + 0.5, 0.5),
-                UB(-X - 0.8, -1.35, -X - 0.15, 0.55)]
+        obs += [UB(ix1 - 0.6, -0.55, ix1, 0.55), UB(ix0, iy1 - 1.0, ix0 + 2.0, iy1), UB(-0.75, -0.65, 0.65, 0.6),
+                UB(ix1 - 1.25, iy0, ix1, iy0 + 0.65), UB(ix0, iy0, ix0 + 0.9, iy0 + 0.65), UB(X + 0.15, -0.5, X + 0.5, 0.5),
+                UB(-X - 0.8, -1.35, -X - 0.15, 0.55), UB(2.0, iy1 - 0.6, 3.1, iy1), UB(0.1, iy1 - 0.25, 1.8, iy1),
+                UB(ix0, -0.7, ix0 + 0.95, -0.1), UB(ix1 - 1.9, iy0, ix1 - 1.3, iy0 + 0.55)]
     else:
-        obs += [UB(ix1 - 0.6, 0.15, ix1, 1.25), UB(ix0, iy1 - 1.0, ix0 + 2.0, iy1), UB(ix0, iy0, ix0 + 1.05, iy0 + 1.95),
-                UB(-0.65, -0.5, 1.25, 0.8), UB(ix1 - 1.25, iy0, ix1, iy0 + 0.65), UB(-2.7, 0.55, -1.5, 0.75),
-                UB(X + 0.3, -1.5, X + 0.6, 1.5)]
+        obs += [UB(ix1 - 0.6, 0.25, ix1, 1.35), UB(ix0, iy1 - 1.0, ix0 + 2.0, iy1), UB(ix0, iy0, ix0 + 1.05, iy0 + 1.95),
+                UB(-0.85, -0.6, 1.25, 0.75), UB(ix1 - 1.25, iy0, ix1, iy0 + 0.65), UB(-3.5, 0.55, -2.3, 0.75),
+                UB(X + 0.3, -1.5, X + 0.6, 1.5), UB(-2.2, iy1 - 0.6, -1.0, iy1), UB(0.1, iy1 - 0.25, 2.5, iy1),
+                UB(ix1 - 1.2, iy1 - 0.67, ix1 - 0.3, iy1 - 0.05), UB(ix1 - 0.25, -2.4, ix1, -1.2),
+                UB(-2.3, iy0, -1.15, iy0 + 0.65), UB(-0.3, iy0, 0.3, iy0 + 0.55)]
     return {
         'name': S['name'],
         'footprint': UB(ix0, iy0, ix1, iy1),
         'obstacles': {'cabin': obs},
         'door': {'closed': UB(d0, -Y - 0.12, d1, -Y + 0.12), 'openYaw': 100, 'locked': False, 'health': 55,
                  'prompt': U((d0 + d1) / 2, -Y - 0.5, 0), 'inside': U((d0 + d1) / 2, -Y + 0.6, 0)},
-        'lights': [{'group': 'cabin', 'pos': U(ix1 - 0.45, 0.0 if S['style'] == 'piedra' else 0.7, 0.7), 'radius': 3.6,
+        'lights': [{'group': 'cabin', 'pos': U(ix1 - 0.45, 0.0 if S['style'] == 'piedra' else 0.8, 0.7), 'radius': 4.2,
                     'color': [1.0, 0.6, 0.3], 'intensity': 0.85, 'flicker': 0.45}],
+        # smoke out of the chimney (MapWorld turns it off in the houses left boarded up)
+        'smoke': [U(X + 0.11, 0.0, S['ridge'] + 0.66) if S['chimney'] == 'gable' else U(X - 1.3, 0.5, S['ridge'] + 0.96)],
+        'searchables': [{'name': n, 'what': w, 'table': tb, 'at': U(x, y, 0), 'group': 'cabin'} for (n, w, tb, (x, y)) in searchables()],
     }
