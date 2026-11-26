@@ -255,10 +255,17 @@ namespace BrumaPx.EditorTools
             if (data.ContainsKey("anchors"))
             {
                 var a = (Dictionary<string, object>)data["anchors"];
-                if (a.ContainsKey("occupant") && building.basementRoot != null)
+                if (a.ContainsKey("rest"))
+                {
+                    // where the refuge point (rest by the fire) goes
+                    var go = new GameObject("Rest");
+                    go.transform.SetParent(Group("cabin").transform, false);
+                    go.transform.localPosition = V3(a["rest"]) * S;
+                }
+                if (a.ContainsKey("occupant"))
                 {
                     var go = new GameObject("Occupant");
-                    string og = a.ContainsKey("occupantGroup") ? (string)a["occupantGroup"] : "basement";
+                    string og = a.ContainsKey("occupantGroup") ? (string)a["occupantGroup"] : (building.basementRoot != null ? "basement" : "cabin");
                     go.transform.SetParent(Group(og).transform, false);
                     go.transform.localPosition = V3(a["occupant"]) * S;
                     go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);

@@ -197,7 +197,11 @@ namespace BrumaPx.World
                 case "aldea": return 7f;
                 case "salida": return 4.5f;
                 case "jefe": return 4f;
-                case "refugio": return 6f;
+                case "refugio":
+                {
+                    string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
+                    return l.Contains("curandera") ? 14f : 6f;       // the healer's hut and garden need a clearing
+                }
                 case "poi":
                 {
                     string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
@@ -758,6 +762,19 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
 
             // What stands around the fire depends on the name given in the map.
             string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
+            if (l.Contains("curandera"))
+            {
+                // the healer's hut: the rest point moves inside, by her fire pit, and the ring of the camp fire hides
+                var hut = SpawnBuilding("ChozaCurandera", p + HealerHutOffset, 0f, parent);
+                if (hut != null)
+                {
+                    var rest = hut.transform.Find("Cabin/Rest");
+                    if (rest != null) g.transform.position = rest.position;
+                    foreach (var r in g.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
+                    Spawn("Lantern", hut.transform.TransformPoint(new Vector3(-1.75f, 0f, -3.2f)), 0f, 1f, parent);
+                    return;
+                }
+            }
             if (l.Contains("caba")) Spawn("Hut", p + new Vector3(4.6f, 0f, 3.2f), 0f, 1f, parent);
             else if (l.Contains("capilla"))
             {
@@ -777,6 +794,22 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             else Spawn("RuinedHut", p + new Vector3(4.2f, 0f, 3.2f), 0f, 1f, parent);
             Spawn("Lantern", p + new Vector3(-1.8f, 0f, 1.2f), 0f, 1f, parent);
+        }
+
+        // The healer's hut stands north-east of her refuge marker: clear of the road on the west, garden to the east.
+        static readonly Vector3 HealerHutOffset = new Vector3(3f, 0f, 2.6f);
+
+        static Building NearestBuilding(string name, Vector3 p, float range)
+        {
+            Building best = null;
+            float bd = range * range;
+            foreach (var b in FindObjectsByType<Building>(FindObjectsSortMode.None))
+            {
+                if (b.name != name) continue;
+                float d = (b.transform.position - p).sqrMagnitude;
+                if (d < bd) { bd = d; best = b; }
+            }
+            return best;
         }
 
         void SpawnBoss(Transform parent, MapMarker m, Vector3 p)
@@ -819,6 +852,17 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
                     g.transform.SetParent(home.occupantAnchor.parent, true);
                     g.transform.position = home.occupantAnchor.position;
                     g.transform.rotation = home.occupantAnchor.rotation;
+                }
+            }
+            // The healer attends from behind the counter of her hut.
+            if (id == "Curandera")
+            {
+                var hut = NearestBuilding("ChozaCurandera", p, 30f);
+                if (hut != null && hut.occupantAnchor != null)
+                {
+                    g.transform.SetParent(hut.occupantAnchor.parent, true);
+                    g.transform.position = hut.occupantAnchor.position;
+                    g.transform.rotation = hut.occupantAnchor.rotation;
                 }
             }
         }

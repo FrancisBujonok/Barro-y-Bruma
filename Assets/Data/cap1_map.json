@@ -241,10 +241,10 @@
   {
    "id": "k21",
    "type": "npc",
-   "x": -102.7,
-   "z": -56.4,
+   "x": -97.6,
+   "z": -48.1,
    "label": "Curandera del pantano",
-   "note": "Vende ungüento y tintura amarga.",
+   "note": "Vende ungüento y tintura amarga. Atiende detrás del mostrador de su choza.",
    "n": 1,
    "phase": 0
   },
