@@ -170,6 +170,135 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 return col;
             }
 
+            // ---------------------------------------------------------------- ground detail
+            // Drawn on the world-anchored screen-pixel lattice (lat), so every mark is whole pixels and stays put.
+
+            float3 Tone(int id, int k) { return PP_Hex(PAL[min(id, 11) * 4 + clamp(k, 0, 3)]); }
+
+            // Tufts of grass: tiny hand-made sprites (5x4 px, 2 bits a pixel: 0 none, 1 dark root, 2 mid, 3 light tip)
+            // dropped on a 7x6 px grid of the world-anchored pixel lattice, one at most per grid cell.
+            static const uint4 TUFT[4] =
+            {
+                uint4(84u, 184u, 907u, 48u),
+                uint4(80u, 744u, 35u, 48u),
+                uint4(20u, 59u, 200u, 3u),
+                uint4(325u, 906u, 140u, 192u)
+            };
+
+            int Blade(float2 lat, float density, float maxLen, float seed)
+            {
+                float2 cell = floor(lat / float2(7.0, 6.0));
+                float h = PP_Hash(cell + seed * 7.1);
+                if (h > density) return 0;
+                float2 jit = floor(float2(PP_Hash(cell + 3.3 + seed), PP_Hash(cell + 8.7 + seed)) * float2(3.0, 3.0));
+                int2 lp = (int2)(lat - cell * float2(7.0, 6.0) - jit);
+                if (lp.x < 0 || lp.x > 4 || lp.y < 0 || lp.y > 3) return 0;
+                int k = min((int)(PP_Hash(cell + 5.9 + seed) * maxLen), 3);
+                uint4 sp = TUFT[k];
+                uint row = lp.y == 0 ? sp.x : (lp.y == 1 ? sp.y : (lp.y == 2 ? sp.z : sp.w));
+                uint v = (row >> (uint)(lp.x * 2)) & 3u;
+                return v == 0u ? 0 : (v == 1u ? 3 : (v == 2u ? 1 : 2));
+            }
+
+            bool IsRoadAt(float2 p) { return CellId(p) == 5; }
+
+            // Cart ruts on straight stretches of road: 1 in a rut, 2 on the grassy strip between them.
+            int Rut(float2 p, out float wet)
+            {
+                wet = 0.0;
+                bool rx = IsRoadAt(p + float2(3.0, 0.0)) && IsRoadAt(p - float2(3.0, 0.0)) && IsRoadAt(p + float2(6.0, 0.0)) && IsRoadAt(p - float2(6.0, 0.0));
+                bool rz = IsRoadAt(p + float2(0.0, 3.0)) && IsRoadAt(p - float2(0.0, 3.0)) && IsRoadAt(p + float2(0.0, 6.0)) && IsRoadAt(p - float2(0.0, 6.0));
+                if (rx == rz) return 0;                            // a crossing, a bend, or a lone cell
+                float2 across = rx ? float2(0.0, 1.0) : float2(1.0, 0.0);
+                float lo = 0.0, hi = 0.0;
+                [loop] for (int k = 1; k <= 12; k++) { if (!IsRoadAt(p - across * (k * 0.5))) break; lo = k * 0.5; }
+                [loop] for (int j = 1; j <= 12; j++) { if (!IsRoadAt(p + across * (j * 0.5))) break; hi = j * 0.5; }
+                if (lo + hi < 2.4 || lo + hi > 5.6) return 0;
+                float centre = (hi - lo) * 0.5;                    // offset of the road centre from p, across
+                float along = dot(p, rx ? float2(1.0, 0.0) : float2(0.0, 1.0));
+                float wob = (PP_Noise(float2(along * 0.15, 3.0)) - 0.5) * 0.5;
+                float d = abs(-centre + wob);
+                if (abs(d - 0.75) < 0.17)
+                {
+                    wet = step(0.66, PP_Fbm(float2(along * 0.4, 9.0)));
+                    return 1;
+                }
+                if (d < 0.32) return 2;
+                return 0;
+            }
+
+            float3 GroundDetail(int id, float2 p, float2 lat, float3 col, int q)
+            {
+                float clump = PP_Noise(p * 0.55 + 13.0);
+                float hr2 = PP_Hash(lat + 71.0);
+                if (id == 0 || id == 1 || id == 3 || id == 10)
+                {
+                    float dens = id == 0 ? lerp(0.10, 0.75, clump) : (id == 1 ? lerp(0.08, 0.5, clump) : (id == 3 ? lerp(0.12, 0.6, clump) : lerp(0.0, 0.3, clump)));
+                    int b = Blade(lat, dens, 4.0, (float)id);
+                    if (b == 3) col = Tone(id, 0);
+                    else if (b == 1) col = Tone(id, 2);
+                    else if (b == 2) col = id == 0 ? PP_Hex(0x948C5Eu) : (id == 1 ? PP_Hex(0x627048u) : Tone(id, 3));
+                }
+                if (id == 0)
+                {
+                    // flowers in patches
+                    float patch = PP_Noise(p * 0.3 + 5.0);
+                    if (patch > 0.68 && hr2 > 0.975)
+                    {
+                        float kind = PP_Hash(floor(p * 0.25));
+                        col = kind < 0.4 ? PP_Hex(0xD2AC88u) : (kind < 0.75 ? PP_Hex(0xC4BFB2u) : PP_Hex(0x8A7AB0u));
+                    }
+                }
+                else if (id == 1)
+                {
+                    // fallen leaves and moss
+                    float leaf = PP_Noise(p * 0.4 + 21.0);
+                    if (leaf > 0.62 && hr2 > 0.965)
+                    {
+                        float k = PP_Hash(lat + 5.0);
+                        col = k < 0.55 ? PP_Hex(0x594A3Cu) : (k < 0.85 ? PP_Hex(0x6B2A24u) : PP_Hex(0x8F4A36u));
+                    }
+                    if (PP_Fbm(p * 0.7 + 3.0) > 0.66) col = lerp(col, PP_Hex(0x3B4A33u), 0.5);
+                }
+                else if (id == 2)
+                {
+                    // dry tufts, twigs and pale ash
+                    int b = Blade(lat, lerp(0.05, 0.35, clump), 4.0, 2.0);
+                    if (b == 3) col = Tone(2, 0);
+                    else if (b == 1 || b == 2) col = PP_Hex(0x7A6650u);
+                    float tw = PP_Hash(floor((lat + float2(lat.y, 0.0)) / float2(3.0, 1.0)));
+                    if (tw > 0.985) col = PP_Hex(0x1F1C1Au);
+                    else if (hr2 > 0.99) col = PP_Hex(0x9A968Cu);
+                }
+                else if (id == 3)
+                {
+                    // duckweed specks
+                    if (hr2 > 0.96 && PP_Noise(p * 0.8) > 0.55) col = hr2 > 0.985 ? PP_Hex(0x666043u) : PP_Hex(0x4F5C40u);
+                }
+                else if (id == 5)
+                {
+                    float wet;
+                    int rut = Rut(p, wet);
+                    if (rut == 1) col = wet > 0.5 ? (PP_Hash(lat + 2.0) > 0.85 ? PP_Hex(0x6A7C80u) : PP_Hex(0x3A4C54u)) : Tone(5, 0);
+                    else if (rut == 2)
+                    {
+                        int b = Blade(lat, 0.45, 4.0, 5.0);
+                        if (b == 3) col = Tone(5, 0);
+                        else if (b != 0) col = PP_Hex(0x666043u);
+                    }
+                    // pebbles: a light pixel with its shadow under it
+                    if (PP_Hash(lat + 33.0) > 0.982) col = PP_Hash(lat + 34.0) > 0.5 ? PP_Hex(0x9A968Cu) : PP_Hex(0x6E6C66u);
+                    else if (PP_Hash(lat + float2(0.0, 1.0) + 33.0) > 0.982) col = Tone(5, 0);
+                }
+                else if (id == 6)
+                {
+                    int b = Blade(lat, lerp(0.05, 0.3, clump), 4.0, 6.0);
+                    if (b == 3) col = Tone(6, 0);
+                    else if (b != 0) col = PP_Hex(0x9C8A70u);
+                }
+                return col;
+            }
+
             float3 Finish(float3 col, float3 wp, float2 lat, float rough)
             {
                 col *= lerp(1.0, 0.82, _PP_Weather.w);
@@ -264,6 +393,7 @@ Shader "BrumaPx/Diorama/PPMapGround"
                 }
                 float q = clamp(floor(v * 4.0 + (bay - 0.5) * 0.6 + 0.5), 0.0, 3.0);
                 float3 col = PP_Hex(PAL[min(id, 11) * 4 + (int)q]);
+                col = GroundDetail(id, p, lat, col, (int)q);
                 if (id == 11)
                 {
                     // standing water that shines a little

@@ -10,6 +10,7 @@ Shader "BrumaPx/Diorama/PPPuff"
         _Fade ("Density", Range(0, 1)) = 1
         _Seed ("Seed", Float) = 0
         _Ring ("Ring (bubble outline)", Range(0, 1)) = 0
+        _Glow ("Glow (no mist, round, flat)", Range(0, 1)) = 0
     }
     SubShader
     {
@@ -32,6 +33,7 @@ Shader "BrumaPx/Diorama/PPPuff"
                 float _Fade;
                 float _Seed;
                 float _Ring;
+                float _Glow;
             CBUFFER_END
 
             struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
@@ -56,6 +58,15 @@ Shader "BrumaPx/Diorama/PPPuff"
                 float2 lat = PP_Lattice(i.positionWS);
                 if (PP_IslandClip(i.positionWS, lat)) discard;
                 float2 c = i.uv * 2.0 - 1.0;
+                if (_Glow > 0.5)
+                {
+                    // a firefly: a round dot (core) or a sparse halo, own light, no mist over it
+                    float g = length(c);
+                    if (g > 1.0) discard;
+                    float gb = PP_Bayer(lat);
+                    if (gb > _Fade) discard;
+                    return float4(lerp(_Color.rgb, _Color2.rgb, step(g, 0.55)), 1.0);
+                }
                 float r = length(c) + (PP_Noise(c * 2.5 + _Seed) - 0.5) * (0.45 * (1.0 - _Ring));
                 if (r > 1.0) discard;
                 if (_Ring > 0.5 && r < 0.55) discard;                 // a bubble is only its skin

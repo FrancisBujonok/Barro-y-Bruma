@@ -42,6 +42,7 @@ namespace BrumaPx.World
         readonly Dictionary<Vector2Int, List<MapMarker>> _byChunk = new Dictionary<Vector2Int, List<MapMarker>>();
         readonly List<Vector3> _clear = new List<Vector3>();   // x, z, radius where scatter must stay away
         readonly List<Vector3> _big = new List<Vector3>();     // big props already placed
+        readonly List<Vector2> _signs = new List<Vector2>();   // milestones and signposts already placed
         readonly List<MapMarker> _zones = new List<MapMarker>();
         readonly List<MapMarker> _exits = new List<MapMarker>();
         readonly Dictionary<string, int> _prendaIndex = new Dictionary<string, int>();
@@ -162,6 +163,7 @@ namespace BrumaPx.World
             foreach (var e in prefabs) if (e != null && e.prefab != null) _prefabs[e.key] = e.prefab;
             LoadRocks();
             LoadPlants();
+            StartFireflies();
 
             // Boss lairs inside mountains are carved before the ground texture is made.
             CaveLair.CarveAll(MapGrid.File);
@@ -455,7 +457,8 @@ namespace BrumaPx.World
 
                     if (id == 7 || id == 8) { Barrier(parent, rng, c, r, x, zTop); continue; }
                     if (id == 4) { WaterDecor(parent, rng, c, r, x, zTop); continue; }
-                    if (id == 5 || id == MapGrid.WaterDeckId) continue;
+                    if (id == 5) { RoadMarks(parent, c, r); continue; }
+                    if (id == MapGrid.WaterDeckId) continue;
 
                     switch (id)
                     {
@@ -465,17 +468,29 @@ namespace BrumaPx.World
                             Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.09f : 0.03f, x, zTop, 0.6f, 0.8f, 1.25f, true);
                             Roll(parent, rng, "Matorral", 0.012f, x, zTop, 0.7f, 0.8f, 1.2f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
+                            Roll(parent, rng, "Pastizal", 0.10f, x, zTop, 0.3f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "Piedritas", 0.03f, x, zTop, 0.3f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "Hongos", 0.005f, x, zTop, 0.3f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "TroncoCaido", 0.004f, x, zTop, 1.4f, 0.8f, 1.05f, true);
                             break;
                         case 1:
                             Roll(parent, rng, "Tree", 0.21f, x, zTop, 0.9f, 0.9f, 1.5f, true);
                             Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.14f : 0.09f, x, zTop, 0.6f, 0.8f, 1.3f, true);
                             Roll(parent, rng, "RockSmall", 0.02f, x, zTop, 0.5f, 0.8f, 1.2f, false);
+                            Roll(parent, rng, "Helecho", 0.12f, x, zTop, 0.4f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "Hongos", 0.035f, x, zTop, 0.3f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "Pastizal", 0.03f, x, zTop, 0.3f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "Piedritas", 0.015f, x, zTop, 0.3f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "TroncoCaido", 0.022f, x, zTop, 1.4f, 0.8f, 1.15f, true);
                             break;
                         case 2:
                             Roll(parent, rng, "Tree", 0.16f, x, zTop, 0.9f, 0.8f, 1.2f, true);
                             Roll(parent, rng, "Matorral", 0.05f, x, zTop, 0.7f, 0.8f, 1.3f, true);
                             Roll(parent, rng, "RockMid", 0.03f, x, zTop, 0.7f, 0.7f, 1.1f, true);
                             Roll(parent, rng, "Cross", 0.004f, x, zTop, 1.4f, 1f, 1f, true);
+                            Roll(parent, rng, "TroncoPodrido", 0.02f, x, zTop, 1.4f, 0.8f, 1.1f, true);
+                            Roll(parent, rng, "Piedritas", 0.03f, x, zTop, 0.3f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "Hongos", 0.012f, x, zTop, 0.3f, 0.7f, 1.0f, true);
                             break;
                         case 3:
                             Roll(parent, rng, "Tree", 0.07f, x, zTop, 0.9f, 0.8f, 1.2f, true);
@@ -483,11 +498,18 @@ namespace BrumaPx.World
                             Roll(parent, rng, "RockSmall", 0.02f, x, zTop, 0.5f, 0.8f, 1.1f, false);
                             Roll(parent, rng, "Charco", 0.012f, x, zTop, 1.4f, 1f, 1f, false);
                             Roll(parent, rng, "Foco", 0.004f, x, zTop, 3.5f, 1f, 1f, false);
+                            Roll(parent, rng, "Juncos", 0.06f, x, zTop, 0.4f, 0.6f, 0.95f, true);
+                            Roll(parent, rng, "Totoras", 0.03f, x, zTop, 0.4f, 0.6f, 0.95f, true);
+                            Roll(parent, rng, "Pastizal", 0.05f, x, zTop, 0.3f, 0.8f, 1.3f, true);
+                            Roll(parent, rng, "TroncoPodrido", 0.022f, x, zTop, 1.4f, 0.8f, 1.15f, true);
+                            Roll(parent, rng, "Hongos", 0.01f, x, zTop, 0.3f, 0.7f, 1.0f, true);
                             break;
                         case 6:
                             Roll(parent, rng, "Fence", 0.04f, x, zTop, 2.0f, 1f, 1f, true);
                             Roll(parent, rng, "Tree", 0.008f, x, zTop, 0.9f, 0.8f, 1.1f, true);
                             Roll(parent, rng, "Arbusto", NearRoad(c, r) ? 0.05f : 0.015f, x, zTop, 0.6f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "Pastizal", NearRoad(c, r) ? 0.08f : 0.03f, x, zTop, 0.3f, 0.8f, 1.2f, true);
+                            Roll(parent, rng, "Piedritas", 0.02f, x, zTop, 0.3f, 0.8f, 1.2f, true);
                             break;
                         case 9:
                             Roll(parent, rng, "RuinedHut", 0.05f, x, zTop, 3.6f, 1f, 1f, false);
@@ -508,6 +530,8 @@ namespace BrumaPx.World
                             Roll(parent, rng, "Lantern", 0.01f, x, zTop, 0.8f, 1f, 1f, false);
                             Roll(parent, rng, "Arbusto", 0.02f, x, zTop, 0.6f, 0.8f, 1.1f, true);
                             Roll(parent, rng, "StoneA", 0.02f, x, zTop, 0.8f, 0.8f, 1f, false);
+                            Roll(parent, rng, "Pastizal", 0.03f, x, zTop, 0.3f, 0.7f, 1.1f, true);
+                            Roll(parent, rng, "Piedritas", 0.02f, x, zTop, 0.3f, 0.8f, 1.2f, true);
                             break;
                     }
                 }
@@ -691,7 +715,8 @@ namespace BrumaPx.World
         void LoadPlants()
         {
             string[] names = { "Roble", "Pino", "Abedul", "ArbolOtono", "Arbolito", "Arbusto", "ArbustoBayas", "Matorral" };
-            foreach (var n in new[] { "Juncos", "Totoras", "Nenufares" })
+            foreach (var n in new[] { "Juncos", "Totoras", "Nenufares", "Helecho", "Hongos", "Piedritas", "Pastizal",
+                                      "TroncoCaido", "TroncoPodrido", "Mojon", "Cartel" })
             {
                 var g = Resources.Load<GameObject>("Props/" + n);
                 if (g != null) _prefabs[n] = g;
@@ -719,6 +744,62 @@ namespace BrumaPx.World
                 if (roll < 0) return TreeNames[i];
             }
             return TreeNames[0];
+        }
+
+        void StartFireflies()
+        {
+            var sh = Shader.Find("BrumaPx/Diorama/PPPuff");
+            if (sh == null) return;
+            var ff = gameObject.AddComponent<Fireflies>();
+            ff.material = new Material(sh) { name = "PP_Firefly" };
+        }
+
+        // ------------------------------------------------------------------------------------------ road marks
+
+        static bool RoadCell(int c, int r) { return MapGrid.InBounds(c, r) && MapGrid.IdAt(c, r) == 5; }
+
+        // On road cells: a signpost where roads meet, a milestone now and then on a straight stretch. Each stands
+        // on the first walkable cell beside the road, never near another one.
+        void RoadMarks(Transform parent, int c, int r)
+        {
+            int dirs = 0;
+            if (RoadCell(c + 3, r)) dirs++;
+            if (RoadCell(c - 3, r)) dirs++;
+            if (RoadCell(c, r + 3)) dirs++;
+            if (RoadCell(c, r - 3)) dirs++;
+            float x = MapGrid.XMin + (c + 0.5f) * MapGrid.Cell, z = MapGrid.ZMax - (r + 0.5f) * MapGrid.Cell;
+            string key;
+            float spacing;
+            // a crossing of narrow roads, not a wide stretch or a square (there the diagonals are road too)
+            int diag = (RoadCell(c + 3, r + 3) ? 1 : 0) + (RoadCell(c - 3, r + 3) ? 1 : 0) + (RoadCell(c + 3, r - 3) ? 1 : 0) + (RoadCell(c - 3, r - 3) ? 1 : 0);
+            if (dirs >= 3 && diag <= 1) { key = "Cartel"; spacing = 22f; }
+            else if (dirs == 2 && Hash01(x, z, 13f) < 0.018f) { key = "Mojon"; spacing = 30f; }
+            else return;
+            if (!_prefabs.ContainsKey(key)) return;
+            for (int i = 0; i < _signs.Count; i++)
+                if ((_signs[i] - new Vector2(x, z)).sqrMagnitude < spacing * spacing) return;
+            // the nearest walkable cell off the road, looking out in eight directions
+            for (int k = 1; k <= 4; k++)
+            {
+                for (int d = 0; d < 8; d++)
+                {
+                    int dc = d == 0 || d == 1 || d == 7 ? k : (d == 3 || d == 4 || d == 5 ? -k : 0);
+                    int dr = d == 1 || d == 2 || d == 3 ? k : (d == 5 || d == 6 || d == 7 ? -k : 0);
+                    int cc = c + dc, rr = r + dr;
+                    if (!MapGrid.InBounds(cc, rr)) continue;
+                    byte id = MapGrid.IdAt(cc, rr);
+                    if (id == 5 || MapGrid.IsBlockedId(id) || id == MapGrid.WaterDeckId) continue;
+                    // just off the road: the side of that cell that faces the road
+                    float px = MapGrid.XMin + (cc + 0.5f - Mathf.Sign(dc) * 0.3f) * MapGrid.Cell;
+                    float pz = MapGrid.ZMax - (rr + 0.5f - Mathf.Sign(dr) * 0.3f) * MapGrid.Cell;
+                    if (InClear(px, pz, 1f) || !Walkable(px, pz, 0.4f, true)) continue;
+                    _signs.Add(new Vector2(x, z));
+                    // the milestone keeps its carved face (south) towards the camera
+                    float yaw = key == "Cartel" ? Hash01(x, z, 17f) * 360f : (Hash01(x, z, 19f) - 0.5f) * 50f;
+                    Spawn(key, new Vector3(px, 0f, pz), yaw, 1f, parent);
+                    return;
+                }
+            }
         }
 
         static bool NearRoad(int c, int r)
