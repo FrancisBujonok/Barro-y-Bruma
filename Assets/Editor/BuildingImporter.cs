@@ -134,6 +134,15 @@ namespace BrumaPx.EditorTools
                     holder.transform.localPosition = pivot;
                     door = holder.AddComponent<BuildingDoor>();
                 }
+                if (role == "spin")
+                {
+                    holder = new GameObject("Spinner " + kv.Key);
+                    holder.transform.SetParent(parent, false);
+                    holder.transform.localPosition = pivot;
+                    var sp = holder.AddComponent<Spinner>();
+                    if (p.ContainsKey("axis")) sp.axis = V3(p["axis"]);
+                    sp.speed = Num(p, "speed", -14f);
+                }
                 if (role == "wardrobe")
                 {
                     holder = new GameObject("Wardrobe");

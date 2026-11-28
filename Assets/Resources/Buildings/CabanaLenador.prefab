@@ -1,52 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &45736774023577027
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3152119499459548564}
-  - component: {fileID: 9008797636257149246}
-  m_Layer: 0
-  m_Name: Obstacle 3
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3152119499459548564
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45736774023577027}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.171, y: 0, z: -3.08}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9008797636257149246
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45736774023577027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 1.239, y: 0.21000001}
 --- !u!1 &67280509185047951
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +88,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77584750783946013}
-  m_Mesh: {fileID: 1835898033256213891, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 5815389168832089393, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &8089967521993334301
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -186,53 +139,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &96708143210588788
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2460798899883574204}
-  - component: {fileID: 9101101515891014124}
-  m_Layer: 0
-  m_Name: Obstacle 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2460798899883574204
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 96708143210588788}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9101101515891014124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 96708143210588788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.21000001, y: 3.2899997}
 --- !u!1 &183310900373825893
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +179,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 183310900373825893}
-  m_Mesh: {fileID: 3163184887912037123, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 457806427979675907, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1618814913674920551
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -350,11 +256,11 @@ Transform:
   m_GameObject: {fileID: 207131405841557823}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.235, y: 0, z: 0}
+  m_LocalPosition: {x: -1.855, y: 0, z: 5.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6520248606315135854
 MonoBehaviour:
@@ -370,7 +276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 0.24499999, y: 3.5}
+  halfSize: {x: 0.24499999, y: 2.31}
 --- !u!1 &267052967036026534
 GameObject:
   m_ObjectHideFlags: 0
@@ -582,11 +488,11 @@ Transform:
   m_GameObject: {fileID: 399245118113968478}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.065, y: 0, z: 3.395}
+  m_LocalPosition: {x: 1.19, y: 0, z: 8.014999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8318465354975856667
 MonoBehaviour:
@@ -602,7 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 2.2749999, y: 0.24499999}
+  halfSize: {x: 3.2899997, y: 0.24499999}
 --- !u!1 &502710279581685321
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,7 +602,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517465562982917834}
-  m_Mesh: {fileID: -2866609427218459363, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 7971513284147517299, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &3366012842280505027
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -786,7 +692,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 532071277997029572}
-  m_Mesh: {fileID: -7672898878137265037, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -5048782630165692488, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &7174222658606278121
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -877,7 +783,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 553098265383185388}
-  m_Mesh: {fileID: -1289357450646340908, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -3475000247062670714, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &4575225789363429877
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -928,6 +834,56 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &649119375798179893
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7496720742629164530}
+  - component: {fileID: 6069156801232618742}
+  m_Layer: 0
+  m_Name: Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7496720742629164530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649119375798179893}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.6399999, y: 1.8199999, z: 6.7200003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7215544385716130544}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6069156801232618742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649119375798179893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2399db904068149a5a46849d358d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
+  offset: {x: 0, y: 0, z: 0}
+  radius: 3.3600001
+  color: {r: 0.62, g: 0.45, b: 0.95, a: 1}
+  intensity: 0.6
+  flicker: 0
+  countsForVisibility: 1
 --- !u!1 &737393321061449294
 GameObject:
   m_ObjectHideFlags: 0
@@ -1010,13 +966,13 @@ Transform:
   - {fileID: 6673663595048624021}
   - {fileID: 5909686080606831056}
   - {fileID: 3092769152264303725}
-  - {fileID: 6314634488840130556}
-  - {fileID: 541355378875112941}
-  - {fileID: 5296116002648444624}
-  - {fileID: 696850997822525983}
-  - {fileID: 7079489065475012622}
-  - {fileID: 286169432507974951}
-  - {fileID: 35425237642766868}
+  - {fileID: 6259697693880711990}
+  - {fileID: 779306987806743746}
+  - {fileID: 5449064823450631982}
+  - {fileID: 2354967229581954175}
+  - {fileID: 1427755964941587480}
+  - {fileID: 2601376832001902200}
+  - {fileID: 7496720742629164530}
   - {fileID: 7491334912278765210}
   - {fileID: 4080971434063425433}
   - {fileID: 1236802792790948656}
@@ -1062,7 +1018,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 994551141601353740}
-  m_Mesh: {fileID: -8621754594566469783, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -3992160310823422010, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &995507204405643455
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1113,53 +1069,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1011073507441402582
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 541355378875112941}
-  - component: {fileID: 85715746112116774}
-  m_Layer: 0
-  m_Name: Obstacle 1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &541355378875112941
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011073507441402582}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.235, y: 0, z: 5.95}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &85715746112116774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1011073507441402582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.24499999, y: 2.31}
 --- !u!1 &1099751522690676728
 GameObject:
   m_ObjectHideFlags: 0
@@ -1200,7 +1109,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1099751522690676728}
-  m_Mesh: {fileID: 4701295364021684399, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -9105533522356245951, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1362905362101555641
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1250,7 +1159,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &1210458222485334604
+--- !u!1 &1183137842783148807
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1258,8 +1167,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 283392262560288927}
-  - component: {fileID: 1546243037189550385}
+  - component: {fileID: 1237817939518540808}
+  - component: {fileID: 6878941340159844665}
   m_Layer: 0
   m_Name: Obstacle 6
   m_TagString: Untagged
@@ -1267,13 +1176,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &283392262560288927
+--- !u!4 &1237817939518540808
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1210458222485334604}
+  m_GameObject: {fileID: 1183137842783148807}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.83, y: 0, z: 0}
@@ -1282,13 +1191,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8829353510220350649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1546243037189550385
+--- !u!114 &6878941340159844665
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1210458222485334604}
+  m_GameObject: {fileID: 1183137842783148807}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
@@ -1392,6 +1301,53 @@ MonoBehaviour:
   what: la despensa
   table: despensa
   radius: 1.4699999
+--- !u!1 &1369918731277367133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4236787008425286831}
+  - component: {fileID: 3946775382966698198}
+  m_Layer: 0
+  m_Name: Obstacle 9
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4236787008425286831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369918731277367133}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.2199998, y: 0, z: -2.429}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3946775382966698198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369918731277367133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.63, y: 0.44099998}
 --- !u!1 &1537293277615004538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,7 +1446,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810398961391749652}
-  m_Mesh: {fileID: -5564221459756001676, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 385185696998208830, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1790281433079870806
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1566,11 +1522,11 @@ Transform:
   m_GameObject: {fileID: 1850637748449402087}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.57, y: 0.97999996, z: 1.19}
+  m_LocalPosition: {x: 0.42000002, y: 2.52, z: 4.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8829353510220350649}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4715125426398668601
 MonoBehaviour:
@@ -1586,11 +1542,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
   offset: {x: 0, y: 0, z: 0}
   radius: 5.04
-  color: {r: 1, g: 0.6, b: 0.3, a: 1}
-  intensity: 0.9
-  flicker: 0.45
+  color: {r: 1, g: 0.62, b: 0.32, a: 1}
+  intensity: 0.8
+  flicker: 0.35
   countsForVisibility: 1
---- !u!1 &2096044355490034039
+--- !u!1 &1887769157765341216
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1598,37 +1554,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8019559900516285425}
-  - component: {fileID: 6749223686754559076}
+  - component: {fileID: 1857628510532543577}
+  - component: {fileID: 5292708525040945394}
   m_Layer: 0
-  m_Name: Obstacle 5
+  m_Name: Obstacle 4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8019559900516285425
+--- !u!4 &1857628510532543577
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2096044355490034039}
+  m_GameObject: {fileID: 1887769157765341216}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.865, y: 0, z: 1.19}
+  m_LocalPosition: {x: -4.235, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8829353510220350649}
+  m_Father: {fileID: 6638452252889447721}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6749223686754559076
+--- !u!114 &5292708525040945394
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2096044355490034039}
+  m_GameObject: {fileID: 1887769157765341216}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
@@ -1636,7 +1592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 0.525, y: 0.658}
+  halfSize: {x: 0.24499999, y: 3.6399999}
 --- !u!1 &2099298356791977766
 GameObject:
   m_ObjectHideFlags: 0
@@ -1677,7 +1633,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2099298356791977766}
-  m_Mesh: {fileID: 4097990878889647806, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -7535054364648237241, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1886823312546722026
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1775,7 +1731,7 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 17b3c06cb37dc2c458d0760ca34d96a6, type: 2}
   radius: 0.2
   wakeDistance: 34
---- !u!1 &2253050001853747182
+--- !u!1 &2255374299495716500
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1783,8 +1739,55 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8806027319381463211}
-  - component: {fileID: 8281807743667393807}
+  - component: {fileID: 4370620054948512396}
+  - component: {fileID: 8450497702541394601}
+  m_Layer: 0
+  m_Name: Obstacle 7
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4370620054948512396
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2255374299495716500}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.6399999, y: 0, z: 1.19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8450497702541394601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2255374299495716500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.42000002, y: 0.798}
+--- !u!1 &2292413130791466601
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6558176666598282088}
+  - component: {fileID: 7447134240192072926}
   m_Layer: 0
   m_Name: Light
   m_TagString: Untagged
@@ -1792,38 +1795,38 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8806027319381463211
+--- !u!4 &6558176666598282088
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2253050001853747182}
+  m_GameObject: {fileID: 2292413130791466601}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42000002, y: 2.52, z: -0.42000002}
+  m_LocalPosition: {x: 3.57, y: 0.97999996, z: 1.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 8829353510220350649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8281807743667393807
+--- !u!114 &7447134240192072926
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2253050001853747182}
+  m_GameObject: {fileID: 2292413130791466601}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f2399db904068149a5a46849d358d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
   offset: {x: 0, y: 0, z: 0}
-  radius: 6.7200003
-  color: {r: 1, g: 0.64, b: 0.34, a: 1}
-  intensity: 0.95
-  flicker: 0.3
+  radius: 5.04
+  color: {r: 1, g: 0.6, b: 0.3, a: 1}
+  intensity: 0.9
+  flicker: 0.45
   countsForVisibility: 1
 --- !u!1 &2400110599104536445
 GameObject:
@@ -1851,11 +1854,11 @@ Transform:
   m_GameObject: {fileID: 2400110599104536445}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.235, y: 0, z: 0}
+  m_LocalPosition: {x: 3.836, y: 0, z: 6.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1904937230766930710
 MonoBehaviour:
@@ -1871,7 +1874,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 0.24499999, y: 3.6399999}
+  halfSize: {x: 0.22399999, y: 0.97999996}
 --- !u!1 &2707101126038057579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1919,6 +1922,100 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.63, y: 1.596}
+--- !u!1 &2729958129415313924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4801832436126795044}
+  - component: {fileID: 6992907678836528932}
+  m_Layer: 0
+  m_Name: Obstacle 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4801832436126795044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2729958129415313924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6992907678836528932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2729958129415313924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.21000001, y: 3.2899997}
+--- !u!1 &2779337298879300784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2969383507364518112}
+  - component: {fileID: 8177647383054387244}
+  m_Layer: 0
+  m_Name: Obstacle 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2969383507364518112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2779337298879300784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.235, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6638452252889447721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8177647383054387244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2779337298879300784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.24499999, y: 3.5}
 --- !u!1 &3061732182441461712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,6 +2063,53 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.952, y: 0.42000002}
+--- !u!1 &3063433447513701559
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5998293503284270582}
+  - component: {fileID: 575400660736331926}
+  m_Layer: 0
+  m_Name: Obstacle 5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5998293503284270582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3063433447513701559}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.865, y: 0, z: 1.19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &575400660736331926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3063433447513701559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.525, y: 0.658}
 --- !u!1 &3142359167199560000
 GameObject:
   m_ObjectHideFlags: 0
@@ -2006,7 +2150,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3142359167199560000}
-  m_Mesh: {fileID: 6983353223296882091, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 782727095053164886, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &8811517407027772386
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2056,6 +2200,56 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3145680480966051450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5633930734560581576}
+  - component: {fileID: 3174968795892051425}
+  m_Layer: 0
+  m_Name: Light
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5633930734560581576
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3145680480966051450}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.42000002, y: 2.52, z: -0.42000002}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6638452252889447721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3174968795892051425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3145680480966051450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2399db904068149a5a46849d358d86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
+  offset: {x: 0, y: 0, z: 0}
+  radius: 6.7200003
+  color: {r: 1, g: 0.64, b: 0.34, a: 1}
+  intensity: 0.95
+  flicker: 0.3
+  countsForVisibility: 1
 --- !u!1 &3226353668078991994
 GameObject:
   m_ObjectHideFlags: 0
@@ -2096,7 +2290,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3226353668078991994}
-  m_Mesh: {fileID: -7459851550041067730, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -2332272783803595960, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &2935201967945190038
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2187,7 +2381,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3237934464543071351}
-  m_Mesh: {fileID: 8163717299172085353, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 8615424334984333614, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &2000843165240326871
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2277,7 +2471,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3763302272584862058}
-  m_Mesh: {fileID: 6715699250871969857, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -65365635520025349, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &2966893239154357329
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2368,7 +2562,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4091149994041688015}
-  m_Mesh: {fileID: 6037609654678907682, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 8125275110699415950, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &7683376661116947448
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2466,6 +2660,100 @@ MonoBehaviour:
   what: los barriles
   table: barril
   radius: 1.4699999
+--- !u!1 &4508992461966359122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1818401951356479684}
+  - component: {fileID: 7388160731781138979}
+  m_Layer: 0
+  m_Name: Obstacle 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1818401951356479684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4508992461966359122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7388160731781138979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4508992461966359122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 0.21000001, y: 3.2899997}
+--- !u!1 &4577835728208753858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8902032689448909536}
+  - component: {fileID: 7776326232661829977}
+  m_Layer: 0
+  m_Name: Obstacle 4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8902032689448909536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4577835728208753858}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.051, y: 0, z: -3.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7776326232661829977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4577835728208753858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 2.359, y: 0.21000001}
 --- !u!1 &4644049059375103465
 GameObject:
   m_ObjectHideFlags: 0
@@ -2506,7 +2794,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4644049059375103465}
-  m_Mesh: {fileID: -1564986131359712820, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 8358731399852055739, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1445574401974801746
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2597,7 +2885,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4771632854595274709}
-  m_Mesh: {fileID: 3419306817109779979, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -5393798603329369930, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &3419205996828301587
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2648,53 +2936,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &4891859858372344576
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8651278646030746036}
-  - component: {fileID: 5560445812485165087}
-  m_Layer: 0
-  m_Name: Obstacle 0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8651278646030746036
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4891859858372344576}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 3.08}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5560445812485165087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4891859858372344576}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 4.41, y: 0.21000001}
 --- !u!1 &5003112521295951271
 GameObject:
   m_ObjectHideFlags: 0
@@ -2743,6 +2984,53 @@ MonoBehaviour:
   what: "la mesa del m\xE9dico"
   table: medico
   radius: 1.4699999
+--- !u!1 &5088513152013704555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8931400468753211229}
+  - component: {fileID: 7519994621309845094}
+  m_Layer: 0
+  m_Name: Obstacle 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8931400468753211229
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5088513152013704555}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -3.395}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6638452252889447721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7519994621309845094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5088513152013704555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 4.48, y: 0.24499999}
 --- !u!1 &5113508762573223510
 GameObject:
   m_ObjectHideFlags: 0
@@ -2783,7 +3071,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5113508762573223510}
-  m_Mesh: {fileID: 8395559485915265441, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -4185655352195863201, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &6057469041573560542
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2834,7 +3122,7 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5443621206428891724
+--- !u!1 &5144549251155858891
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2842,37 +3130,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5296116002648444624}
-  - component: {fileID: 6126954460963022888}
+  - component: {fileID: 3472381512609826163}
+  - component: {fileID: 8707363091522063749}
   m_Layer: 0
-  m_Name: Obstacle 2
+  m_Name: Obstacle 8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5296116002648444624
+--- !u!4 &3472381512609826163
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5443621206428891724}
+  m_GameObject: {fileID: 5144549251155858891}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.855, y: 0, z: 5.95}
+  m_LocalPosition: {x: -3.325, y: 0, z: -1.435}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7215544385716130544}
+  m_Father: {fileID: 8829353510220350649}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6126954460963022888
+--- !u!114 &8707363091522063749
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5443621206428891724}
+  m_GameObject: {fileID: 5144549251155858891}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
@@ -2880,7 +3168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 0.24499999, y: 2.31}
+  halfSize: {x: 0.66499996, y: 1.365}
 --- !u!1 &5494915710175164999
 GameObject:
   m_ObjectHideFlags: 0
@@ -2921,7 +3209,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5494915710175164999}
-  m_Mesh: {fileID: 3452660664521642810, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -3887958770186529723, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &298866641662466361
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3011,7 +3299,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5507603221668112613}
-  m_Mesh: {fileID: -600313683572038279, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -8886483601316731313, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &8447354017147966583
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3101,7 +3389,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5556684428253094435}
-  m_Mesh: {fileID: 5721520355979383565, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 5227195520122236411, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &5952051283391962602
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3192,7 +3480,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5570096431059014231}
-  m_Mesh: {fileID: 6423594291442504334, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -384007911458159744, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &1953085962411323590
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3242,56 +3530,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5615067097083651492
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 35425237642766868}
-  - component: {fileID: 5281980618490862443}
-  m_Layer: 0
-  m_Name: Light
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &35425237642766868
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5615067097083651492}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.6399999, y: 1.8199999, z: 6.7200003}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5281980618490862443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5615067097083651492}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f2399db904068149a5a46849d358d86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
-  offset: {x: 0, y: 0, z: 0}
-  radius: 3.3600001
-  color: {r: 0.62, g: 0.45, b: 0.95, a: 1}
-  intensity: 0.6
-  flicker: 0
-  countsForVisibility: 1
 --- !u!1 &5712497473648761768
 GameObject:
   m_ObjectHideFlags: 0
@@ -3338,26 +3576,73 @@ Transform:
   - {fileID: 6180686583771930640}
   - {fileID: 2147222532893698263}
   - {fileID: 5298621249946276409}
-  - {fileID: 8651278646030746036}
-  - {fileID: 2460798899883574204}
-  - {fileID: 8963764791720122991}
-  - {fileID: 3152119499459548564}
-  - {fileID: 2401717094295071853}
-  - {fileID: 8019559900516285425}
-  - {fileID: 283392262560288927}
-  - {fileID: 3749710539708107095}
-  - {fileID: 4847774648605151851}
-  - {fileID: 4880321513149117500}
+  - {fileID: 1376225676272162065}
+  - {fileID: 4801832436126795044}
+  - {fileID: 1818401951356479684}
+  - {fileID: 5959093186608817353}
+  - {fileID: 8902032689448909536}
+  - {fileID: 5998293503284270582}
+  - {fileID: 1237817939518540808}
+  - {fileID: 4370620054948512396}
+  - {fileID: 3472381512609826163}
+  - {fileID: 4236787008425286831}
   - {fileID: 5696939875419321126}
   - {fileID: 7735637161708774990}
   - {fileID: 4795612843948114483}
   - {fileID: 2047219059272825006}
-  - {fileID: 2601376832001902200}
+  - {fileID: 6558176666598282088}
   - {fileID: 3240626842133438520}
   - {fileID: 7433116619857636733}
   - {fileID: 3826476551786497199}
   m_Father: {fileID: 8604692573026629889}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5922152305730023623
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3720494955353997957}
+  - component: {fileID: 374651364341581127}
+  m_Layer: 0
+  m_Name: Obstacle 0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3720494955353997957
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5922152305730023623}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.065, y: 0, z: 3.395}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6638452252889447721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &374651364341581127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5922152305730023623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 2.2749999, y: 0.24499999}
 --- !u!1 &5938175740781601477
 GameObject:
   m_ObjectHideFlags: 0
@@ -3405,53 +3690,6 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.77, y: 0.168}
---- !u!1 &5965948696550666262
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 696850997822525983}
-  - component: {fileID: 5917924938645692658}
-  m_Layer: 0
-  m_Name: Obstacle 3
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &696850997822525983
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5965948696550666262}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.3600001, y: 0, z: 4.83}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5917924938645692658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5965948696550666262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.7, y: 0.90999997}
 --- !u!1 &6553914906428800626
 GameObject:
   m_ObjectHideFlags: 0
@@ -3541,53 +3779,6 @@ MonoBehaviour:
   wardrobe: {fileID: 9000847063372642941}
   behindReach: 3.2
   behindCut: 0.8
---- !u!1 &6569360640018971042
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7079489065475012622}
-  - component: {fileID: 6429912656561033106}
-  m_Layer: 0
-  m_Name: Obstacle 4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7079489065475012622
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6569360640018971042}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.836, y: 0, z: 6.79}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6429912656561033106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6569360640018971042}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.22399999, y: 0.97999996}
 --- !u!1 &6678035661320706450
 GameObject:
   m_ObjectHideFlags: 0
@@ -3729,6 +3920,53 @@ MonoBehaviour:
   kind: 1
   radius: 0.5
   halfSize: {x: 0.63, y: 0.63}
+--- !u!1 &7106381387304011879
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5959093186608817353}
+  - component: {fileID: 3372858199230979623}
+  m_Layer: 0
+  m_Name: Obstacle 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5959093186608817353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7106381387304011879}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.171, y: 0, z: -3.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3372858199230979623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7106381387304011879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 1.239, y: 0.21000001}
 --- !u!1 &7111421028424483673
 GameObject:
   m_ObjectHideFlags: 0
@@ -3767,17 +4005,17 @@ Transform:
   - {fileID: 7681613500878894849}
   - {fileID: 5702994468381904994}
   - {fileID: 7215544385716130544}
-  - {fileID: 6259697693880711990}
-  - {fileID: 779306987806743746}
-  - {fileID: 5449064823450631982}
-  - {fileID: 2354967229581954175}
-  - {fileID: 1427755964941587480}
+  - {fileID: 3720494955353997957}
+  - {fileID: 6108280032302651313}
+  - {fileID: 2969383507364518112}
+  - {fileID: 8931400468753211229}
+  - {fileID: 1857628510532543577}
   - {fileID: 1162025843998268502}
   - {fileID: 87242189828704864}
   - {fileID: 1049860604837771812}
   - {fileID: 2381035946596505482}
   - {fileID: 3259460668739944396}
-  - {fileID: 8806027319381463211}
+  - {fileID: 5633930734560581576}
   - {fileID: 7216551422098747133}
   - {fileID: 3166418014288698989}
   - {fileID: 3848662912123444037}
@@ -3917,7 +4155,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7380404120102676388}
-  m_Mesh: {fileID: -3739558583259132514, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 4972820216051787746, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &7796984732105724570
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3967,6 +4205,53 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &7490963663055943970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1376225676272162065}
+  - component: {fileID: 5349283957811547878}
+  m_Layer: 0
+  m_Name: Obstacle 0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1376225676272162065
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490963663055943970}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 3.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8829353510220350649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5349283957811547878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490963663055943970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 4.41, y: 0.21000001}
 --- !u!1 &7518298147596105144
 GameObject:
   m_ObjectHideFlags: 0
@@ -4055,7 +4340,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7612606589401343416}
-  m_Mesh: {fileID: 1951989269034587059, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -1863153336287129522, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &6101342740153971022
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4146,7 +4431,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7617092265462618530}
-  m_Mesh: {fileID: 7560964302198990296, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -2057122714302507967, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &3473993694672861028
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4237,7 +4522,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7686113645702726314}
-  m_Mesh: {fileID: -5853681188194466234, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 5885898003329889489, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &4060923194780672716
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4341,147 +4626,6 @@ MonoBehaviour:
   reach: 1.2
   downText: '[Interactuar] Bajar al sotano'
   upText: '[Interactuar] Subir'
---- !u!1 &7824589095219561440
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4880321513149117500}
-  - component: {fileID: 8939516546755095693}
-  m_Layer: 0
-  m_Name: Obstacle 9
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4880321513149117500
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7824589095219561440}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.2199998, y: 0, z: -2.429}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8939516546755095693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7824589095219561440}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.63, y: 0.44099998}
---- !u!1 &7854873416756401920
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2401717094295071853}
-  - component: {fileID: 1000093475412138396}
-  m_Layer: 0
-  m_Name: Obstacle 4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2401717094295071853
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7854873416756401920}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.051, y: 0, z: -3.08}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1000093475412138396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7854873416756401920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 2.359, y: 0.21000001}
---- !u!1 &7890285860629613815
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3749710539708107095}
-  - component: {fileID: 7733672145943713406}
-  m_Layer: 0
-  m_Name: Obstacle 7
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3749710539708107095
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7890285860629613815}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.6399999, y: 0, z: 1.19}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7733672145943713406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7890285860629613815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.42000002, y: 0.798}
 --- !u!1 &7965374599478819282
 GameObject:
   m_ObjectHideFlags: 0
@@ -4508,11 +4652,11 @@ Transform:
   m_GameObject: {fileID: 7965374599478819282}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.975, y: 0, z: 3.395}
+  m_LocalPosition: {x: 4.235, y: 0, z: 5.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2885974049664279265
 MonoBehaviour:
@@ -4528,57 +4672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 1.365, y: 0.24499999}
---- !u!1 &7967973329948434003
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 286169432507974951}
-  - component: {fileID: 6609219592323025233}
-  m_Layer: 0
-  m_Name: Light
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &286169432507974951
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7967973329948434003}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.42000002, y: 2.52, z: 4.9}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6609219592323025233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7967973329948434003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f2399db904068149a5a46849d358d86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.Atmosphere.PixelLight
-  offset: {x: 0, y: 0, z: 0}
-  radius: 5.04
-  color: {r: 1, g: 0.62, b: 0.32, a: 1}
-  intensity: 0.8
-  flicker: 0.35
-  countsForVisibility: 1
+  halfSize: {x: 0.24499999, y: 2.31}
 --- !u!1 &8029251240699802920
 GameObject:
   m_ObjectHideFlags: 0
@@ -4627,53 +4721,6 @@ MonoBehaviour:
   max: 70
   flashMaterial: {fileID: 0}
   Invulnerable: 0
---- !u!1 &8205317137177669522
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8963764791720122991}
-  - component: {fileID: 924911491190261486}
-  m_Layer: 0
-  m_Name: Obstacle 2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8963764791720122991
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8205317137177669522}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &924911491190261486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8205317137177669522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.21000001, y: 3.2899997}
 --- !u!1 &8334486345994940940
 GameObject:
   m_ObjectHideFlags: 0
@@ -4714,7 +4761,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8334486345994940940}
-  m_Mesh: {fileID: -578804056470753999, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 3902006710840732063, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &4721141908105304799
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4764,6 +4811,53 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8357903213458988640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6108280032302651313}
+  - component: {fileID: 1153030346961800195}
+  m_Layer: 0
+  m_Name: Obstacle 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6108280032302651313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8357903213458988640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.975, y: 0, z: 3.395}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6638452252889447721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1153030346961800195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8357903213458988640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
+  kind: 1
+  radius: 0.5
+  halfSize: {x: 1.365, y: 0.24499999}
 --- !u!1 &8374426182763600875
 GameObject:
   m_ObjectHideFlags: 0
@@ -4804,7 +4898,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8374426182763600875}
-  m_Mesh: {fileID: 9174629820561092384, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 6122071631626132125, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &2433025232236469382
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -4855,53 +4949,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &8435441647122941752
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4847774648605151851}
-  - component: {fileID: 5299306754632302628}
-  m_Layer: 0
-  m_Name: Obstacle 8
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4847774648605151851
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8435441647122941752}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.325, y: 0, z: -1.435}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8829353510220350649}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5299306754632302628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8435441647122941752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 0.66499996, y: 1.365}
 --- !u!1 &8515298753300118229
 GameObject:
   m_ObjectHideFlags: 0
@@ -4942,7 +4989,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8515298753300118229}
-  m_Mesh: {fileID: -4190939177021682390, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 5021948944414383026, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &8006521639256477373
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5019,11 +5066,11 @@ Transform:
   m_GameObject: {fileID: 8518628976387726989}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -3.395}
+  m_LocalPosition: {x: 3.3600001, y: 0, z: 4.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6638452252889447721}
+  m_Father: {fileID: 7215544385716130544}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8042223794401921126
 MonoBehaviour:
@@ -5039,7 +5086,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
   kind: 1
   radius: 0.5
-  halfSize: {x: 4.48, y: 0.24499999}
+  halfSize: {x: 0.7, y: 0.90999997}
 --- !u!1 &8611998023632356733
 GameObject:
   m_ObjectHideFlags: 0
@@ -5088,53 +5135,6 @@ MonoBehaviour:
   what: los frascos
   table: botica
   radius: 1.4699999
---- !u!1 &8716020345555787168
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6314634488840130556}
-  - component: {fileID: 3291244601460445838}
-  m_Layer: 0
-  m_Name: Obstacle 0
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6314634488840130556
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8716020345555787168}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.19, y: 0, z: 8.014999}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7215544385716130544}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3291244601460445838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8716020345555787168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 277c0550e2037bd40a7b1e1063773c3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BrumaPx.World.WorldObstacle
-  kind: 1
-  radius: 0.5
-  halfSize: {x: 3.2899997, y: 0.24499999}
 --- !u!1 &8718042199983853278
 GameObject:
   m_ObjectHideFlags: 0
@@ -5175,7 +5175,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8718042199983853278}
-  m_Mesh: {fileID: 5124606978078649950, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: -8104205041358837508, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &929323801715683001
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5297,7 +5297,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9025665736284904639}
-  m_Mesh: {fileID: 7863496487741296715, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
+  m_Mesh: {fileID: 1380106468388156295, guid: 8a6066b5253d3494e90fa0fb1421a637, type: 2}
 --- !u!23 &5548790498559906152
 MeshRenderer:
   m_ObjectHideFlags: 0

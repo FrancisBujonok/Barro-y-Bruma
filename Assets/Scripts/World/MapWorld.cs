@@ -118,6 +118,14 @@ namespace BrumaPx.World
                     add("Tintura", 1);
                     add("Tonico", 1);
                     break;
+                case "comerciante":
+                    add("Venda", 1 + rng.Next(2));
+                    add(healing[rng.Next(healing.Length)], 1);
+                    break;
+                case "ofrendas":
+                    if (r < 0.5) add("Tintura", 1);
+                    else if (r < 0.7) add("HierbaSeca", 2);
+                    break;
                 default:
                     if (r < 0.4) { if (rng.Next(2) == 0) add("HierbaSeca", 1 + rng.Next(2)); else add("Venda", 1); }
                     break;
@@ -263,13 +271,19 @@ namespace BrumaPx.World
                 case "refugio":
                 {
                     string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
-                    return l.Contains("curandera") ? 14f : 6f;       // the healer's hut and garden need a clearing
+                    if (l.Contains("curandera")) return 14f;        // the healer's hut and garden need a clearing
+                    if (l.Contains("posada")) return 12f;
+                    if (RefugeBuilding(l) != null) return 9f;
+                    return 6f;
                 }
                 case "poi":
                 {
                     string l = m.label == null ? string.Empty : m.label.ToLowerInvariant();
                     // the woodcutter's cabin is a big building: clear the trees in front of its door too
                     if (l.Contains("caba") && (l.Contains("leñador") || l.Contains("lenador"))) return 8f;
+                    if (l.Contains("establo")) return 8f;
+                    if (l.Contains("altar")) return 7f;
+                    if (l.Contains("carreta")) return 6f;
                     return 5.5f;
                 }
                 case "npc": return 2.5f;
@@ -967,6 +981,25 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
                     return;
                 }
             }
+            // the other refuges with a building of their own: the rest point goes inside, by its fire
+            string own = RefugeBuilding(l);
+            if (own != null)
+            {
+                float yaw = 0f;
+                Vector3 at = p;
+                if (own == "Molino") PlaceMill(p, ref at, ref yaw);
+                var b = SpawnBuilding(own, at, yaw, parent);
+                if (b != null)
+                {
+                    var rest = b.transform.Find("Cabin/Rest");
+                    if (rest != null) g.transform.position = rest.position;
+                    foreach (var r in g.GetComponentsInChildren<Renderer>(true)) r.enabled = false;
+                    var bd = b.GetComponent<Building>();
+                    if (bd != null && bd.door != null)
+                        Spawn("Lantern", bd.door.transform.position + b.transform.TransformDirection(new Vector3(-2.2f, 0f, -1.1f)), 0f, 1f, parent);
+                    return;
+                }
+            }
             if (l.Contains("caba")) Spawn("Hut", p + new Vector3(4.6f, 0f, 3.2f), 0f, 1f, parent);
             else if (l.Contains("capilla"))
             {
@@ -986,6 +1019,52 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             else Spawn("RuinedHut", p + new Vector3(4.2f, 0f, 3.2f), 0f, 1f, parent);
             Spawn("Lantern", p + new Vector3(-1.8f, 0f, 1.2f), 0f, 1f, parent);
+        }
+
+        static string RefugeBuilding(string l)
+        {
+            if (l.Contains("cazador")) return "CabanaCazador";
+            if (l.Contains("soto")) return "CabanaSoto";
+            if (l.Contains("marisme")) return "CabanaMarisma";
+            if (l.Contains("posada")) return "Posada";
+            if (l.Contains("molino")) return "Molino";
+            return null;
+        }
+
+        // The water mill turns its wheel side (local +x) to nearby water, so that the wheel stands in it, while its
+        // door (local -z) faces dry land and the mill itself stands on dry land. Tries the four directions.
+        void PlaceMill(Vector3 p, ref Vector3 at, ref float yaw)
+        {
+            int mc = MapGrid.ColOf(p.x), mr = MapGrid.RowOf(p.z);
+            Vector2Int[] dirs = { new Vector2Int(1, 0), new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(0, 1) };
+            const float S = 1.4f, HalfAlong = 2.5f * S, HalfAcross = 2.1f * S, WheelOut = 3.45f * S;
+            float bestK = float.MaxValue;
+            for (int i = 0; i < 4; i++)
+            {
+                int k = 1;
+                for (; k <= 7; k++) if (MapGrid.IdAt(mc + dirs[i].x * k, mr + dirs[i].y * k) == 4) break;
+                if (k > 7) continue;
+                var w = new Vector3(dirs[i].x, 0f, -dirs[i].y);          // towards the water, world space
+                var door = new Vector3(w.z, 0f, -w.x);                    // where the door looks
+                var cellC = new Vector3(MapGrid.CellX(mc + dirs[i].x * k), 0f, MapGrid.CellZ(mr + dirs[i].y * k));
+                float edge = Vector3.Dot(cellC, w) - MapGrid.Cell * 0.5f;
+                var c = p + w * (edge - Vector3.Dot(p, w) - (WheelOut - 0.6f));
+                // the mill on dry land, and dry land in front of its door
+                bool ok = true;
+                var side = new Vector3(-w.z, 0f, w.x);
+                for (float u = -HalfAlong; u <= HalfAlong + 0.01f && ok; u += HalfAlong / 2f)
+                    for (float v = -HalfAcross; v <= HalfAcross + 0.01f && ok; v += HalfAcross / 2f)
+                    {
+                        var q = c + w * u + side * v;
+                        if (MapGrid.BlockedAt(q.x, q.z)) ok = false;
+                    }
+                var front = c + door * (HalfAcross + 1.6f);
+                if (MapGrid.BlockedAt(front.x, front.z)) ok = false;
+                if (!ok || k >= bestK) continue;
+                bestK = k;
+                at = c;
+                yaw = Mathf.Atan2(-w.z, w.x) * Mathf.Rad2Deg;
+            }
         }
 
         // The healer's hut stands north-east of her refuge marker: clear of the road on the west, garden to the east.
@@ -1221,7 +1300,7 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             else if (l.Contains("carreta"))
             {
-                Spawn("Cart", p, 120f, 1f, parent);
+                if (SpawnBuilding("CarretaVolcada", p, 20f, parent) == null) Spawn("Cart", p, 120f, 1f, parent);
             }
             else if (l.Contains("pozo"))
             {
@@ -1234,14 +1313,20 @@ void SpawnRefuge(Transform parent, MapMarker m, Vector3 p)
             }
             else if (l.Contains("altar"))
             {
-                Spawn("StoneB", p, 0f, 1.5f, parent);
-                Spawn("Cross", p + new Vector3(2.4f, 0f, 0f), 25f, 1f, parent);
+                if (SpawnBuilding("AltarTorcido", p, 0f, parent) == null)
+                {
+                    Spawn("StoneB", p, 0f, 1.5f, parent);
+                    Spawn("Cross", p + new Vector3(2.4f, 0f, 0f), 25f, 1f, parent);
+                }
             }
             else if (l.Contains("establo"))
             {
-                Spawn("RuinedHut", p, 0f, 1.1f, parent);
-                Spawn("Fence", p + new Vector3(4.5f, 0f, 1f), 0f, 1f, parent);
-                Spawn("Fence", p + new Vector3(4.5f, 0f, -2f), 0f, 1f, parent);
+                if (SpawnBuilding("EstabloQuemado", p, 0f, parent) == null)
+                {
+                    Spawn("RuinedHut", p, 0f, 1.1f, parent);
+                    Spawn("Fence", p + new Vector3(4.5f, 0f, 1f), 0f, 1f, parent);
+                    Spawn("Fence", p + new Vector3(4.5f, 0f, -2f), 0f, 1f, parent);
+                }
             }
             else
             {
